@@ -1,1215 +1,2252 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZIO LODGE - Menu</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://images.unsplash.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebaseapp.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
+  <title>INVER</title>
+  <script>
+    try {
+      if (window.top !== window.self) { window.top.location = window.self.location; }
+    } catch (e) {
+      document.documentElement.style.display = "none";
+    }
+  </script>
+  <style>
+    :root {
+      --bg-main: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-input: #f8fafc;
+      --primary: #10b981;
+      --primary-hover: #059669;
+      --accent: #f59e0b;
+      --danger: #ef4444;
+      --info: #3b82f6;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: none;
+    }
 
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', sans-serif;
-}
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; min-height: 100dvh; padding-bottom: calc(90px + env(safe-area-inset-bottom)); line-height: 1.5; }
 
-body {
-  background: #f4f6f9;
-  color: #333;
-}
+    .topbar {
+      background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+      padding: 14px 20px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center;
+    }
+    .brand { display: flex; align-items: center; gap: 8px; font-size: 1.35rem; font-weight: 800; color: var(--primary); text-decoration: none; cursor: pointer; }
+    .brand span { color: var(--text-main); }
 
-/* STYLES POUR LE HEADER STICKY ET LES FILTRES */
-.sticky-header {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  background: #f4f6f9;
-}
+    .container { max-width: 960px; margin: 0 auto; padding: 20px 16px; }
 
-.header-logo {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  height: 60px;
-  width: auto;
-  object-fit: contain;
-}
+    .card { background: transparent; border: none; border-bottom: 1px solid var(--border); border-radius: 0; padding: 18px 0; box-shadow: none; margin-bottom: 0; }
+    .page-head { padding: 4px 0 16px 14px; border-left: 4px solid var(--accent); margin-bottom: 8px; }
+    .page-head.green { border-left-color: var(--primary); }
+    .list-row { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+    .stat { background: var(--bg-input); border-radius: 12px; padding: 14px; text-align: center; }
+    .auth-box { border: 1px solid var(--border); border-radius: 16px; padding: 24px; background: #fff; }
 
-.filter-container {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  padding: 15px 20px;
-  background: white;
-  border-bottom: 1px solid #ddd;
-}
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
 
-.btn-filter {
-  padding: 10px 20px;
-  background: #f4f6f9;
-  color: #333;
-  border: 2px solid #2c5364;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s;
-}
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 0.92rem; border: none; cursor: pointer; transition: all 0.2s ease; text-decoration: none; }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn-primary { background: var(--primary); color: #06281e; }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+    .btn-accent { background: var(--accent); color: #1e1b18; }
+    .btn-outline { background: #fff; border: 1px solid var(--border); color: var(--text-main); }
+    .btn-outline:hover:not(:disabled) { background: var(--bg-card-hover); }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-full { width: 100%; }
 
-.btn-filter:hover, .btn-filter.active {
-  background: #2c5364;
-  color: white;
-}
+    .form-group { margin-bottom: 14px; }
+    .form-label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+    .form-control { width: 100%; padding: 11px 14px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 10px; color: var(--text-main); font-size: 0.92rem; outline: none; }
+    .form-control:focus { border-color: var(--primary); background: #fff; }
 
-/* HEADER ORIGINAL */
-header {
-  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-  color: white;
-  text-align: center;
-  padding: 15px 20px;
-  position: relative;
-}
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; }
+    .badge-success { background: rgba(16, 185, 129, 0.14); color: #047857; }
+    .badge-warning { background: rgba(245, 158, 11, 0.16); color: #b45309; }
+    .badge-danger  { background: rgba(239, 68, 68, 0.12); color: #b91c1c; }
+    .badge-info    { background: rgba(59, 130, 246, 0.12); color: #1d4ed8; }
 
-/* MENU CONTAINER */
-.menu-container {
-  max-width: 1200px;
-  margin: 40px auto;
-  padding: 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 25px;
-}
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0; z-index: 150;
+    }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-muted); text-decoration: none; font-size: 0.78rem; font-weight: 600; cursor: pointer; background: none; border: none; }
+    .nav-item.active, .nav-item:hover { color: var(--primary); }
+    .nav-item svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s ease, stroke-width 0.2s ease; }
+    .nav-item.active svg { stroke-width: 2.3; transform: translateY(-1px); }
 
-/* MENU CARD */
-.menu-card {
-  position: relative;
-  background: white;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-  transition: transform 0.4s, box-shadow 0.4s;
-  display: flex;
-  flex-direction: column;
-}
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(3px); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 300; }
+    .modal-overlay.open { display: flex; }
+    .modal-box { background: #fff; border: 1px solid var(--border); border-radius: 16px; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 24px; box-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.25); animation: popIn 0.2s ease-out; }
+    @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-.menu-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 25px 45px rgba(0,0,0,0.2);
-}
+    #sys-popup { z-index: 500; }
+    .popup-box { max-width: 400px; text-align: center; padding: 28px 22px 22px 22px; }
+    .popup-icon { width: 58px; height: 58px; border-radius: 50%; margin: 0 auto 14px auto; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; }
+    .popup-icon.success, .popup-icon.credit { background: rgba(16, 185, 129, 0.14); }
+    .popup-icon.error { background: rgba(239, 68, 68, 0.12); }
+    .popup-icon.warning, .popup-icon.debit { background: rgba(245, 158, 11, 0.16); }
+    .popup-icon.info { background: rgba(59, 130, 246, 0.12); }
+    .popup-title { font-size: 1.15rem; font-weight: 800; margin-bottom: 6px; }
+    .popup-msg { font-size: 0.92rem; color: var(--text-muted); white-space: pre-line; line-height: 1.55; word-break: break-word; }
+    .popup-amount { font-size: 1.5rem; font-weight: 800; margin-top: 10px; }
+    .popup-amount.pos { color: #047857; }
+    .popup-amount.neg { color: #b45309; }
+    .popup-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .popup-actions .btn { flex: 1; }
 
-/* BADGE */
-.badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  background: #e63946;
-  color: white;
-  padding: 6px 10px;
-  font-size: 0.75rem;
-  border-radius: 8px;
-  font-weight: bold;
-}
+    .chat-fab { position: fixed; right: calc(18px + env(safe-area-inset-right)); bottom: calc(82px + env(safe-area-inset-bottom)); width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #059669); color: #06281e; border: none; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 200; font-size: 1.4rem; }
+    .chat-window { position: fixed; right: calc(18px + env(safe-area-inset-right)); bottom: calc(145px + env(safe-area-inset-bottom)); width: 340px; max-width: calc(100vw - 36px); height: 420px; background: #fff; border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.25); display: none; flex-direction: column; z-index: 250; overflow: hidden; }
+    .chat-window.open { display: flex; }
 
-.menu-card img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-}
+    .view-pane { display: none; }
+    .view-pane.active { display: block; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { color: var(--text-muted); font-weight: 600; }
 
-.menu-content {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-}
+    .progress { height: 6px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+    .progress > span { display: block; height: 100%; background: var(--primary); transition: width 0.6s ease; }
+    .countdown { font-variant-numeric: tabular-nums; font-weight: 800; color: #b45309; }
 
-.menu-content p {
-  flex-grow: 1;
-  margin-bottom: 10px;
-}
+    #view-accueil .home-hero {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 4px 0 22px 0;
+      margin-bottom: 22px;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 20px;
+      align-items: center;
+    }
+    #view-accueil .home-hero-tag {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px;
+      background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); color: #047857;
+      font-size: 0.76rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 10px;
+    }
+    #view-accueil .home-hero-title { font-size: 1.45rem; font-weight: 800; line-height: 1.25; margin-bottom: 6px; color: var(--text-main); }
+    #view-accueil .home-hero-sub { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 14px; }
+    #view-accueil .home-hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    #view-accueil .home-hero-media { position: relative; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); min-height: 170px; max-height: 210px; }
+    #view-accueil .home-hero-media img { width: 100%; height: 100%; min-height: 170px; object-fit: cover; display: block; }
+    #view-accueil .home-hero-caption {
+      position: absolute; inset: auto 0 0 0; padding: 10px 14px;
+      background: linear-gradient(to top, rgba(2, 6, 23, 0.8), rgba(2, 6, 23, 0.05));
+      font-size: 0.78rem; color: #f8fafc; font-weight: 600;
+    }
 
-.price {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #2c5364;
-  margin-bottom: 15px;
-}
+    #view-accueil .home-section-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+    #view-accueil .home-section-title { font-size: 1.12rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+    #view-accueil .news-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 20px; }
+    #view-accueil .news-card {
+      background: #fff; border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+      display: flex; flex-direction: column; transition: border-color 0.2s ease;
+    }
+    #view-accueil .news-card:hover { border-color: rgba(16, 185, 129, 0.55); }
+    #view-accueil .news-media-wrap { position: relative; width: 100%; height: 140px; overflow: hidden; background: var(--bg-input); }
+    #view-accueil .news-thumb { width: 100%; height: 140px; object-fit: cover; display: block; background: var(--bg-input); }
+    #view-accueil .news-like-btn {
+      position: absolute; right: 10px; bottom: 10px; display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 11px; border-radius: 999px; border: 1px solid rgba(15, 23, 42, 0.12);
+      background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(6px); color: var(--text-main);
+      font-size: 0.82rem; font-weight: 700; cursor: pointer;
+      transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #view-accueil .news-like-btn:hover:not(:disabled) { transform: scale(1.04); border-color: rgba(239, 68, 68, 0.6); }
+    #view-accueil .news-like-btn.liked { background: rgba(254, 226, 226, 0.97); border-color: var(--danger); color: #b91c1c; }
+    #view-accueil .news-like-btn.liked:disabled { opacity: 1; cursor: default; }
+    #view-accueil .news-like-btn:disabled:not(.liked) { opacity: 0.6; cursor: not-allowed; }
+    #view-accueil .news-body { padding: 14px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    #view-accueil .news-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--text-muted); }
+    #view-accueil .news-title { font-size: 0.98rem; font-weight: 700; color: var(--text-main); line-height: 1.35; }
+    #view-accueil .news-excerpt { font-size: 0.83rem; color: var(--text-muted); line-height: 1.45; }
 
-.btn-order {
-  width: 100%;
-  padding: 12px;
-  background: #2c5364;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-}
+    @media (max-width: 820px) {
+      #view-accueil .home-hero { grid-template-columns: 1fr; }
+      #view-accueil .news-grid { grid-template-columns: 1fr; }
+      #view-accueil .news-like-btn { padding: 7px 12px; font-size: 0.86rem; }
+    }
+    @media (min-width: 821px) and (max-width: 1024px) {
+      #view-accueil .news-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
 
-/* STYLE : BOUTON AJOUTER AU PANIER */
-.btn-add-cart {
-  width: 100%;
-  padding: 12px;
-  background: #f39c12;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  margin-bottom: 10px;
-  font-weight: bold;
-  transition: background 0.3s;
-}
+    .fab-badge { position: absolute; top: -4px; right: -4px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--danger); color: #fff; font-size: 0.72rem; font-weight: 800; display: none; align-items: center; justify-content: center; border: 2px solid #fff; line-height: 1; }
+    .chat-head { background: var(--primary); color: #06281e; padding: 12px 16px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+    .chat-close { background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #06281e; min-width: 36px; min-height: 36px; }
+    .chat-msgs { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: var(--bg-input); }
+    .chat-form { display: flex; border-top: 1px solid var(--border); padding: 8px; background: #fff; gap: 6px; }
+    .chat-form .form-control { padding: 8px 12px; }
+    .cbub { padding: 8px 12px; border-radius: 12px; font-size: 0.88rem; max-width: 85%; white-space: pre-wrap; word-break: break-word; }
+    .cbub.me { align-self: flex-end; background: var(--primary); color: #06281e; border-bottom-right-radius: 4px; }
+    .cbub.them { align-self: flex-start; background: #fff; border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+    .cbub .ct { display: block; text-align: right; font-size: 0.66rem; opacity: 0.65; margin-top: 2px; }
+    .cday { align-self: center; font-size: 0.7rem; color: var(--text-muted); background: #fff; border: 1px solid var(--border); border-radius: 999px; padding: 2px 10px; }
+    .chat-window { max-height: calc(100vh - 170px); max-height: calc(100dvh - 170px); }
 
-.btn-add-cart:hover {
-  background: #d68910;
-}
+    .policy-meta { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px; }
+    .policy-body { white-space: pre-wrap; font-size: 0.92rem; line-height: 1.65; word-break: break-word; max-height: 60vh; overflow-y: auto; border-top: 1px solid var(--border); padding-top: 12px; color: var(--text-main); -webkit-overflow-scrolling: touch; }
+    .link-policy { color: var(--primary); font-weight: 600; text-decoration: underline; cursor: pointer; }
 
-/* STYLES POUR LE PANIER */
-#cart-floating-btn {
-  position: fixed;
-  bottom: 25px;
-  right: 25px;
-  background: #e63946;
-  color: white;
-  padding: 15px 25px;
-  border-radius: 50px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  cursor: pointer;
-  z-index: 1001;
-  font-weight: bold;
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  transition: transform 0.2s, background 0.3s;
-}
+    .blocked-view { position: fixed; inset: 0; z-index: 340; background: #fff; display: none; align-items: center; justify-content: center; padding: 24px; overflow-y: auto; }
+    .blocked-box { max-width: 420px; width: 100%; text-align: center; }
+    .blocked-icon { width: 72px; height: 72px; border-radius: 50%; background: rgba(239, 68, 68, 0.12); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 16px auto; }
+    body.blocked-active { overflow: hidden; }
+    body.blocked-active .chat-fab { display: none !important; }
+    body.blocked-active .chat-window { z-index: 360; }
 
-#cart-floating-btn:hover {
-  background: #d62828;
-}
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+    body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+    img, video { max-width: 100%; }
+    button, a, .nav-item { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    .modal-box, .chat-msgs, .policy-body { overscroll-behavior: contain; }
+    .form-control { min-height: 44px; }
+    .topbar {
+      padding-top: calc(12px + env(safe-area-inset-top));
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
+      gap: 10px;
+    }
+    .topbar > div:last-child { flex-wrap: wrap; justify-content: flex-end; }
+    .container { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+    #auth-view { padding-top: max(20px, env(safe-area-inset-top)); }
+    .bottom-nav { padding: 6px env(safe-area-inset-right) calc(6px + env(safe-area-inset-bottom)) env(safe-area-inset-left); }
+    .nav-item { flex: 1; min-height: 48px; justify-content: center; }
+    .modal-overlay { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+    .modal-box { max-height: 90vh; max-height: 90dvh; }
 
-#cart-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  z-index: 1002;
-  display: none;
-}
+    @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-#cart-overlay.active {
-  display: block;
-}
+    @media (max-width: 640px) {
+      .container { padding-top: 14px; padding-bottom: 14px; }
+      .brand { font-size: 1.2rem; }
+      #topbar-balance { font-size: 0.8rem !important; padding: 5px 9px !important; }
+      #logout-btn { padding: 8px 10px !important; font-size: 0.78rem !important; }
+      .btn { min-height: 44px; }
+      .form-control, select.form-control, input, textarea { font-size: 16px; }
+      .auth-box { padding: 18px; }
+      .page-head { padding-left: 12px; }
+      #view-accueil .home-hero-title { font-size: 1.25rem; }
+      #view-accueil .home-hero-actions .btn { flex: 1 1 auto; }
+      #view-accueil .home-hero-media, #view-accueil .home-hero-media img { min-height: 150px; max-height: 190px; }
 
-#cart-modal {
-  position: fixed;
-  top: 0;
-  right: -450px;
-  width: 100%;
-  max-width: 400px;
-  height: 100%;
-  background: white;
-  box-shadow: -2px 0 15px rgba(0,0,0,0.2);
-  z-index: 1003;
-  transition: right 0.3s ease;
-  display: flex;
-  flex-direction: column;
-}
+      .modal-overlay:not(#sys-popup) { align-items: flex-end; padding: 0; }
+      .modal-overlay:not(#sys-popup) .modal-box {
+        max-width: none; border-radius: 20px 20px 0 0; border-bottom: none;
+        max-height: 92vh; max-height: 92dvh;
+        padding-bottom: calc(24px + env(safe-area-inset-bottom));
+        animation: slideUp 0.25s ease-out;
+      }
+      .policy-body { max-height: 58vh; max-height: 58dvh; }
+      #sys-popup { padding: 16px; }
 
-#cart-modal.active {
-  right: 0;
-}
+      .chat-window { inset: 0; width: 100%; max-width: none; height: 100vh; height: 100dvh; max-height: none; border-radius: 0; border: none; }
+      .chat-head { padding-top: calc(12px + env(safe-area-inset-top)); }
+      .chat-form { padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
+      .chat-fab { bottom: calc(76px + env(safe-area-inset-bottom)); right: calc(14px + env(safe-area-inset-right)); }
+      body.chat-open { overflow: hidden; }
 
-.cart-header {
-  padding: 20px;
-  background: #2c5364;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+      #view-compte .table-wrap { overflow-x: visible; }
+      #view-compte table, #view-compte tbody, #view-compte tr, #view-compte td { display: block; width: 100%; }
+      #view-compte thead { display: none; }
+      #view-compte tr { border: 1px solid var(--border); border-radius: 12px; padding: 8px 12px; margin-bottom: 10px; }
+      #view-compte td { border: none; padding: 4px 0; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; text-align: right; }
+      #view-compte td::before { content: attr(data-label); color: var(--text-muted); font-weight: 600; font-size: 0.8rem; text-align: left; flex-shrink: 0; }
+      #view-compte td[colspan] { justify-content: center; text-align: center; }
+      #view-compte td[colspan]::before { content: none; }
+    }
 
-.cart-header h2 { margin: 0; font-size: 1.5rem; }
-.close-cart { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+    @media (max-width: 360px) {
+      .topbar { padding-left: 12px; padding-right: 12px; }
+      .brand { font-size: 1.1rem; }
+      .nav-item { font-size: 0.7rem; }
+    }
 
-.cart-items {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px;
-}
-
-.cart-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 15px;
-  margin-bottom: 15px;
-  border-bottom: 1px solid #ddd;
-}
-
-.cart-item-info h4 { margin: 0 0 5px 0; color: #333; font-size: 1rem; }
-.cart-item-info p { margin: 0; color: #666; font-size: 0.9rem; }
-
-.cart-item-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn-qty { background: #eee; border: 1px solid #ccc; width: 28px; height: 28px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-.btn-qty:hover { background: #ddd; }
-.btn-remove { background: #e63946; color: white; border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
-
-.cart-footer {
-  padding: 20px;
-  background: #f4f6f9;
-  border-top: 1px solid #ddd;
-}
-
-.cart-total { display: flex; justify-content: space-between; font-size: 1.3rem; font-weight: bold; margin-bottom: 15px; color: #2c5364; }
-
-.btn-cart-action { width: 100%; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-bottom: 10px; font-size: 1rem; }
-.btn-checkout { background: #2ecc71; color: white; }
-.btn-checkout:hover { background: #27ae60; }
-.btn-clear { background: #e63946; color: white; }
-.btn-clear:hover { background: #c0392b; }
-
-/* -------------------------------------------
-   NOUVEAUX STYLES : FENÊTRES POPUP (MODAL)
-------------------------------------------- */
-#custom-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.6);
-  z-index: 9999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s;
-}
-#custom-modal-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-#custom-modal-box {
-  background: white;
-  padding: 25px;
-  border-radius: 15px;
-  width: 90%;
-  max-width: 400px;
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  transform: translateY(-20px);
-  transition: transform 0.3s;
-}
-#custom-modal-overlay.active #custom-modal-box {
-  transform: translateY(0);
-}
-#custom-modal-box h3 {
-  margin-bottom: 10px;
-  color: #2c5364;
-}
-#custom-modal-box p {
-  margin-bottom: 20px;
-  color: #555;
-  font-size: 1rem;
-}
-#custom-modal-input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  text-align: center;
-  outline: none;
-}
-#custom-modal-input:focus {
-  border-color: #2c5364;
-}
-.custom-modal-actions {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-}
-.custom-modal-actions button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  flex: 1;
-  font-size: 1rem;
-  transition: opacity 0.2s;
-}
-.custom-modal-actions button:hover {
-  opacity: 0.9;
-}
-.btn-modal-cancel { background: #e74c3c; color: white; }
-.btn-modal-confirm { background: #2ecc71; color: white; }
-
-/* -------------------------------------------
-   NOUVEAUX STYLES : GRILLE MOBILE
-------------------------------------------- */
-@media (max-width: 600px) {
-  .header-logo {
-    height: 40px;
-    top: 15px;
-    right: 15px;
-  }
-  .filter-container {
-    gap: 8px;
-    padding: 10px;
-  }
-  .btn-filter {
-    padding: 8px 12px;
-    font-size: 0.85rem;
-  }
-  /* Grille à 2 colonnes pour mobiles */
-  .menu-container {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    padding: 10px;
-  }
-  .menu-card {
-    border-radius: 12px;
-  }
-  .menu-card img {
-    height: 120px; /* Image réduite pour gagner de l'espace */
-  }
-  .menu-content {
-    padding: 10px;
-  }
-  .menu-content h3 {
-    font-size: 0.95rem;
-    margin-bottom: 5px;
-  }
-  .menu-content p {
-    font-size: 0.75rem;
-    line-height: 1.2;
-    /* Coupe le texte après 2 lignes s'il est trop long */
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .price {
-    font-size: 0.95rem;
-    margin-bottom: 10px;
-  }
-  .btn-add-cart, .btn-order {
-    padding: 8px;
-    font-size: 0.8rem;
-    border-radius: 6px;
-    margin-bottom: 8px;
-  }
-  .badge, .menu-card span[style*="position: absolute"] {
-    font-size: 0.6rem !important;
-    padding: 3px 6px !important;
-  }
-}
-
-footer {
-  background: #0f2027;
-  color: white;
-  text-align: center;
-  padding: 25px;
-  margin-top: 50px;
-}
-</style>
+    @media (max-height: 520px) and (orientation: landscape) {
+      .bottom-nav { padding-top: 2px; padding-bottom: calc(2px + env(safe-area-inset-bottom)); }
+      .nav-item { min-height: 40px; flex-direction: row; gap: 6px; }
+      .chat-fab { bottom: calc(60px + env(safe-area-inset-bottom)); }
+      .chat-window { bottom: calc(60px + env(safe-area-inset-bottom)); max-height: calc(100dvh - 80px); }
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="sticky-header">
-  <header>
-    <img src="source/logo.jpg" alt="ZIO LODGE Logo" class="header-logo">
-    <h1>ZIO LODGE</h1>
-    <p>HOTEL - Restaurant local & bio</p>
-  </header>
-  
-  <div class="filter-container">
-    <button class="btn-filter" onclick="filterMenu('cat-nourriture', this)">NOURRITURE</button>
-    <button class="btn-filter" onclick="filterMenu('cat-boisson', this)">BOISSON</button>
-    <button class="btn-filter active" onclick="filterMenu('tout', this)">TOUT</button>
-  </div>
-</div>
+  <div id="auth-view" class="container" style="max-width: 440px; margin-top: 40px; display: none;">
+    <div class="auth-box">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <h1 class="brand" style="justify-content: center; font-size: 1.8rem;">IN<span>VER</span></h1>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Plateforme professionnelle sécurisée</p>
+      </div>
 
-<section class="menu-container">
+      <form id="login-form" autocomplete="on">
+        <h2 style="font-size: 1.2rem; margin-bottom: 14px;">Connexion</h2>
+        <div class="form-group">
+          <label class="form-label">Numéro de téléphone</label>
+          <input type="tel" id="login-phone" class="form-control" placeholder="+22890000000" required maxlength="20" autocomplete="tel" inputmode="tel">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mot de passe</label>
+          <input type="password" id="login-password" class="form-control" placeholder="••••••••" required maxlength="64" autocomplete="current-password">
+        </div>
+        <button type="submit" id="login-submit" class="btn btn-primary btn-full">Se connecter</button>
+        <p style="text-align: center; margin-top: 16px; font-size: 0.88rem; color: var(--text-muted);">
+          Pas de compte ? <a href="#" id="to-register" style="color: var(--primary); font-weight: 600;">S'inscrire</a>
+        </p>
+        <p style="text-align: center; margin-top: 8px; font-size: 0.8rem;">
+          <a href="#" data-open-policy class="link-policy">Politique de confidentialité et conditions d'utilisation</a>
+        </p>
+      </form>
 
-<h2 style="grid-column:1/-1; color:#2c5364;" class="cat-nourriture">Nos Plats principaux</h2>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #f39c12; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">MENU</span>
-    <img src="source/image1.jpeg">
-    <div class="menu-content">
-        <h3>Kpedjigawou (African Pizza)</h3>
-        <p>Spécialité locale savoureuse préparée avec soin et épices traditionnelles.</p>
-        <div class="price">1 500 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Kpedjigawou', 1500)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Kpedjigawou', 1500)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #f39c12; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">MENU</span>
-    <img src="source/image2.jpeg">
-    <div class="menu-content">
-        <h3>Spaghettis blanc</h3>
-        <p>Plat généreux de pâtes sautées aux petits légumes et épices parfumées.</p>
-        <div class="price">2 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Spaghettis', 2000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Spaghettis', 2000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #f39c12; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">MENU</span>
-    <img src="source/image25.jpeg">
-    <div class="menu-content">
-        <h3>Spaghettis rouge</h3>
-        <p>Plat généreux de pâtes sautées aux petits légumes et épices parfumées.</p>
-        <div class="price">2 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Spaghettis', 2000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Spaghettis', 2000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #f39c12; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">MENU</span>
-    <img src="source/image3.jpeg">
-    <div class="menu-content">
-        <h3>Riz cantonais poulet</h3>
-        <p>Riz sauté façon cantonaise avec de tendres morceaux de poulet et légumes croquants.</p>
-        <div class="price">3 500 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Riz cantonais poulet', 3000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Riz cantonais poulet', 3000)">Commander</button>
-    </div>
-</div>
-
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #f39c12; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">MENU</span>
-    <img src="source/image5.jpeg">
-    <div class="menu-content">
-        <h3>Koliko Poulet</h3>
-        <p>Frites d'igname dorées et croustillantes servies avec des brochettes savoureuses.</p>
-        <div class="price">3 500 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Koliko brochette', 3500)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Koliko brochette', 3500)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #f39c12; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">MENU</span>
-    <img src="source/image6.jpeg">
-    <div class="menu-content">
-        <h3>Djenkoumé poulet</h3>
-        <p>Pâte de maïs torréfié savoureuse accompagnée de morceaux de poulet bien assaisonnés.</p>
-        <div class="price">3 500 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Djenkoumé poulet', 3500)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Djenkoumé poulet', 3500)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #f39c12; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">MENU</span>
-    <img src="source/image7.jpeg">
-    <div class="menu-content">
-        <h3>Djenkoumé poulet bicyclette</h3>
-        <p>Djenkoumé authentique servi avec la chair ferme et goûteuse d'un poulet bicyclette local.</p>
-        <div class="price">7 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Djenkoumé poulet bicyclette', 7000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Djenkoumé poulet bicyclette', 7000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #f39c12; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">MENU</span>
-    <img src="source/image8.jpeg">
-    <div class="menu-content">
-        <h3>Ragoût d'igname / patates douces</h3>
-        <p>Ragoût longuement mijoté aux saveurs authentiques, garni de tubercules fondants au choix.</p>
-        <div class="price">4 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Ragoût d\'igname / patates douces', 4000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Ragoût d\'igname / patates douces', 4000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #f39c12; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">MENU</span>
-    <img src="source/image99.jpeg">
-    <div class="menu-content">
-        <h3>Poulet mayo</h3>
-        <p>Morceaux de poulet tendres et frits, enrobés d'une sauce mayonnaise onctueuse et gourmande.</p>
-        <div class="price">4 500 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Poulet mayo', 4500)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Poulet mayo', 4500)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #e74c3c; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">PLATS SUR COMMANDE</span>
-    <img src="source/image10.jpeg">
-    <div class="menu-content">
-        <h3>Akoumé Ebessesi</h3>
-        <p>Pâte traditionnelle de maïs accompagnée d'une sauce locale épicée et savoureuse.</p>
-        <div class="price">6 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Akoumé Ebessesi', 6000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Akoumé Ebessesi', 6000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #e74c3c; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">PLATS SUR COMMANDE</span>
-    <img src="source/image11.jpeg">
-    <div class="menu-content">
-        <h3>Akoumé Adèmè</h3>
-        <p>L'incontournable pâte locale servie avec la célèbre sauce gluante Adèmè riche en goût.</p>
-        <div class="price">7 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Akoumé Adèmè', 7000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Akoumé Adèmè', 7000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #e74c3c; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">PLATS SUR COMMANDE</span>
-    <img src="source/image12.jpeg">
-    <div class="menu-content">
-        <h3>Fufu poulet</h3>
-        <p>Igname pilée à la texture parfaite, servie avec une soupe légère et du poulet bien assaisonné.</p>
-        <div class="price">7 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Fufu poulet', 7000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Fufu poulet', 7000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #e74c3c; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">PLATS SUR COMMANDE</span>
-    <img src="source/image13.jpeg">
-    <div class="menu-content">
-        <h3>Fufu poisson</h3>
-        <p>Igname pilée accompagnée d'une délicieuse soupe de poisson mijotée aux épices.</p>
-        <div class="price">6 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Fufu poisson', 6000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Fufu poisson', 6000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #e74c3c; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">PLATS SUR COMMANDE</span>
-    <img src="source/image14.jpeg">
-    <div class="menu-content">
-        <h3>Fufu chèvre</h3>
-        <p>Le grand classique : Fufu traditionnel servi avec une soupe corsée à la viande de chèvre.</p>
-        <div class="price">8 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Fufu chèvre', 8000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Fufu chèvre', 8000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #e74c3c; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">PLATS SUR COMMANDE</span>
-    <img src="source/image15.jpeg">
-    <div class="menu-content">
-        <h3>Fufu agouti</h3>
-        <p>Un mets de choix composé d'igname pilée et d'une sauce riche à la viande d'agouti.</p>
-        <div class="price">15 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Fufu agouti', 15000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Fufu agouti', 15000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #e74c3c; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">PLATS SUR COMMANDE</span>
-    <img src="source/image16.jpeg">
-    <div class="menu-content">
-        <h3>Sifio (Tilapia)</h3>
-        <p>Poisson Tilapia préparé avec expertise selon le savoir-faire local, tendre et parfumé.</p>
-        <div class="price">6 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Sifio (Tilapia)', 6000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Sifio (Tilapia)', 6000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #e74c3c; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">PLATS SUR COMMANDE</span>
-    <img src="source/image17.jpeg">
-    <div class="menu-content">
-        <h3>Poisson braisé</h3>
-        <p>Poisson frais mariné aux épices fines puis braisé au feu de bois pour un goût fumé unique.</p>
-        <div class="price">7 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Poisson braisé', 7000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Poisson braisé', 7000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #e74c3c; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">PLATS SUR COMMANDE</span>
-    <img src="source/image18.jpeg">
-    <div class="menu-content">
-        <h3>Familiale Zozo</h3>
-        <p>Grand plateau convivial avec Koliko, alloco, poulet mayo et poisson braisé à partager.</p>
-        <div class="price">15 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Familiale Zozo', 15000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Familiale Zozo', 15000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #e74c3c; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">PLATS SUR COMMANDE</span>
-    <img src="source/image19.jpeg">
-    <div class="menu-content">
-        <h3>Familiale Zio Lodge</h3>
-        <p>Le festin royal réunissant Koliko, riz, alloco, brochettes, poulet et poisson braisé.</p>
-        <div class="price">20 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Familiale Zio Lodge', 20000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Familiale Zio Lodge', 20000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #e74c3c; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">PLATS SUR COMMANDE</span>
-    <img src="source/image20.jpeg">
-    <div class="menu-content">
-        <h3>Brochette</h3>
-        <p>Morceaux de viande tendres, finement marinés et grillés à la perfection.</p>
-        <div class="price">1 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Brochette', 1000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Brochette', 1000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #2ecc71; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">ACCOMPAGNEMENTS</span>
-    <img src="source/image21.jpeg">
-    <div class="menu-content">
-        <h3>Alloco</h3>
-        <p>Délicieuses rondelles de bananes plantains mûres frites jusqu'à obtenir une couleur dorée.</p>
-        <div class="price">1 500 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Alloco', 1500)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Alloco', 1500)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #2ecc71; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">ACCOMPAGNEMENTS</span>
-    <img src="source/image22.jpg">
-    <div class="menu-content">
-        <h3>Attiéké</h3>
-        <p>Semoule de manioc cuite à la vapeur, légère, légèrement acidulée et irrésistible.</p>
-        <div class="price">1 500 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Attiéké', 1500)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Attiéké', 1500)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #2ecc71; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">ACCOMPAGNEMENTS</span>
-    <img src="source/image23.jpeg">
-    <div class="menu-content">
-        <h3>Riz blanc</h3>
-        <p>Portion de riz blanc nature, cuit à la perfection pour accompagner harmonieusement vos sauces.</p>
-        <div class="price">1 500 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Riz blanc', 1500)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Riz blanc', 1500)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #2ecc71; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">ACCOMPAGNEMENTS</span>
-    <img src="source/image24.jpeg">
-    <div class="menu-content">
-        <h3>Riz gras</h3>
-        <p>Riz cuisiné dans un savoureux bouillon de tomates, d'épices et d'aromates locaux.</p>
-        <div class="price">1 500 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Riz gras', 1500)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Riz gras', 1500)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #2ecc71; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">ACCOMPAGNEMENTS</span>
-    <img src="source/image25.jpg">
-    <div class="menu-content">
-        <h3>Patates douces</h3>
-        <p>Portion de patates douces frites offrant une texture croustillante et une douce note sucrée.</p>
-        <div class="price">1 500 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Patates douces', 1500)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Patates douces', 1500)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-nourriture">
-  <span style="position: absolute; top: 10px; right: 10px; background-color: #2ecc71; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">ACCOMPAGNEMENTS</span>
-  <img src="source/image9.jpg">
-  <div class="menu-content">
-    <h3>Frites</h3>
-    <p>Frites croustillantes et bien assaisonnées.</p>
-    <div class="price">1 500 FCFA</div>
-    <button class="btn-add-cart" onclick="ajouterAuPanier('Frites', 1500)">Ajouter au panier</button>
-    <button class="btn-order" onclick="commander('Frites',1500)">Commander</button>
-  </div>
-</div>
-
-
-
-
-<h2 style="text-align: center; margin-bottom: 40px; font-size: 2.2em; text-transform: uppercase;" class="cat-boisson">NOS BOISSONS</h2>
-
-
-
-<div class="menu-card cat-boisson">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #3498db; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">NOS BOISSONS</span>
-    <img src="source/image26.jpg">
-    <div class="menu-content">
-        <h3>Toutes les boissons BB & SNB</h3>
-        <p>Retrouvez la gamme complète de vos rafraîchissements classiques des brasseries locales.</p>
-        <div class="price">1 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Boissons BB & SNB', 1000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Boissons BB & SNB', 1000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-boisson">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #3498db; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">NOS BOISSONS</span>
-    <img src="source/image27.jpeg">
-    <div class="menu-content">
-        <h3>AWOOYO</h3>
-        <p>Boisson brune rafraîchissante et pleine de caractère, idéale pour étancher votre soif.</p>
-        <div class="price">1 500 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('AWOYOO', 1500)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('AWOYOO', 1500)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-boisson">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #3498db; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">NOS BOISSONS</span>
-    <img src="source/image28.jpg">
-    <div class="menu-content">
-        <h3>PILS</h3>
-        <p>Bière blonde de renommée, légère, finement pétillante et très désaltérante.</p>
-        <div class="price">1 500 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('PILS', 1500)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('PILS', 1500)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-boisson">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #3498db; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">NOS BOISSONS</span>
-    <img src="source/image29.jpg">
-    <div class="menu-content">
-        <h3>LAGER</h3>
-        <p>Bière douce et rafraîchissante, parfaite pour accompagner vos repas en toute simplicité.</p>
-        <div class="price">1 500 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('LAGER', 1500)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('LAGER', 1500)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-boisson">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #3498db; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">NOS BOISSONS</span>
-    <img src="source/image30.jpg">
-    <div class="menu-content">
-        <h3>Eau minérale</h3>
-        <p>Eau pure et naturelle en bouteille pour vous hydrater sereinement à tout moment.</p>
-        <div class="price">1 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Eau minérale', 1000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Eau minérale', 1000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-boisson">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #3498db; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">NOS BOISSONS</span>
-    <img src="source/image31.jpg">
-    <div class="menu-content">
-        <h3>Energy Drinks</h3>
-        <p>Un assortiment de boissons énergisantes pour vous redonner un coup de boost immédiat.</p>
-        <div class="price">1 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Energy Drinks', 1000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Energy Drinks', 1000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-boisson">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #9b59b6; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">AUTRES BOISSONS</span>
-    <img src="source/image32.jpg">
-    <div class="menu-content">
-        <h3>FAB (Forever Énergie Drink)</h3>
-        <p>Boisson énergétique premium de Forever offrant une vitalité durable et saine.</p>
-        <div class="price">5 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('FAB (Forever Énergie Drink)', 5000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('FAB (Forever Énergie Drink)', 5000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-boisson">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #9b59b6; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">AUTRES BOISSONS</span>
-    <img src="source/image33.jpeg">
-    <div class="menu-content">
-        <h3>Tchoukoutchou</h3>
-        <p>Délicieuse bière traditionnelle locale, artisanale et brassée à base de sorgho.</p>
-        <div class="price">1 500 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Tchoukoutchou', 1500)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Tchoukoutchou', 1500)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-boisson">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #9b59b6; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">AUTRES BOISSONS</span>
-    <img src="source/image34.jpg">
-    <div class="menu-content">
-        <h3>Vin de palme (Deha)</h3>
-        <p>Boisson 100% naturelle directement extraite du palmier, fraîche, douce et légèrement pétillante.</p>
-        <div class="price">1 500 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Vin de palme (Deha)', 1500)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Vin de palme (Deha)', 1500)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-boisson">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #9b59b6; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">AUTRES BOISSONS</span>
-    <img src="source/image35.jpeg">
-    <div class="menu-content">
-        <h3>Zio Lodge Apevia Bio</h3>
-        <p>Boisson naturelle et biologique, une spécialité exclusive de la maison aux vertus purifiantes.</p>
-        <div class="price">2 500 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Zio Lodge Apevia Bio', 2500)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Zio Lodge Apevia Bio', 2500)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-boisson">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #9b59b6; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">AUTRES BOISSONS</span>
-    <img src="source/image36.jpeg">
-    <div class="menu-content">
-        <h3>Zio Lodge Apevia Atikedi</h3>
-        <p>Boisson tonifiante et traditionnelle revisitée par l'expertise et le soin de Zio Lodge.</p>
-        <div class="price">3 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Zio Lodge Apevia Atkedji', 3000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Zio Lodge Apevia Atkedji', 3000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-boisson">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #9b59b6; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">AUTRES BOISSONS</span>
-    <img src="source/image37.jpeg">
-    <div class="menu-content">
-        <h3>Cocktail Zio Lodge</h3>
-        <p>Mélange exotique rafraîchissant créé par notre barman pour éveiller vos papilles.</p>
-        <div class="price">3 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Cocktail Zio Lodge', 3000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Cocktail Zio Lodge', 3000)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-boisson">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #9b59b6; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">AUTRES BOISSONS</span>
-    <img src="source/image38.jpeg">
-    <div class="menu-content">
-        <h3>Jus de fruit naturel</h3>
-        <p>Jus fraîchement pressé avec des fruits de saison, gorgé de vitamines et de douceur.</p>
-        <div class="price">2 500 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Jus de fruit naturel', 2500)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Jus de fruit naturel', 2500)">Commander</button>
-    </div>
-</div>
-
-<div class="menu-card cat-boisson">
-    <span style="position: absolute; top: 10px; right: 10px; background-color: #9b59b6; color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;">AUTRES BOISSONS</span>
-    <img src="source/image39.jpeg">
-    <div class="menu-content">
-        <h3>Vin Zio Lodge</h3>
-        <p>Cuvée spéciale de la maison aux arômes intenses, idéale pour accompagner vos grandes occasions.</p>
-        <div class="price">6 000 FCFA</div>
-        <button class="btn-add-cart" onclick="ajouterAuPanier('Vin Zio Lodge', 6000)">Ajouter au panier</button>
-        <button class="btn-order" onclick="commander('Vin Zio Lodge', 6000)">Commander</button>
-    </div>
-</div>
-
-
-
-</section>
-
-<div id="cart-floating-btn" onclick="toggleCart()">
-  🛒 Panier (<span id="cart-count">0</span>)
-</div>
-
-<div id="cart-overlay" onclick="toggleCart()"></div>
-<div id="cart-modal">
-  <div class="cart-header">
-    <h2>Votre Panier</h2>
-    <button class="close-cart" onclick="toggleCart()">✖</button>
-  </div>
-  
-  <div class="cart-items" id="cart-items">
-    </div>
-  
-  <div class="cart-footer">
-    <div class="cart-total">
-      <span>Total :</span>
-      <span><span id="cart-total">0</span> FCFA</span>
-    </div>
-    <button class="btn-cart-action btn-checkout" onclick="commanderPanier()">Commander le panier</button>
-    <button class="btn-cart-action btn-clear" onclick="viderPanier()">Vider le panier</button>
-  </div>
-</div>
-
-<div id="custom-modal-overlay">
-  <div id="custom-modal-box">
-    <h3 id="custom-modal-title"></h3>
-    <p id="custom-modal-text"></p>
-    <input type="text" id="custom-modal-input" style="display:none;" />
-    <div class="custom-modal-actions">
-      <button id="custom-modal-btn-cancel" class="btn-modal-cancel">Annuler</button>
-      <button id="custom-modal-btn-confirm" class="btn-modal-confirm">OK</button>
+      <form id="register-form" style="display: none;" autocomplete="on">
+        <h2 style="font-size: 1.2rem; margin-bottom: 14px;">Inscription</h2>
+        <div class="form-group">
+          <label class="form-label">Nom complet</label>
+          <input type="text" id="reg-name" class="form-control" placeholder="Johns Michael" required maxlength="60" autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Numéro de téléphone</label>
+          <input type="tel" id="reg-phone" class="form-control" placeholder="+22890000000" required maxlength="20" autocomplete="tel" inputmode="tel">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mot de passe (6 car. min)</label>
+          <input type="password" id="reg-password" class="form-control" placeholder="••••••••" required minlength="6" maxlength="64" autocomplete="new-password">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Code d'invitation (Parrain)</label>
+          <input type="text" id="reg-invite" class="form-control" placeholder="EX: INVER2026" required maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false" style="text-transform: uppercase;">
+          <small style="color:var(--text-muted); font-size:0.75rem;">()</small>
+        </div>
+        <div class="form-group" style="display:flex; align-items:flex-start; gap:8px;">
+          <input type="checkbox" id="reg-privacy" required style="margin-top:4px; width:18px; height:18px; accent-color:var(--primary);">
+          <label for="reg-privacy" style="font-size:0.82rem; color:var(--text-muted);">J'accepte la <a href="#" data-open-policy class="link-policy">politique de confidentialité et les conditions d'utilisation</a> d'INVER.</label>
+        </div>
+        <button type="submit" id="register-submit" class="btn btn-primary btn-full">Créer mon compte</button>
+        <p style="text-align: center; margin-top: 16px; font-size: 0.88rem; color: var(--text-muted);">
+          Déjà un compte ? <a href="#" id="to-login" style="color: var(--primary); font-weight: 600;">Se connecter</a>
+        </p>
+      </form>
     </div>
   </div>
-</div>
 
-<footer>
-© 2025 ZIO LODGE — Tous droits réservés
-</footer>
 
-<script>
-// --- FONCTIONS DE FENÊTRE POPUP PERSONNALISÉE (MODAL) ---
+  <div id="main-app-view" style="display: none;">
+    <header class="topbar">
+      <div class="brand" onclick="switchTab('accueil')">IN<span>VER</span></div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span id="topbar-balance" class="badge badge-success" style="font-size: 0.9rem; padding: 6px 12px;">0 F CFA</span>
+        <button id="logout-btn" class="btn btn-outline" style="padding: 6px 10px; font-size: 0.8rem;">Déconnexion</button>
+      </div>
+    </header>
 
-function customDialog({ type, title, text, inputType = 'text', defaultValue = '' }) {
-  return new Promise((resolve) => {
-    const overlay = document.getElementById('custom-modal-overlay');
-    const titleEl = document.getElementById('custom-modal-title');
-    const textEl = document.getElementById('custom-modal-text');
-    const inputEl = document.getElementById('custom-modal-input');
-    const btnCancel = document.getElementById('custom-modal-btn-cancel');
-    const btnConfirm = document.getElementById('custom-modal-btn-confirm');
-
-    titleEl.innerText = title || '';
-    textEl.innerText = text || '';
-
-    if (type === 'prompt') {
-      inputEl.style.display = 'block';
-      inputEl.type = inputType;
-      inputEl.value = defaultValue;
-      // Empêche le focus automatique sur mobile de scroller bizarrement
-      setTimeout(() => inputEl.focus(), 100); 
-    } else {
-      inputEl.style.display = 'none';
-    }
-
-    if (type === 'alert') {
-      btnCancel.style.display = 'none';
-      btnConfirm.innerText = 'Fermer';
-    } else {
-      btnCancel.style.display = 'block';
-      btnConfirm.innerText = 'OK';
-    }
-
-    overlay.classList.add('active');
-
-    const cleanup = () => {
-      overlay.classList.remove('active');
-      btnConfirm.onclick = null;
-      btnCancel.onclick = null;
-    };
-
-    btnConfirm.onclick = () => {
-      cleanup();
-      if (type === 'prompt') resolve(inputEl.value);
-      else if (type === 'confirm') resolve(true);
-      else resolve(true);
-    };
-
-    btnCancel.onclick = () => {
-      cleanup();
-      if (type === 'prompt') resolve(null);
-      else if (type === 'confirm') resolve(false);
-      else resolve(false);
-    };
-  });
-}
-
-async function customAlert(title, text) {
-  return customDialog({ type: 'alert', title, text });
-}
-
-async function customConfirm(title, text) {
-  return customDialog({ type: 'confirm', title, text });
-}
-
-async function customPrompt(title, text, inputType='text', defaultValue='') {
-  return customDialog({ type: 'prompt', title, text, inputType, defaultValue });
-}
-
-// --- FONCTIONS EXISTANTES ADAPTÉES ---
-
-function filterMenu(category, btn) {
-  let buttons = document.querySelectorAll('.btn-filter');
-  buttons.forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-
-  let items = document.querySelector('.menu-container').children;
-  for (let i = 0; i < items.length; i++) {
-    let item = items[i];
-    if (category === 'tout') {
-      item.style.display = ""; 
-    } else {
-      if (item.classList.contains(category)) {
-        item.style.display = "";
-      } else {
-        item.style.display = "none";
-      }
-    }
-  }
-}
-
-// Ajout de async pour utiliser les popup
-async function commander(nomPlat, prix) {
-  let qte = await customPrompt("Quantité", "Nombre de plats ?", "number", "1");
-  if (!qte || qte <= 0) return;
-
-  let table = await customPrompt("Table", "Numéro de table ?", "text", "");
-  if (!table) return;
-
-  let total = prix * qte;
-
-  let message =
-    "🍽️ COMMANDE ZIO LODGE\n\n" +
-    "Plat : " + nomPlat + "\n" +
-    "Prix unitaire : " + prix + " FCFA\n" +
-    "Quantité : " + qte + "\n" +
-    "Total : " + total + " FCFA\n" +
-    "Table : " + table;
-
-  window.open(
-    "https://wa.me/22896068238?text=" + encodeURIComponent(message),
-    "_blank"
-  );
-}
-
-// --- GESTION DU PANIER ---
-
-let cart = [];
-
-function ajouterAuPanier(nom, prix) {
-  let existingItem = cart.find(item => item.nom === nom);
-  
-  if (existingItem) {
-    existingItem.qty += 1;
-  } else {
-    cart.push({ nom: nom, prix: prix, qty: 1 });
-  }
-  
-  updateCartUI();
-  
-  let btn = document.getElementById('cart-floating-btn');
-  btn.style.transform = 'scale(1.15)';
-  setTimeout(() => { btn.style.transform = 'scale(1)'; }, 200);
-}
-
-function updateCartUI() {
-  let cartItemsContainer = document.getElementById('cart-items');
-  let cartTotalEl = document.getElementById('cart-total');
-  let cartCountEl = document.getElementById('cart-count');
-  
-  cartItemsContainer.innerHTML = '';
-  let total = 0;
-  let count = 0;
-
-  if(cart.length === 0) {
-    cartItemsContainer.innerHTML = '<p style="text-align:center; color:#666; margin-top:20px;">Votre panier est vide.</p>';
-  } else {
-    cart.forEach((item, index) => {
-      let subtotal = item.prix * item.qty;
-      total += subtotal;
-      count += item.qty;
-
-      cartItemsContainer.innerHTML += `
-        <div class="cart-item">
-          <div class="cart-item-info">
-            <h4>${item.nom}</h4>
-            <p>${item.prix} FCFA x ${item.qty} = <strong>${subtotal} FCFA</strong></p>
+    <main class="container">
+      <div id="view-accueil" class="view-pane active">
+        <section class="home-hero">
+          <div>
+            <div class="home-hero-tag">✦ Membre INVER</div>
+            <h2 id="welcome-title" class="home-hero-title">Bonjour, Membre</h2>
+            <p id="user-level-status" class="home-hero-sub">Vérification du niveau...</p>
+            <div class="home-hero-actions">
+              <button type="button" onclick="switchTab('actions')" class="btn btn-primary" style="padding: 8px 14px; font-size: 0.85rem;">Explorer les Actions</button>
+              <button type="button" onclick="openModal('activate-modal')" class="btn btn-accent" style="padding: 8px 14px; font-size: 0.85rem;">Activer un Niveau</button>
+              <button type="button" onclick="switchTab('parrainage')" class="btn btn-outline" style="padding: 8px 14px; font-size: 0.85rem;">Parrainage</button>
+            </div>
           </div>
-          <div class="cart-item-actions">
-            <button class="btn-qty" onclick="changeQty(${index}, -1)">-</button>
-            <span>${item.qty}</span>
-            <button class="btn-qty" onclick="changeQty(${index}, 1)">+</button>
-            <button class="btn-remove" onclick="removeItem(${index})">❌</button>
+          <div class="home-hero-media">
+            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80" alt="Tableau de bord financier et analyses numériques" referrerpolicy="no-referrer">
+            <div class="home-hero-caption">Suivi en temps réel • Activités &amp; Rendements</div>
+          </div>
+        </section>
+
+        <section>
+          <div class="home-section-header">
+            <h3 class="home-section-title"> ACTUALITÉS</h3>
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span id="news-daily-limit-badge" class="badge badge-warning">J'aime aujourd'hui : 0 / 5</span>
+             
+            </div>
+          </div>
+          <div id="news-grid" class="news-grid"></div>
+        </section>
+      </div>
+
+      <div id="view-actions" class="view-pane">
+        
+        <h3 style="font-size: 1.1rem; margin: 16px 0 10px 0;">Actions disponibles</h3>
+		<p style="color: var(--text-muted); font-size: 0.9rem;">Choisissez une action, misez le montant de votre choix et recevez votre mise + bénéfice à l'échéance.</p>
+        <div id="actions-grid" class="grid-2"><p style="color:var(--text-muted);">Chargement...</p></div>
+        <h3 style="font-size: 1.1rem; margin: 24px 0 10px 0;">Mes participations</h3>
+        <div id="my-participations-box" style="display:flex; flex-direction:column; gap:10px;"><p style="color:var(--text-muted);">Aucune participation en cours.</p></div>
+      </div>
+
+      <div id="view-bonus" class="view-pane" style="text-align: center;">
+        <div style="max-width: 500px; margin: 0 auto; padding: 10px 0;">
+          <h2 style="font-size: 1.3rem; margin-bottom: 6px;">Roue de la Fortune</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Chaque nouveau filleul inscrit avec votre code ou votre lien vous offre un tour de roue.</p>
+          <div style="position: relative; width: 220px; height: 220px; margin: 0 auto 20px auto; border-radius: 50%; border: 6px solid var(--primary); display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #ffffff, #ecfdf5);">
+            <div id="wheel-display" style="font-size: 1.15rem; font-weight: 800;">INVER BONUS</div>
+          </div>
+          <button id="spin-wheel-btn" class="btn btn-primary btn-full" style="padding: 14px;" disabled>Roue verrouillée</button>
+          <p id="spin-msg" style="margin-top: 10px; font-size: 0.85rem; color: var(--text-muted);"></p>
+        </div>
+      </div>
+
+      <div id="view-compte" class="view-pane">
+        <div class="card" style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+          <div id="profile-avatar" style="width: 64px; height: 64px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; color: #06281e;">IN</div>
+          <div style="flex: 1;">
+            <h2 id="profile-name" style="font-size: 1.25rem;">Nom</h2>
+            <p id="profile-phone" style="color: var(--text-muted); font-size: 0.88rem;"></p>
+            <span id="profile-level-pill" class="badge badge-warning" style="margin-top: 4px;">Niveau --</span>
           </div>
         </div>
-      `;
+
+        <div class="grid-3" style="margin: 18px 0 16px 0;">
+          <div class="stat">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Solde disponible</div>
+            <div id="val-bal" style="font-size: 1.25rem; font-weight: 800; color: var(--primary); margin-top: 4px;">0 F CFA</div>
+          </div>
+          <div class="stat">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Total gains</div>
+            <div id="val-earn" style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-top: 4px;">0 F CFA</div>
+          </div>
+          <div class="stat">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Total retraits</div>
+            <div id="val-with" style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-top: 4px;">0 F CFA</div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="gap: 12px; margin-bottom: 20px;">
+          <button onclick="openModal('activate-modal')" class="btn btn-accent">⚡ Activer mon compte</button>
+          <button onclick="openModal('withdraw-modal')" class="btn btn-primary">💸 Effectuer un retrait</button>
+          <button onclick="openModal('deposit-modal')" class="btn btn-outline">📥 Recharger mon solde</button>
+          <button onclick="switchTab('parrainage')" class="btn btn-outline">👥 Parrainage &amp; Commissions</button>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size: 1.1rem; margin-bottom: 6px;">Informations légales</h3>
+          <p style="font-size:0.86rem; color:var(--text-muted); margin-bottom:12px;">Consultez à tout moment la politique de confidentialité et les conditions d'utilisation d'INVER.</p>
+          <button type="button" class="btn btn-outline btn-full" onclick="openPolicy()">📄 Politique de confidentialité &amp; conditions d'utilisation</button>
+        </div>
+
+        <div class="card" style="border-bottom:none;">
+          <h3 style="font-size: 1.1rem; margin-bottom: 12px;">Historique des transactions</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Montant</th><th>Statut</th></tr></thead>
+              <tbody id="tx-tbody"><tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Chargement...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-parrainage" class="view-pane">
+        <div class="page-head green">
+          <h2 style="font-size: 1.3rem; margin-bottom: 4px;">Système de Parrainage</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Invitez vos amis : jusqu'à 25% de commission sur leurs activations et un tour de roue pour chaque nouvelle inscription confirmée.</p>
+        </div>
+        <div class="card">
+          <h3 style="font-size: 1.1rem; margin-bottom: 10px;">Vos liens d'invitation</h3>
+          <div class="form-group">
+            <label class="form-label">Code d'invitation</label>
+            <input type="text" id="my-code-input" class="form-control" readonly style="font-weight:bold; color:var(--primary);">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Lien de parrainage unique</label>
+            <input type="text" id="my-link-input" class="form-control" readonly>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-top:18px;">
+          <div class="stat">
+            <div style="font-size:0.8rem; color:var(--text-muted);">Total filleuls</div>
+            <div id="ref-total" style="font-size:1.4rem; font-weight:800; margin-top:4px;">0</div>
+          </div>
+          <div class="stat">
+            <div style="font-size:0.8rem; color:var(--text-muted);">Filleuls actifs</div>
+            <div id="ref-active" style="font-size:1.4rem; font-weight:800; color:var(--primary); margin-top:4px;">0</div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navigation principale">
+      <button class="nav-item active" data-tab="accueil" onclick="switchTab('accueil')" aria-label="Accueil">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg>
+        <span>Accueil</span>
+      </button>
+      <button class="nav-item" data-tab="actions" onclick="switchTab('actions')" aria-label="Actions">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg>
+        <span>Actions</span>
+      </button>
+      <button class="nav-item" data-tab="bonus" onclick="switchTab('bonus')" aria-label="Bonus">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg>
+        <span>Bonus</span>
+      </button>
+      <button class="nav-item" data-tab="compte" onclick="switchTab('compte')" aria-label="Compte">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>
+        <span>Compte</span>
+      </button>
+    </nav>
+  </div>
+
+
+  <div id="activate-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h2 style="font-size:1.15rem;">Activation du compte</h2>
+        <button onclick="closeModal('activate-modal')" class="btn btn-outline" style="padding:4px 10px;">✕</button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div class="list-row">
+          <strong>Niveau 1 — 3 500 F CFA</strong>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin:2px 0 10px 0;">Gain quotidien : 125 F CFA / jour</p>
+          <button class="btn btn-primary btn-full" style="padding:8px;" onclick="doActivateLevel(1)">Activer Niveau 1</button>
+        </div>
+        <div class="list-row">
+          <strong>Niveau 2 — 6 500 F CFA</strong>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin:2px 0 10px 0;">Gain quotidien : 200 F CFA / jour</p>
+          <button class="btn btn-primary btn-full" style="padding:8px;" onclick="doActivateLevel(2)">Activer Niveau 2</button>
+        </div>
+        <div class="list-row">
+          <strong>Niveau 3 — 18 500 F CFA</strong>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin:2px 0 10px 0;">Gain quotidien : 500 F CFA / jour</p>
+          <button class="btn btn-primary btn-full" style="padding:8px;" onclick="doActivateLevel(3)">Activer Niveau 3</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="join-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h2 id="join-title" style="font-size:1.15rem;">Participer à une action</h2>
+        <button type="button" onclick="closeModal('join-modal')" class="btn btn-outline" style="padding:4px 10px;">✕</button>
+      </div>
+      <div id="join-info" style="font-size:0.88rem; color:var(--text-muted); margin-bottom:14px;"></div>
+      <form id="join-form">
+        <div class="form-group">
+          <label class="form-label" id="join-amount-label">Montant à miser (F CFA)</label>
+          <input type="number" id="join-amount" class="form-control" step="1" inputmode="numeric" autocomplete="off" required>
+        </div>
+        <div id="join-preview" class="list-row" style="font-size:0.88rem; margin-bottom:14px;">Saisissez un montant pour voir votre bénéfice.</div>
+        <button type="submit" id="join-submit" class="btn btn-primary btn-full">Confirmer la participation</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="withdraw-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h2 style="font-size:1.15rem;">Demande de retrait</h2>
+        <button onclick="closeModal('withdraw-modal')" class="btn btn-outline" style="padding:4px 10px;">✕</button>
+      </div>
+      <form id="withdraw-form">
+        <div class="form-group">
+          <label class="form-label">Opérateur</label>
+          <select id="w-op" class="form-control"><option value="Moov Money">Moov Money</option><option value="Mixx by Yas">Mixx by Yas</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Montant (F CFA)</label>
+          <select id="w-amt" class="form-control"><option value="2000">2 000 F CFA</option><option value="9000">9 000 F CFA</option><option value="15000">15 000 F CFA</option></select>
+          <small style="color:var(--text-muted); font-size:0.78rem;">Frais de retrait : 15%</small>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Numéro de réception</label>
+          <input type="tel" id="w-phone" class="form-control" placeholder="+22890000000" required maxlength="20" autocomplete="off" inputmode="tel">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirmer le numéro</label>
+          <input type="tel" id="w-phone-confirm" class="form-control" placeholder="+22890000000" required maxlength="20" autocomplete="off" inputmode="tel">
+        </div>
+        <button type="submit" id="withdraw-submit" class="btn btn-primary btn-full">Soumettre le retrait</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="deposit-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h2 style="font-size:1.15rem;">Recharger mon compte</h2>
+        <button onclick="closeModal('deposit-modal')" class="btn btn-outline" style="padding:4px 10px;">✕</button>
+      </div>
+      <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6; margin-bottom:16px;">
+        « Cette option est momentanément indisponible en raison d'une surcharge. Veuillez contacter l'Assistant INVER (via le chat en bas à droite) pour effectuer un dépôt manuel. »
+      </p>
+      <button onclick="closeModal('deposit-modal'); toggleChat();" class="btn btn-primary btn-full">Ouvrir l'Assistant INVER</button>
+    </div>
+  </div>
+
+  <div id="policy-modal" class="modal-overlay">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="policy-title">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:6px;">
+        <h2 id="policy-title" style="font-size:1.15rem;">Politique de confidentialité</h2>
+        <button type="button" onclick="closeModal('policy-modal')" class="btn btn-outline" style="padding:4px 10px;" aria-label="Fermer">✕</button>
+      </div>
+      <div id="policy-meta" class="policy-meta"></div>
+      <div id="policy-body" class="policy-body">Chargement...</div>
+      <button type="button" onclick="closeModal('policy-modal')" class="btn btn-primary btn-full" style="margin-top:14px;">Fermer</button>
+    </div>
+  </div>
+
+  <div id="blocked-view" class="blocked-view" role="alertdialog" aria-labelledby="blocked-title">
+    <div class="blocked-box">
+      <div class="blocked-icon">🔒</div>
+      <h2 id="blocked-title" style="font-size:1.35rem; margin-bottom:8px;">Compte bloqué</h2>
+      <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:20px;">
+        Votre compte a été bloqué par l'administration. Les opérations sont suspendues.<br>
+        Contactez l'assistance INVER pour plus d'informations.
+      </p>
+      <button type="button" class="btn btn-primary btn-full" onclick="openChatWindow()" style="margin-bottom:10px;">💬 Contacter l'assistance <span id="blocked-chat-count" style="margin-left:4px;"></span></button>
+      <button type="button" id="blocked-logout-btn" class="btn btn-outline btn-full">Se déconnecter</button>
+    </div>
+  </div>
+
+  <div id="sys-popup" class="modal-overlay">
+    <div class="modal-box popup-box" role="dialog" aria-modal="true" aria-labelledby="sys-popup-title">
+      <div id="sys-popup-icon" class="popup-icon info"></div>
+      <h2 id="sys-popup-title" class="popup-title"></h2>
+      <div id="sys-popup-msg" class="popup-msg"></div>
+      <div id="sys-popup-amount" class="popup-amount" style="display:none;"></div>
+      <div class="popup-actions">
+        <button type="button" id="sys-popup-cancel" class="btn btn-outline" style="display:none;">Annuler</button>
+        <button type="button" id="sys-popup-ok" class="btn btn-primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <button id="chat-fab" class="chat-fab" onclick="toggleChat()" style="display:none;" title="Assistant INVER" aria-label="Assistant INVER">💬<span id="chat-fab-badge" class="fab-badge">0</span></button>
+  <div id="chat-window" class="chat-window">
+    <div class="chat-head">
+      <span>Assistant INVER</span>
+      <button type="button" class="chat-close" onclick="toggleChat()" aria-label="Fermer la discussion">✕</button>
+    </div>
+    <div id="chat-msgs" class="chat-msgs">
+      <div class="cbub them">Bonjour ! Comment l'assistance INVER peut-elle vous aider ?</div>
+    </div>
+    <form id="chat-form" class="chat-form">
+      <input type="text" id="chat-input" class="form-control" placeholder="Votre message..." required autocomplete="off" maxlength="2000">
+      <button type="submit" class="btn btn-primary" style="padding:8px 12px;">Envoyer</button>
+    </form>
+  </div>
+
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, getDocFromServer, getDocs, collection, query, where, onSnapshot, addDoc, setDoc, updateDoc, runTransaction, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCNWjPVDO6HJC8PIGCEpbFqNlzhWo7d_Go",
+      authDomain: "inver-fd53f.firebaseapp.com",
+      projectId: "inver-fd53f",
+      storageBucket: "inver-fd53f.firebasestorage.app",
+      messagingSenderId: "261510675198",
+      appId: "1:261510675198:web:dbb03fa66b60f6132d43af"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const ACTIVATION_LEVELS = Object.freeze({
+      1: Object.freeze({ price: 3500, dailyGain: 125, rate: 0.20 }),
+      2: Object.freeze({ price: 6500, dailyGain: 200, rate: 0.20 }),
+      3: Object.freeze({ price: 18500, dailyGain: 500, rate: 0.25 })
     });
-  }
+    const ALLOWED_WITHDRAW_AMOUNTS = Object.freeze([2000, 9000, 15000]);
+    const ALLOWED_OPERATORS = Object.freeze(["Moov Money", "Mixx by Yas"]);
 
-  cartTotalEl.innerText = total;
-  cartCountEl.innerText = count;
-}
+    class AppError extends Error {}
+    function userMsg(err, fallback) {
+      return err instanceof AppError ? err.message : fallback;
+    }
 
-function changeQty(index, delta) {
-  cart[index].qty += delta;
-  if (cart[index].qty <= 0) {
-    cart.splice(index, 1);
-  }
-  updateCartUI();
-}
+    const PHONE_RE = /^\+?[0-9]{8,15}$/;
+    const NAME_RE = /^[\p{L}\p{M}' .-]{2,60}$/u;
+    const INVITE_RE = /^[A-Z0-9]{4,20}$/;
 
-function removeItem(index) {
-  cart.splice(index, 1);
-  updateCartUI();
-}
+    function normalizePhone(v) {
+      return String(v || "").replace(/[\s\-().]/g, "");
+    }
+    function cleanText(v, max) {
+      return String(v || "").replace(/[\u0000-\u001F\u007F]/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
+    }
 
-// Ajout de async pour utiliser les popup
-async function viderPanier() {
-  if(cart.length === 0) return;
-  
-  let confirmed = await customConfirm("Vider le panier", "Voulez-vous vraiment vider votre panier ?");
-  if(confirmed) {
-    cart = [];
-    updateCartUI();
-  }
-}
+    function phoneToAuthEmail(phone) {
+      return `u_${phone.replace(/[^0-9]/g, "")}@inver.tg`;
+    }
+    function formatCFA(amount) {
+      return new Intl.NumberFormat("fr-FR").format(Number(amount || 0)) + " F CFA";
+    }
+    function esc(s) {
+      return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+    function pad2(n) { return String(n).padStart(2, "0"); }
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-function toggleCart() {
-  document.getElementById('cart-modal').classList.toggle('active');
-  document.getElementById('cart-overlay').classList.toggle('active');
-}
+    function storeGet(key) {
+      try { return JSON.parse(localStorage.getItem(key) || "null"); } catch (e) { return null; }
+    }
+    function storeSet(key, value) {
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+    }
+    function storeDel(key) {
+      try { localStorage.removeItem(key); } catch (e) {}
+    }
 
-// Ajout de async pour utiliser les popup
-async function commanderPanier() {
-  if (cart.length === 0) {
-    await customAlert("Erreur", "Votre panier est vide !");
-    return;
-  }
-  
-  let table = await customPrompt("Table", "Numéro de table ?", "text", "");
-  if (!table) return;
+    let currentUser = null;
+    let currentProfile = null;
+    let liveUnsubs = [];
 
-  let message = "🛒 COMMANDE ZIO LODGE (Panier)\n\n";
-  let total = 0;
+    const POPUP_ICONS = { success: "✅", error: "⛔", warning: "⚠️", info: "INFO", credit: "💰", debit: "💸" };
+    const popupQueue = [];
+    let popupBusy = false;
 
-  cart.forEach(item => {
-    let subtotal = item.prix * item.qty;
-    message += "- " + item.qty + "x " + item.nom + " (" + item.prix + " FCFA) = " + subtotal + " FCFA\n";
-    total += subtotal;
-  });
+    function showPopup(opts = {}) {
+      return new Promise(resolve => {
+        popupQueue.push({ opts, resolve });
+        if (!popupBusy) nextPopup();
+      });
+    }
+    function confirmPopup(opts = {}) {
+      return showPopup({ ...opts, confirm: true });
+    }
+    function nextPopup() {
+      const item = popupQueue.shift();
+      const overlay = document.getElementById("sys-popup");
+      if (!item) { popupBusy = false; overlay.classList.remove("open"); return; }
+      popupBusy = true;
+      const o = item.opts;
+      const type = POPUP_ICONS[o.type] ? o.type : "info";
+      const icon = document.getElementById("sys-popup-icon");
+      icon.className = `popup-icon ${type}`;
+      icon.textContent = POPUP_ICONS[type];
+      document.getElementById("sys-popup-title").textContent = o.title || "Information";
+      document.getElementById("sys-popup-msg").textContent = o.message || "";
+      const amt = document.getElementById("sys-popup-amount");
+      if (typeof o.amount === "number" && !isNaN(o.amount)) {
+        amt.style.display = "block";
+        amt.className = `popup-amount ${o.amount >= 0 ? "pos" : "neg"}`;
+        amt.textContent = (o.amount >= 0 ? "+" : "−") + formatCFA(Math.abs(o.amount));
+      } else {
+        amt.style.display = "none";
+      }
+      const okBtn = document.getElementById("sys-popup-ok");
+      const cancelBtn = document.getElementById("sys-popup-cancel");
+      okBtn.textContent = o.confirmText || (o.confirm ? "Confirmer" : "OK");
+      cancelBtn.textContent = o.cancelText || "Annuler";
+      cancelBtn.style.display = o.confirm ? "inline-flex" : "none";
+      const finish = (val) => {
+        okBtn.onclick = null; cancelBtn.onclick = null;
+        overlay.classList.remove("open");
+        item.resolve(val);
+        setTimeout(nextPopup, 120);
+      };
+      okBtn.onclick = () => finish(true);
+      cancelBtn.onclick = () => finish(false);
+      overlay.classList.add("open");
+    }
 
-  message += "\n💰 Total à payer : " + total + " FCFA\n";
-  message += "📍 Table : " + table;
+    let timeBase = null;
+    let timeResyncInterval = null;
 
-  window.open(
-    "https://wa.me/22896368928?text=" + encodeURIComponent(message),
-    "_blank"
-  );
-}
+    async function syncServerTime() {
+      if (!currentUser) return false;
+      try {
+        const ref = doc(db, "server_time", currentUser.uid);
+        await setDoc(ref, { t: serverTimestamp() });
+        const snap = await getDocFromServer(ref);
+        const t = snap.exists() ? snap.data().t : null;
+        if (!t || typeof t.toMillis !== "function") return false;
+        timeBase = { serverMs: t.toMillis(), perf: performance.now() };
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+    function serverNowMs() {
+      return timeBase ? timeBase.serverMs + (performance.now() - timeBase.perf) : null;
+    }
+    function getServerDateKey() {
+      const ms = serverNowMs();
+      if (ms == null) return null;
+      const d = new Date(ms);
+      return `${d.getUTCFullYear()}-${pad2(d.getUTCMonth() + 1)}-${pad2(d.getUTCDate())}`;
+    }
+    function startTimeResync() {
+      if (timeResyncInterval) clearInterval(timeResyncInterval);
+      timeResyncInterval = setInterval(syncServerTime, 60000);
+    }
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible" && currentUser) syncServerTime();
+    });
+    const TIME_ERROR = "Impossible de vérifier l'heure officielle du serveur. Vérifiez votre connexion internet puis réessayez.";
 
-// Initialiser l'affichage du panier au chargement
-updateCartUI();
-</script>
+    function formatDuration(totalSeconds) {
+      const s = Math.max(0, Math.round(Number(totalSeconds) || 0));
+      const d = Math.floor(s / 86400);
+      const h = Math.floor((s % 86400) / 3600);
+      const m = Math.floor((s % 3600) / 60);
+      const sec = s % 60;
+      const parts = [];
+      if (d) parts.push(`${d} jour${d > 1 ? "s" : ""}`);
+      if (h) parts.push(`${h} h`);
+      if (m) parts.push(`${m} min`);
+      if (sec && !d && !h) parts.push(`${sec} s`);
+      return parts.join(" ") || "0 s";
+    }
+    function formatRemaining(ms) {
+      const s = Math.max(0, Math.floor(ms / 1000));
+      const d = Math.floor(s / 86400);
+      const h = Math.floor((s % 86400) / 3600);
+      const m = Math.floor((s % 3600) / 60);
+      const sec = s % 60;
+      return `${d > 0 ? d + "j " : ""}${pad2(h)}h ${pad2(m)}m ${pad2(sec)}s`;
+    }
 
+    const IDLE_LIMIT_MS = 15 * 60 * 1000;
+    let idleTimer = null;
+    const IDLE_EVENTS = ["mousemove", "keydown", "touchstart", "click", "scroll"];
+
+    function resetIdleTimer() {
+      if (!currentUser) return;
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(async () => {
+        if (!currentUser) return;
+        try { await signOut(auth); } catch (e) {}
+        showPopup({ type: "warning", title: "Session expirée", message: "Vous avez été déconnecté après une période d'inactivité pour protéger votre compte." });
+      }, IDLE_LIMIT_MS);
+    }
+    function startIdleWatch() {
+      IDLE_EVENTS.forEach(ev => window.addEventListener(ev, resetIdleTimer, { passive: true }));
+      resetIdleTimer();
+    }
+    function stopIdleWatch() {
+      IDLE_EVENTS.forEach(ev => window.removeEventListener(ev, resetIdleTimer));
+      if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
+    }
+
+    const LOGIN_MAX_FAILS = 5;
+    const LOGIN_LOCK_MS = 2 * 60 * 1000;
+    const REGISTER_COOLDOWN_MS = 30 * 1000;
+    const CHAT_MIN_GAP_MS = 1500;
+    const ACTION_COOLDOWN_MS = 3000;
+
+    function loginLockRemaining() {
+      const st = storeGet("inver_la");
+      if (!st || !st.until) return 0;
+      const rem = st.until - Date.now();
+      if (rem <= 0) { storeDel("inver_la"); return 0; }
+      return rem;
+    }
+    function registerLoginFailure() {
+      const st = storeGet("inver_la") || { n: 0, until: 0 };
+      st.n = (st.n || 0) + 1;
+      if (st.n >= LOGIN_MAX_FAILS) {
+        st.until = Date.now() + LOGIN_LOCK_MS;
+        st.n = 0;
+      }
+      storeSet("inver_la", st);
+    }
+
+    const DAILY_LIKE_LIMIT = 5;
+    const THIRTY_MIN_MS = 30 * 60 * 1000;
+    const FIFTEEN_MIN_MS = 15 * 60 * 1000;
+
+    const ALL_NEWS_CATALOG = [
+      { id: "news_01", tag: "Finance & Mobile", badgeClass: "badge-success", metaLabel: "Actualité", title: "Écosystème des services financiers numériques en Afrique de l'Ouest", excerpt: "La démocratisation des transactions mobiles accélère l'accès aux outils de gestion et d'épargne au quotidien.", imageUrl: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=800&q=80", alt: "Économie numérique et paiements mobiles" },
+      { id: "news_02", tag: "Stratégie", badgeClass: "badge-info", metaLabel: "Analyse", title: "Régularité et discipline : clés d'une progression durable", excerpt: "Compléter ses objectifs journaliers et suivre attentivement ses opérations permet de structurer ses résultats.", imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80", alt: "Analyse de données et croissance d'entreprise" },
+      { id: "news_03", tag: "Technologie", badgeClass: "badge-warning", metaLabel: "Sécurité", title: "Bonnes pratiques de sécurité pour vos comptes en ligne", excerpt: "Protégez vos accès avec un mot de passe robuste et vérifiez toujours vos informations avant validation.", imageUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80", alt: "Innovation technologique et sécurité" },
+      { id: "news_04", tag: "Marchés", badgeClass: "badge-success", metaLabel: "Tendance", title: "Transformation digitale des PME et commerce connecté", excerpt: "Les outils numériques simplifient le suivi des opérations et la relation client au quotidien.", imageUrl: "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=800&q=80", alt: "Équipe travaillant sur outils numériques" },
+      { id: "news_05", tag: "Économie", badgeClass: "badge-info", metaLabel: "Repère", title: "Gestion budgétaire : anticiper ses cycles de trésorerie", excerpt: "Une vision claire des entrées et sorties aide à maintenir un équilibre financier sain.", imageUrl: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=800&q=80", alt: "Planification financière et croissance" },
+      { id: "news_06", tag: "Réseaux", badgeClass: "badge-warning", metaLabel: "Connectivité", title: "Fiabilité des infrastructures mobiles et accès haut débit", excerpt: "L'amélioration continue des réseaux favorise des services en ligne plus rapides et accessibles.", imageUrl: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80", alt: "Infrastructure réseau et serveurs" },
+      { id: "news_07", tag: "Productivité", badgeClass: "badge-success", metaLabel: "Méthode", title: "Structurer sa routine quotidienne pour optimiser son temps", excerpt: "Prioriser les tâches essentielles permet d'avancer avec méthode sur les objectifs du jour.", imageUrl: "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&w=800&q=80", alt: "Organisation et planification quotidienne" },
+      { id: "news_08", tag: "Innovation", badgeClass: "badge-info", metaLabel: "Numérique", title: "Cloud et automatisation au service des plateformes modernes", excerpt: "Les architectures distribuées garantissent une meilleure disponibilité et réactivité des services.", imageUrl: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80", alt: "Technologie cloud et données mondiales" },
+      { id: "news_09", tag: "Communauté", badgeClass: "badge-warning", metaLabel: "Réseau", title: "L'impact du parrainage qualifié sur la croissance collective", excerpt: "Accompagner les nouveaux membres favorise une participation active et pérenne.", imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80", alt: "Collaboration d'équipe et partage" },
+      { id: "news_10", tag: "Éducation", badgeClass: "badge-success", metaLabel: "Formation", title: "Développer ses compétences numériques à l'ère mobile", excerpt: "L'auto-formation continue et la pratique régulière renforcent l'autonomie sur les outils digitaux.", imageUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80", alt: "Apprentissage numérique sur ordinateur portable" },
+      { id: "news_11", tag: "Paiements", badgeClass: "badge-info", metaLabel: "Fintech", title: "Rapidité et traçabilité des transactions instantanées", excerpt: "La clarté des historiques et confirmations renforce la confiance des utilisateurs.", imageUrl: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=800&q=80", alt: "Paiement sécurisé et technologie bancaire" },
+      { id: "news_12", tag: "Entreprise", badgeClass: "badge-warning", metaLabel: "Organisation", title: "Transparence et suivi des indicateurs clés de performance", excerpt: "Observer ses statistiques permet d'ajuster rapidement ses décisions opérationnelles.", imageUrl: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80", alt: "Professionnel analysant des résultats" },
+      { id: "news_13", tag: "Mobilité", badgeClass: "badge-success", metaLabel: "Usage", title: "Expérience fluide sur smartphone et tablette au quotidien", excerpt: "Une interface réactive facilite la consultation des actualités et le suivi des activités en déplacement.", imageUrl: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=800&q=80", alt: "Utilisation d'une application sur smartphone" },
+      { id: "news_14", tag: "Cybersécurité", badgeClass: "badge-info", metaLabel: "Prévention", title: "Identifier et éviter les liens douteux en ligne", excerpt: "Toujours vérifier l'adresse du site et ne jamais partager ses identifiants personnels.", imageUrl: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80", alt: "Sécurité informatique et protection numérique" },
+      { id: "news_15", tag: "Perspectives", badgeClass: "badge-warning", metaLabel: "Évolution", title: "Les nouveaux usages du numérique dans les services du quotidien", excerpt: "L'adoption des plateformes web renforce l'efficacité des échanges et des suivis.", imageUrl: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80", alt: "Espace de travail moderne et innovation" },
+      { id: "news_16", tag: "Finance & Mobile", badgeClass: "badge-success", metaLabel: "Actualité", title: "L'essor des portefeuilles électroniques régionaux", excerpt: "Les solutions mobiles facilitent les transferts rapides et le suivi des soldes.", imageUrl: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=80", alt: "Transaction numérique moderne" },
+      { id: "news_17", tag: "Stratégie", badgeClass: "badge-info", metaLabel: "Analyse", title: "Diversifier ses points d'attention pour mieux progresser", excerpt: "Combiner tâches quotidiennes, actions et bonus structure une approche équilibrée.", imageUrl: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=800&q=80", alt: "Réunion stratégique et analyse" },
+      { id: "news_18", tag: "Technologie", badgeClass: "badge-warning", metaLabel: "Sécurité", title: "Sauvegarde et intégrité des données applicatives", excerpt: "La cohérence des enregistrements assure un suivi fiable sur la durée.", imageUrl: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80", alt: "Système numérique et sécurité des données" },
+      { id: "news_19", tag: "Marchés", badgeClass: "badge-success", metaLabel: "Tendance", title: "L'économie des services en ligne et l'inclusion digitale", excerpt: "De plus en plus d'utilisateurs adoptent les services numériques pour leurs démarches courantes.", imageUrl: "https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=800&q=80", alt: "Équipe d'analyse digitale" },
+      { id: "news_20", tag: "Économie", badgeClass: "badge-info", metaLabel: "Repère", title: "Éviter la précipitation lors des décisions financières", excerpt: "Prendre le temps de vérifier les conditions et soldes disponibles limite les erreurs.", imageUrl: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80", alt: "Calcul et gestion financière" },
+      { id: "news_21", tag: "Réseaux", badgeClass: "badge-warning", metaLabel: "Connectivité", title: "Optimiser sa connexion pour une navigation sans interruption", excerpt: "Une liaison stable améliore la réactivité lors de la validation des actions en ligne.", imageUrl: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=800&q=80", alt: "Équipement réseau et connectivité" },
+      { id: "news_22", tag: "Productivité", badgeClass: "badge-success", metaLabel: "Méthode", title: "Le rôle des objectifs courts dans la constance", excerpt: "Des étapes régulières et mesurables facilitent le maintien du cap sur la semaine.", imageUrl: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80", alt: "Prise de notes et organisation" },
+      { id: "news_23", tag: "Innovation", badgeClass: "badge-info", metaLabel: "Numérique", title: "Interfaces responsives : concevoir pour tous les écrans", excerpt: "L'adaptation aux téléphones, tablettes et ordinateurs garantit un confort d'usage uniforme.", imageUrl: "https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=800&q=80", alt: "Design d'interface sur différents écrans" },
+      { id: "news_24", tag: "Communauté", badgeClass: "badge-warning", metaLabel: "Réseau", title: "Partager les bonnes pratiques au sein de sa communauté", excerpt: "Informer clairement ses filleuls aide chacun à utiliser la plateforme sereinement.", imageUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=80", alt: "Échanges et travail collaboratif" },
+      { id: "news_25", tag: "Éducation", badgeClass: "badge-success", metaLabel: "Formation", title: "Comprendre les bases de la gestion de compte numérique", excerpt: "Maîtriser les notions de solde, historique et statut permet de mieux suivre son activité.", imageUrl: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80", alt: "Apprentissage collaboratif" },
+      { id: "news_26", tag: "Paiements", badgeClass: "badge-info", metaLabel: "Fintech", title: "Fiabilité des canaux de dépôt et de retrait", excerpt: "Vérifier les coordonnées et opérateurs sélectionnés reste une étape essentielle.", imageUrl: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80", alt: "Analyse de services financiers numériques" },
+      { id: "news_27", tag: "Entreprise", badgeClass: "badge-warning", metaLabel: "Organisation", title: "Standardiser ses vérifications avant chaque opération", excerpt: "Un contrôle rapide évite les saisies incorrectes et accélère le traitement.", imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80", alt: "Environnement professionnel moderne" },
+      { id: "news_28", tag: "Mobilité", badgeClass: "badge-success", metaLabel: "Usage", title: "Gérer ses consultations rapides depuis un téléphone", excerpt: "Les applications web modernes offrent un accès direct aux rubriques clés en quelques clics.", imageUrl: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80", alt: "Smartphone moderne en main" },
+      { id: "news_29", tag: "Cybersécurité", badgeClass: "badge-info", metaLabel: "Prévention", title: "Renouveler régulièrement ses mots de passe sensibles", excerpt: "Éviter la réutilisation d'un même mot de passe sur plusieurs services améliore la protection.", imageUrl: "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?auto=format&fit=crop&w=800&q=80", alt: "Protection et sécurité numérique" },
+      { id: "news_30", tag: "Perspectives", badgeClass: "badge-warning", metaLabel: "Évolution", title: "Vers des services numériques toujours plus intuitifs", excerpt: "La simplicité de navigation et la clarté des informations restent au cœur de l'expérience.", imageUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80", alt: "Innovation et travail numérique" }
+    ];
+    Object.freeze(ALL_NEWS_CATALOG);
+
+    let newsLikeUnsubscribers = [];
+    let newsLikeBusy = {};
+    let newsCountsById = {};
+    let userLikedIds = new Set();
+    let userTodayLikesCount = 0;
+    let activeDisplayedNews = [];
+    let newsSchedulerInterval = null;
+    let lastRotationSlot = -1;
+    let lastShuffleSlot = -1;
+
+    function getLikeEntryDateKey(data) {
+      if (data && typeof data.dateKey === "string" && data.dateKey.length > 0) return data.dateKey;
+      if (data && data.createdAt && typeof data.createdAt.toDate === "function") {
+        const d = data.createdAt.toDate();
+        return `${d.getUTCFullYear()}-${pad2(d.getUTCMonth() + 1)}-${pad2(d.getUTCDate())}`;
+      }
+      return null;
+    }
+
+    function seededShuffle(items, seed) {
+      const arr = items.slice();
+      let s = (Math.abs(Number(seed) || 1) * 9301 + 49297) % 233280;
+      for (let i = arr.length - 1; i > 0; i--) {
+        s = (s * 9301 + 49297) % 233280;
+        const j = Math.floor((s / 233280) * (i + 1));
+        const tmp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = tmp;
+      }
+      return arr;
+    }
+
+    function computeDisplayedNews(nowMs) {
+      const rotationSlot = Math.floor(nowMs / THIRTY_MIN_MS);
+      const shuffleSlot = Math.floor(nowMs / FIFTEEN_MIN_MS);
+      const rotatedCatalog = seededShuffle(ALL_NEWS_CATALOG, rotationSlot);
+      const fifteenBatch = rotatedCatalog.slice(0, 15);
+      return seededShuffle(fifteenBatch, shuffleSlot);
+    }
+
+    function updateNewsLimitBadge() {
+      const badge = document.getElementById("news-daily-limit-badge");
+      if (!badge) return;
+      const reached = userTodayLikesCount >= DAILY_LIKE_LIMIT;
+      badge.className = `badge ${reached ? "badge-danger" : "badge-warning"}`;
+      badge.textContent = `J'aime aujourd'hui : ${userTodayLikesCount} / ${DAILY_LIKE_LIMIT}`;
+    }
+
+    function renderNewsCardsDOM() {
+      const grid = document.getElementById("news-grid");
+      if (!grid) return;
+
+      grid.innerHTML = "";
+      activeDisplayedNews.forEach(item => {
+        const count = newsCountsById[item.id] || 0;
+        const isLiked = userLikedIds.has(item.id);
+        const limitReached = !isLiked && userTodayLikesCount >= DAILY_LIKE_LIMIT;
+        const isDisabled = !currentUser || Boolean(newsLikeBusy[item.id]) || isLiked || limitReached;
+        const titleAttr = isLiked ? "Vous avez déjà aimé cette publication" : (limitReached ? "Limite quotidienne de J'aime atteinte" : "");
+
+        const article = document.createElement("article");
+        article.className = "news-card";
+        article.setAttribute("data-news-id", item.id);
+        article.innerHTML = `
+          <div class="news-media-wrap">
+            <img class="news-thumb" src="${esc(item.imageUrl)}" alt="${esc(item.alt)}" referrerpolicy="no-referrer" loading="lazy">
+            <button type="button" class="news-like-btn ${isLiked ? "liked" : ""}" data-news-like-btn="${esc(item.id)}" onclick="toggleNewsLike('${esc(item.id)}')" aria-pressed="${isLiked ? "true" : "false"}" aria-label="${isLiked ? "Publication déjà aimée" : "J'aime cette image"}" ${isDisabled ? "disabled" : ""} title="${esc(titleAttr)}">
+              <span data-news-heart="${esc(item.id)}">${isLiked ? "❤️" : "🤍"}</span>
+              <span data-news-count="${esc(item.id)}">${count}</span>
+              ${isLiked ? '<span style="font-size:0.72rem;">Aimé</span>' : ""}
+            </button>
+          </div>
+          <div class="news-body">
+            <div class="news-meta">
+              <span class="badge ${esc(item.badgeClass)}">${esc(item.tag)}</span>
+              <span>${esc(item.metaLabel)}</span>
+            </div>
+            <h4 class="news-title">${esc(item.title)}</h4>
+            <p class="news-excerpt">${esc(item.excerpt)}</p>
+          </div>
+        `;
+        grid.appendChild(article);
+      });
+
+      updateNewsLimitBadge();
+    }
+
+    function refreshNewsGridIfNeeded(force = false) {
+      const nowMs = serverNowMs() ?? Date.now();
+      const rotationSlot = Math.floor(nowMs / THIRTY_MIN_MS);
+      const shuffleSlot = Math.floor(nowMs / FIFTEEN_MIN_MS);
+
+      if (force || rotationSlot !== lastRotationSlot || shuffleSlot !== lastShuffleSlot || activeDisplayedNews.length !== 15) {
+        lastRotationSlot = rotationSlot;
+        lastShuffleSlot = shuffleSlot;
+        activeDisplayedNews = computeDisplayedNews(nowMs);
+        renderNewsCardsDOM();
+      }
+    }
+
+    function startNewsScheduler() {
+      refreshNewsGridIfNeeded(true);
+      if (newsSchedulerInterval) clearInterval(newsSchedulerInterval);
+      newsSchedulerInterval = setInterval(() => {
+        refreshNewsGridIfNeeded(false);
+      }, 5000);
+    }
+
+    function detachNewsLikeListeners() {
+      newsLikeUnsubscribers.forEach(unsub => {
+        try { unsub(); } catch (e) {}
+      });
+      newsLikeUnsubscribers = [];
+      newsCountsById = {};
+      userLikedIds = new Set();
+      userTodayLikesCount = 0;
+      renderNewsCardsDOM();
+    }
+
+    function attachNewsLikeListeners() {
+      detachNewsLikeListeners();
+      if (!currentUser) {
+        renderNewsCardsDOM();
+        return;
+      }
+
+      const unsubAllLikes = onSnapshot(
+        collection(db, "news_likes"),
+        (snap) => {
+          const nextCounts = {};
+          const nextLikedSet = new Set();
+          const todayKey = getServerDateKey();
+          let todayCount = 0;
+
+          snap.forEach(docSnap => {
+            const data = docSnap.data();
+            const nId = data.newsId;
+            if (!nId) return;
+            nextCounts[nId] = (nextCounts[nId] || 0) + 1;
+
+            if (data.userId === currentUser.uid) {
+              nextLikedSet.add(nId);
+              if (todayKey && getLikeEntryDateKey(data) === todayKey) {
+                todayCount += 1;
+              }
+            }
+          });
+
+          newsCountsById = nextCounts;
+          userLikedIds = nextLikedSet;
+          userTodayLikesCount = todayCount;
+          renderNewsCardsDOM();
+        },
+        () => {}
+      );
+
+      newsLikeUnsubscribers.push(unsubAllLikes);
+    }
+
+    window.toggleNewsLike = async function(newsId) {
+      if (!currentUser || !newsId) return;
+      if (!ALL_NEWS_CATALOG.some(n => n.id === newsId)) return;
+      if (guardBlocked()) return;
+      if (userLikedIds.has(newsId)) return;
+      if (newsLikeBusy[newsId]) return;
+
+      newsLikeBusy[newsId] = true;
+      renderNewsCardsDOM();
+
+      const likeDocRef = doc(db, "news_likes", `${newsId}_${currentUser.uid}`);
+      const userRef = doc(db, "users", currentUser.uid);
+
+      try {
+        const synced = await syncServerTime();
+        const todayKey = getServerDateKey();
+        if (!synced || !todayKey) throw new AppError(TIME_ERROR);
+        const rewardDocRef = doc(db, "news_daily_rewards", `${currentUser.uid}_${todayKey}`);
+
+        const dbLikesSnap = await getDocs(query(collection(db, "news_likes"), where("userId", "==", currentUser.uid)));
+        let dbTodayCount = 0;
+        dbLikesSnap.forEach(d => {
+          if (getLikeEntryDateKey(d.data()) === todayKey) dbTodayCount += 1;
+        });
+
+        let creditedAmount = 0;
+        let alreadyLiked = false;
+
+        await runTransaction(db, async (transaction) => {
+          creditedAmount = 0;
+          alreadyLiked = false;
+          const likeSnap = await transaction.get(likeDocRef);
+          if (likeSnap.exists()) { alreadyLiked = true; return; }
+          if (dbTodayCount >= DAILY_LIKE_LIMIT) {
+            throw new AppError(`Limite quotidienne atteinte (${DAILY_LIKE_LIMIT} J'aime / jour).`);
+          }
+          const rewardSnap = await transaction.get(rewardDocRef);
+          const userSnap = await transaction.get(userRef);
+
+          transaction.set(likeDocRef, {
+            newsId,
+            userId: currentUser.uid,
+            dateKey: todayKey,
+            createdAt: serverTimestamp()
+          });
+
+          const nextTodayCount = dbTodayCount + 1;
+          const alreadyCreditedToday = rewardSnap.exists() && Boolean(rewardSnap.data()?.credited);
+
+          if (nextTodayCount === DAILY_LIKE_LIMIT && !alreadyCreditedToday) {
+            const profileData = userSnap.exists() ? userSnap.data() : (currentProfile || {});
+            const lvl = Number(profileData.level || 0);
+            const rewardAmount = (lvl >= 1 && ACTIVATION_LEVELS[lvl]) ? Number(ACTIVATION_LEVELS[lvl].dailyGain || 0) : 0;
+
+            transaction.set(rewardDocRef, {
+              userId: currentUser.uid,
+              dateKey: todayKey,
+              likesCountAtReward: nextTodayCount,
+              rewardAmount: rewardAmount,
+              credited: true,
+              creditedAt: serverTimestamp()
+            }, { merge: true });
+
+            if (rewardAmount > 0 && userSnap.exists()) {
+              transaction.update(userRef, {
+                balance: increment(rewardAmount),
+                totalEarnings: increment(rewardAmount)
+              });
+              transaction.set(doc(collection(db, "transactions")), {
+                userId: currentUser.uid,
+                type: "daily_like_reward",
+                description: `Crédit automatique après ${DAILY_LIKE_LIMIT} J'aime quotidiens (${todayKey})`,
+                amount: rewardAmount,
+                status: "completed",
+                createdAt: serverTimestamp()
+              });
+              creditedAmount = rewardAmount;
+            }
+          }
+        });
+
+        if (alreadyLiked) {
+          userLikedIds.add(newsId);
+        } else if (creditedAmount > 0) {
+          showPopup({
+            type: "credit",
+            title: "Objectif quotidien atteint",
+            message: `${DAILY_LIKE_LIMIT} J'aime quotidiens atteints ! Votre crédit a été ajouté à votre solde.`,
+            amount: creditedAmount
+          });
+        }
+      } catch (err) {
+        showPopup({ type: "error", title: "J'aime non enregistré", message: userMsg(err, "Erreur lors de l'enregistrement du J'aime.") });
+      } finally {
+        newsLikeBusy[newsId] = false;
+        renderNewsCardsDOM();
+      }
+    };
+
+    startNewsScheduler();
+
+    const VALID_TABS = ["accueil", "actions", "bonus", "compte", "parrainage"];
+    window.switchTab = function(tabId) {
+      if (!VALID_TABS.includes(tabId)) return;
+      document.querySelectorAll(".view-pane").forEach(p => p.classList.remove("active"));
+      document.querySelectorAll(".nav-item").forEach(n => n.classList.toggle("active", n.dataset.tab === tabId));
+      document.getElementById(`view-${tabId}`).classList.add("active");
+    };
+
+    window.openModal = function(id) { document.getElementById(id).classList.add("open"); };
+    window.closeModal = function(id) { document.getElementById(id).classList.remove("open"); };
+    window.toggleChat = function() {
+      const w = document.getElementById("chat-window");
+      w.classList.toggle("open");
+      const open = w.classList.contains("open");
+      document.body.classList.toggle("chat-open", open);
+      if (open) {
+        const box = document.getElementById("chat-msgs");
+        box.scrollTop = box.scrollHeight;
+        markChatRead();
+      }
+    };
+    window.openChatWindow = function() {
+      if (!document.getElementById("chat-window").classList.contains("open")) window.toggleChat();
+    };
+
+    const authView = document.getElementById("auth-view");
+    const mainAppView = document.getElementById("main-app-view");
+    const loginForm = document.getElementById("login-form");
+    const registerForm = document.getElementById("register-form");
+
+    function showAuthAlert(msg, type = "error") {
+      return showPopup({
+        type: type === "success" ? "success" : "error",
+        title: type === "success" ? "Succès" : "Erreur",
+        message: msg
+      });
+    }
+
+    document.getElementById("to-register").addEventListener("click", (e) => { e.preventDefault(); loginForm.style.display = "none"; registerForm.style.display = "block"; });
+    document.getElementById("to-login").addEventListener("click", (e) => { e.preventDefault(); registerForm.style.display = "none"; loginForm.style.display = "block"; });
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("ref")) {
+      loginForm.style.display = "none";
+      registerForm.style.display = "block";
+      document.getElementById("reg-invite").value = urlParams.get("ref").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 20);
+    }
+
+    let loginBusy = false;
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (loginBusy) return;
+      const lockMs = loginLockRemaining();
+      if (lockMs > 0) {
+        return showAuthAlert(`Trop de tentatives échouées. Réessayez dans ${Math.ceil(lockMs / 1000)} secondes.`);
+      }
+      const phone = normalizePhone(document.getElementById("login-phone").value);
+      const password = document.getElementById("login-password").value;
+      if (!PHONE_RE.test(phone) || password.length < 6 || password.length > 64) {
+        registerLoginFailure();
+        return showAuthAlert("Téléphone ou mot de passe incorrect.");
+      }
+      loginBusy = true;
+      const btn = document.getElementById("login-submit");
+      btn.disabled = true;
+      try {
+        await signInWithEmailAndPassword(auth, phoneToAuthEmail(phone), password);
+        storeDel("inver_la");
+        sessionStorage.setItem("inver_just_logged_in", "1");
+      } catch (err) {
+        registerLoginFailure();
+        showAuthAlert("Téléphone ou mot de passe incorrect.");
+      } finally {
+        loginBusy = false;
+        btn.disabled = false;
+      }
+    });
+
+    let registerBusy = false;
+    registerForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (registerBusy) return;
+      const fullName = cleanText(document.getElementById("reg-name").value, 60);
+      const phone = normalizePhone(document.getElementById("reg-phone").value);
+      const password = document.getElementById("reg-password").value;
+      const inviteCode = document.getElementById("reg-invite").value.trim().toUpperCase();
+      const acceptedPrivacy = document.getElementById("reg-privacy").checked;
+
+      if (!acceptedPrivacy) return showAuthAlert("Vous devez accepter la politique de confidentialité.");
+      if (!NAME_RE.test(fullName)) return showAuthAlert("Nom invalide. Utilisez uniquement des lettres (2 à 60 caractères).");
+      if (!PHONE_RE.test(phone)) return showAuthAlert("Numéro de téléphone invalide. Exemple : +22890000000");
+      if (password.length < 6 || password.length > 64) return showAuthAlert("Le mot de passe doit contenir entre 6 et 64 caractères.");
+      if (password.replace(/[^0-9]/g, "") === phone.replace(/[^0-9]/g, "")) return showAuthAlert("Le mot de passe ne doit pas être identique à votre numéro de téléphone.");
+      if (!INVITE_RE.test(inviteCode)) return showAuthAlert("Code d'invitation invalide.");
+
+      const last = Number(storeGet("inver_reg_ts") || 0);
+      if (Date.now() - last < REGISTER_COOLDOWN_MS) {
+        return showAuthAlert("Veuillez patienter quelques secondes avant de réessayer.");
+      }
+      storeSet("inver_reg_ts", Date.now());
+
+      registerBusy = true;
+      const btn = document.getElementById("register-submit");
+      btn.disabled = true;
+
+      try {
+        const phoneCheck = await getDocs(query(collection(db, "users"), where("phone", "==", phone)));
+        if (!phoneCheck.empty) throw new AppError("Ce numéro de téléphone est déjà associé à un compte.");
+
+        const usersSnap = await getDocs(collection(db, "users"));
+        const isFirstUser = (usersSnap.empty && inviteCode === "INV2026") || inviteCode === "INVER2026";
+
+        let referrerId = null;
+        if (!isFirstUser) {
+          const refQuery = await getDocs(query(collection(db, "users"), where("inviteCode", "==", inviteCode)));
+          if (refQuery.empty) throw new AppError("Code d'invitation invalide.");
+          referrerId = refQuery.docs[0].id;
+        }
+
+        const authCred = await createUserWithEmailAndPassword(auth, phoneToAuthEmail(phone), password);
+        const uid = authCred.user.uid;
+        const rndBytes = new Uint8Array(5);
+        crypto.getRandomValues(rndBytes);
+        const myPersonalCode = "INV" + Array.from(rndBytes, b => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[b % 32]).join("").slice(0, 6);
+
+        await setDoc(doc(db, "users", uid), {
+          uid,
+          fullName,
+          phone,
+          role: isFirstUser ? "admin" : "user",
+          status: "active",
+          level: 0,
+          balance: 0,
+          reservedBalance: 0,
+          totalEarnings: 0,
+          totalCommissions: 0,
+          totalWithdrawals: 0,
+          inviteCode: myPersonalCode,
+          referredBy: referrerId,
+          referralsCount: 0,
+          activeReferralsCount: 0,
+          createdAt: serverTimestamp()
+        });
+
+        if (referrerId) {
+          await updateDoc(doc(db, "users", referrerId), { referralsCount: increment(1) });
+          try {
+            await setDoc(doc(db, "wheel_authorizations", `ref_${uid}`), {
+              userId: referrerId,
+              referredUserId: uid,
+              referredUserName: fullName,
+              used: false,
+              createdAt: serverTimestamp()
+            });
+          } catch (wErr) {}
+        }
+
+        sessionStorage.setItem("inver_just_logged_in", "1");
+        showAuthAlert("Compte créé avec succès ! Connexion en cours...", "success");
+      } catch (err) {
+        if (err && err.code === "auth/email-already-in-use") {
+          showAuthAlert("Ce numéro de téléphone est déjà associé à un compte.");
+        } else {
+          showAuthAlert(userMsg(err, "Erreur lors de l'inscription."));
+        }
+      } finally {
+        registerBusy = false;
+        btn.disabled = false;
+      }
+    });
+
+    document.getElementById("logout-btn").addEventListener("click", async () => { await signOut(auth); });
+    document.getElementById("blocked-logout-btn").addEventListener("click", async () => { await signOut(auth); });
+
+    function cleanupLive() {
+      liveUnsubs.forEach(u => { try { u(); } catch (e) {} });
+      liveUnsubs = [];
+      myParticipations = [];
+      actionsList = [];
+      wheelAuths = [];
+      resetChatState();
+      resetBlockedState();
+      if (timeResyncInterval) { clearInterval(timeResyncInterval); timeResyncInterval = null; }
+      timeBase = null;
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        stopIdleWatch();
+        cleanupLive();
+        detachNewsLikeListeners();
+        currentUser = null;
+        currentProfile = null;
+        authView.style.display = "block";
+        mainAppView.style.display = "none";
+        document.getElementById("chat-fab").style.display = "none";
+        ["activate-modal", "join-modal", "withdraw-modal", "deposit-modal", "policy-modal"].forEach(id => document.getElementById(id).classList.remove("open"));
+        document.getElementById("login-password").value = "";
+        document.getElementById("reg-password").value = "";
+      } else {
+        currentUser = user;
+        const userRef = doc(db, "users", user.uid);
+        const snap = await getDoc(userRef);
+        if (!snap.exists()) {
+          cleanupLive();
+          detachNewsLikeListeners();
+          authView.style.display = "block";
+          mainAppView.style.display = "none";
+          return;
+        }
+
+        authView.style.display = "none";
+        mainAppView.style.display = "block";
+        document.getElementById("chat-fab").style.display = "flex";
+
+        cleanupLive();
+        await syncServerTime();
+        startTimeResync();
+        startIdleWatch();
+
+        liveUnsubs.push(onSnapshot(userRef, (liveSnap) => {
+          if (!liveSnap.exists()) return;
+          currentProfile = liveSnap.data();
+          updateUIWithProfile();
+        }));
+
+        if (sessionStorage.getItem("inver_just_logged_in") === "1") {
+          sessionStorage.removeItem("inver_just_logged_in");
+          try {
+            const popSnap = await getDoc(doc(db, "platform_settings", "popup"));
+            if (popSnap.exists() && popSnap.data().enabled) {
+              showPopup({
+                type: "info",
+                title: popSnap.data().title || "Annonce INVER",
+                message: popSnap.data().message || "",
+                confirmText: "J'ai compris"
+              });
+            }
+          } catch(e) {}
+        }
+
+        attachNewsLikeListeners();
+        loadActionsData();
+        loadCompteData();
+        attachWheelListener();
+        attachNotificationsListener();
+        attachChatListeners();
+      }
+    });
+
+    function updateUIWithProfile() {
+      document.getElementById("topbar-balance").textContent = formatCFA(currentProfile.balance);
+      document.getElementById("welcome-title").textContent = `Bonjour, ${currentProfile.fullName}`;
+      document.getElementById("user-level-status").textContent = currentProfile.level > 0 ? `Niveau d'activation : Niveau ${currentProfile.level} (Actif)` : `Niveau d'activation : Non activé`;
+
+      document.getElementById("profile-name").textContent = currentProfile.fullName;
+      document.getElementById("profile-phone").textContent = currentProfile.phone;
+      document.getElementById("profile-level-pill").textContent = currentProfile.level > 0 ? `Niveau ${currentProfile.level}` : "Non activé";
+      document.getElementById("val-bal").textContent = formatCFA(currentProfile.balance);
+      document.getElementById("val-earn").textContent = formatCFA(currentProfile.totalEarnings);
+      document.getElementById("val-with").textContent = formatCFA(currentProfile.totalWithdrawals);
+
+      document.getElementById("my-code-input").value = currentProfile.inviteCode || "";
+      document.getElementById("my-link-input").value = `${window.location.origin}/index.html?ref=${encodeURIComponent(currentProfile.inviteCode || '')}`;
+      document.getElementById("ref-total").textContent = currentProfile.referralsCount || 0;
+      document.getElementById("ref-active").textContent = currentProfile.activeReferralsCount || 0;
+
+      applyBlockedState();
+      renderActionsGrid();
+    }
+
+    window.openPolicy = async function() {
+      const titleEl = document.getElementById("policy-title");
+      const metaEl = document.getElementById("policy-meta");
+      const bodyEl = document.getElementById("policy-body");
+      titleEl.textContent = "Politique de confidentialité";
+      metaEl.textContent = "";
+      bodyEl.textContent = "Chargement...";
+      bodyEl.scrollTop = 0;
+      openModal("policy-modal");
+      try {
+        const snap = await getDoc(doc(db, "platform_settings", "privacy"));
+        const d = snap.exists() ? snap.data() : null;
+        if (!d || d.published === false || !String(d.content || "").trim()) {
+          bodyEl.textContent = "Ce document n'a pas encore été publié par l'administration. Veuillez réessayer plus tard.";
+          return;
+        }
+        titleEl.textContent = d.title || "Politique de confidentialité";
+        const parts = [];
+        if (d.version) parts.push(`Version ${d.version}`);
+        if (d.updatedAt && typeof d.updatedAt.toDate === "function") parts.push(`Mise à jour le ${d.updatedAt.toDate().toLocaleDateString("fr-FR")}`);
+        metaEl.textContent = parts.join(" • ");
+        bodyEl.textContent = d.content;
+        bodyEl.scrollTop = 0;
+      } catch (err) {
+        bodyEl.textContent = "Impossible de charger le document pour le moment. Vérifiez votre connexion internet puis réessayez.";
+      }
+    };
+    document.addEventListener("click", (e) => {
+      const link = e.target.closest("[data-open-policy]");
+      if (!link) return;
+      e.preventDefault();
+      window.openPolicy();
+    });
+
+    let wasBlocked = null;
+    function isBlockedProfile() { return !!currentProfile && currentProfile.status === "blocked"; }
+    function guardBlocked() {
+      if (!isBlockedProfile()) return false;
+      showPopup({ type: "error", title: "Compte bloqué", message: "Votre compte est bloqué par l'administration. Contactez l'assistance INVER." });
+      return true;
+    }
+    function applyBlockedState() {
+      const blocked = isBlockedProfile();
+      document.getElementById("blocked-view").style.display = blocked ? "flex" : "none";
+      document.body.classList.toggle("blocked-active", blocked);
+      if (blocked && wasBlocked !== true) {
+        ["activate-modal", "join-modal", "withdraw-modal", "deposit-modal", "policy-modal"].forEach(id => document.getElementById(id).classList.remove("open"));
+      }
+      if (wasBlocked === true && !blocked) {
+        showPopup({ type: "success", title: "Compte réactivé", message: "Votre compte a été débloqué. Vous pouvez de nouveau utiliser la plateforme." });
+      }
+      wasBlocked = blocked;
+    }
+    function resetBlockedState() {
+      wasBlocked = null;
+      document.getElementById("blocked-view").style.display = "none";
+      document.body.classList.remove("blocked-active");
+    }
+
+    const shownNotifs = new Set();
+    function attachNotificationsListener() {
+      const q = query(collection(db, "notifications"), where("userId", "==", currentUser.uid), where("read", "==", false));
+      liveUnsubs.push(onSnapshot(q, (snap) => {
+        snap.docChanges().forEach(ch => {
+          if (ch.type !== "added") return;
+          const id = ch.doc.id;
+          if (shownNotifs.has(id)) return;
+          shownNotifs.add(id);
+          const n = ch.doc.data();
+          const type = POPUP_ICONS[n.kind] ? n.kind : "info";
+          showPopup({
+            type,
+            title: n.title || "Notification",
+            message: n.message || "",
+            amount: typeof n.amount === "number" ? n.amount : undefined
+          }).then(() => {
+            updateDoc(doc(db, "notifications", id), { read: true, readAt: serverTimestamp() }).catch(() => {});
+          });
+        });
+      }, () => {}));
+    }
+
+    let actionsList = [];
+    let myParticipations = [];
+    let joiningAction = null;
+    let joinBusy = false;
+    const settleBusy = {};
+    const settleAttemptAt = {};
+
+    function isValidAction(a) {
+      const num = (v) => typeof v === "number" && isFinite(v);
+      return num(a.minStake) && num(a.maxStake) && num(a.profitPercent) && num(a.durationSeconds)
+        && a.minStake > 0 && a.maxStake >= a.minStake && a.profitPercent >= 0 && a.durationSeconds > 0;
+    }
+    function computeProfit(stake, percent) {
+      return Math.round(stake * percent / 100);
+    }
+
+    function loadActionsData() {
+      const unsubActions = onSnapshot(query(collection(db, "actions"), where("status", "==", "active")), (snap) => {
+        actionsList = [];
+        snap.forEach(d => actionsList.push({ id: d.id, ...d.data() }));
+        renderActionsGrid();
+      }, () => {
+        document.getElementById("actions-grid").innerHTML = `<p style="color:var(--text-muted);">Impossible de charger les actions.</p>`;
+      });
+      const unsubParts = onSnapshot(query(collection(db, "action_participations"), where("userId", "==", currentUser.uid)), (snap) => {
+        myParticipations = [];
+        snap.forEach(d => myParticipations.push({ id: d.id, ...d.data() }));
+        renderParticipations();
+      }, () => {});
+      liveUnsubs.push(unsubActions, unsubParts);
+    }
+
+    function renderActionsGrid() {
+      const grid = document.getElementById("actions-grid");
+      if (!grid) return;
+      const available = actionsList.filter(isValidAction);
+      if (!available.length) {
+        grid.innerHTML = `<p style="color:var(--text-muted);">Aucune action disponible pour le moment.</p>`;
+        return;
+      }
+      const level = (currentProfile && currentProfile.level) || 0;
+      grid.innerHTML = "";
+      available.forEach(act => {
+        const card = document.createElement("div");
+        card.className = "list-row";
+        card.style.cssText = "display:flex; flex-direction:column; gap:8px;";
+        card.innerHTML = `
+          <h4 style="font-size:1.05rem;">${esc(act.title)}</h4>
+          <p style="font-size:0.82rem; color:var(--text-muted);">${esc(act.description || "")}</p>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:0.85rem;">
+            <span>Durée : <strong>${esc(formatDuration(act.durationSeconds))}</strong></span>
+            <span style="color:#047857;">Bénéfice : <strong>+${esc(act.profitPercent)} %</strong></span>
+            <span style="grid-column:1 / -1;">Mise : <strong>${esc(formatCFA(act.minStake))}</strong> à <strong>${esc(formatCFA(act.maxStake))}</strong></span>
+          </div>
+          <button class="btn btn-primary btn-full" data-join="${esc(act.id)}" ${level < 1 ? "disabled" : ""}>
+            ${level < 1 ? "Niveau requis" : "Participer"}
+          </button>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    document.getElementById("actions-grid").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-join]");
+      if (!btn || btn.disabled) return;
+      openJoin(btn.getAttribute("data-join"));
+    });
+
+    function openJoin(actionId) {
+      const act = actionsList.find(a => a.id === actionId);
+      if (!act || !isValidAction(act)) return;
+      joiningAction = act;
+      document.getElementById("join-title").textContent = act.title;
+      document.getElementById("join-info").innerHTML = `
+        ${act.description ? `<p style="margin-bottom:6px;">${esc(act.description)}</p>` : ""}
+        <p>Durée : <strong style="color:var(--text-main);">${esc(formatDuration(act.durationSeconds))}</strong> • Bénéfice : <strong style="color:#047857;">${esc(act.profitPercent)} %</strong></p>
+        <p>Mise autorisée : <strong style="color:var(--text-main);">${esc(formatCFA(act.minStake))}</strong> à <strong style="color:var(--text-main);">${esc(formatCFA(act.maxStake))}</strong></p>
+        <p>Votre solde : <strong style="color:var(--text-main);">${esc(formatCFA(currentProfile ? currentProfile.balance : 0))}</strong></p>
+      `;
+      const input = document.getElementById("join-amount");
+      input.min = act.minStake;
+      input.max = act.maxStake;
+      input.value = "";
+      updateJoinPreview();
+      openModal("join-modal");
+    }
+
+    function updateJoinPreview() {
+      const box = document.getElementById("join-preview");
+      const act = joiningAction;
+      if (!act) return;
+      const amount = Number(document.getElementById("join-amount").value);
+      if (!amount || !isFinite(amount)) { box.textContent = "Saisissez un montant pour voir votre bénéfice."; return; }
+      if (amount < act.minStake || amount > act.maxStake) {
+        box.innerHTML = `<span style="color:#b91c1c;">Le montant doit être compris entre ${esc(formatCFA(act.minStake))} et ${esc(formatCFA(act.maxStake))}.</span>`;
+        return;
+      }
+      const profit = computeProfit(amount, act.profitPercent);
+      box.innerHTML = `
+        <div style="display:flex; justify-content:space-between;"><span>Mise</span><strong>${esc(formatCFA(amount))}</strong></div>
+        <div style="display:flex; justify-content:space-between;"><span>Bénéfice (${esc(act.profitPercent)} %)</span><strong style="color:#047857;">+${esc(formatCFA(profit))}</strong></div>
+        <div style="display:flex; justify-content:space-between; border-top:1px solid var(--border); margin-top:6px; padding-top:6px;"><span>Total à recevoir</span><strong>${esc(formatCFA(amount + profit))}</strong></div>
+      `;
+    }
+    document.getElementById("join-amount").addEventListener("input", updateJoinPreview);
+
+    document.getElementById("join-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (joinBusy || !joiningAction || !currentUser) return;
+      if (guardBlocked()) return;
+      const act = joiningAction;
+      const amount = Number(document.getElementById("join-amount").value);
+
+      if (!Number.isInteger(amount) || amount <= 0) return showPopup({ type: "error", title: "Montant invalide", message: "Veuillez saisir un montant entier valide." });
+      if (amount < act.minStake || amount > act.maxStake) {
+        return showPopup({ type: "error", title: "Montant hors limites", message: `La mise doit être comprise entre ${formatCFA(act.minStake)} et ${formatCFA(act.maxStake)}.` });
+      }
+      if ((currentProfile.balance || 0) < amount) {
+        return showPopup({ type: "warning", title: "Solde insuffisant", message: `Votre solde (${formatCFA(currentProfile.balance)}) est insuffisant pour cette mise.` });
+      }
+      const profitPreview = computeProfit(amount, act.profitPercent);
+      const ok = await confirmPopup({
+        type: "warning",
+        title: "Confirmer la participation",
+        message: `Action : ${act.title}\nDurée : ${formatDuration(act.durationSeconds)}\nBénéfice prévu : ${formatCFA(profitPreview)} (${act.profitPercent} %)\nTotal à recevoir : ${formatCFA(amount + profitPreview)}\n\nLa mise sera débitée immédiatement de votre solde.`,
+        amount: -amount,
+        confirmText: "Miser"
+      });
+      if (!ok) return;
+      if (joinBusy) return;
+
+      joinBusy = true;
+      const submitBtn = document.getElementById("join-submit");
+      submitBtn.disabled = true; submitBtn.textContent = "Traitement...";
+      try {
+        const synced = await syncServerTime();
+        if (!synced) throw new AppError(TIME_ERROR);
+
+        const actionRef = doc(db, "actions", act.id);
+        const userRef = doc(db, "users", currentUser.uid);
+        const partRef = doc(collection(db, "action_participations"));
+        let result = null;
+
+        await runTransaction(db, async (tx) => {
+          const aSnap = await tx.get(actionRef);
+          const uSnap = await tx.get(userRef);
+          if (!aSnap.exists()) throw new AppError("Cette action n'existe plus.");
+          const a = aSnap.data();
+          if (a.status !== "active" || !isValidAction(a)) throw new AppError("Cette action n'est plus disponible.");
+          if (amount < a.minStake || amount > a.maxStake) throw new AppError("Les conditions de l'action ont changé. Veuillez réessayer.");
+          if (!uSnap.exists()) throw new AppError("Compte introuvable.");
+          if (uSnap.data().status === "blocked") throw new AppError("Votre compte est bloqué par l'administration.");
+          if (Number(uSnap.data().level || 0) < 1) throw new AppError("Un niveau d'activation est requis.");
+          const balance = Number(uSnap.data().balance || 0);
+          if (balance < amount) throw new AppError("Solde insuffisant pour cette mise.");
+
+          const profit = computeProfit(amount, a.profitPercent);
+          tx.update(userRef, { balance: increment(-amount) });
+          tx.set(partRef, {
+            userId: currentUser.uid,
+            userName: currentProfile.fullName || "",
+            actionId: act.id,
+            actionTitle: a.title,
+            stakeAmount: amount,
+            profitPercent: a.profitPercent,
+            profitAmount: profit,
+            totalPayout: amount + profit,
+            durationSeconds: a.durationSeconds,
+            status: "running",
+            startedAt: serverTimestamp(),
+            createdAt: serverTimestamp()
+          });
+          tx.set(doc(collection(db, "transactions")), {
+            userId: currentUser.uid,
+            type: "action_stake",
+            description: `Participation action : ${a.title}`,
+            amount: -amount,
+            status: "completed",
+            createdAt: serverTimestamp()
+          });
+          result = { profit, title: a.title, duration: a.durationSeconds };
+        });
+
+        closeModal("join-modal");
+        showPopup({
+          type: "debit",
+          title: "Action activée",
+          message: `« ${result.title} » est lancée. Le compte à rebours de ${formatDuration(result.duration)} a démarré.\nVous recevrez votre mise + ${formatCFA(result.profit)} de bénéfice à la fin.`,
+          amount: -amount
+        });
+      } catch (err) {
+        showPopup({ type: "error", title: "Participation impossible", message: userMsg(err, "Une erreur est survenue. Veuillez réessayer.") });
+      } finally {
+        joinBusy = false;
+        submitBtn.disabled = false; submitBtn.textContent = "Confirmer la participation";
+      }
+    });
+
+    function partEndMs(p) {
+      if (!p.startedAt || typeof p.startedAt.toMillis !== "function") return null;
+      return p.startedAt.toMillis() + Number(p.durationSeconds) * 1000;
+    }
+
+    function renderParticipations() {
+      const box = document.getElementById("my-participations-box");
+      if (!box) return;
+      if (!myParticipations.length) {
+        box.innerHTML = `<p style="color:var(--text-muted);">Aucune participation en cours.</p>`;
+        return;
+      }
+      const now = serverNowMs();
+      const sorted = [...myParticipations].sort((a, b) => {
+        const am = a.startedAt && a.startedAt.toMillis ? a.startedAt.toMillis() : Infinity;
+        const bm = b.startedAt && b.startedAt.toMillis ? b.startedAt.toMillis() : Infinity;
+        return bm - am;
+      });
+      let html = "";
+      sorted.forEach(p => {
+        const endMs = partEndMs(p);
+        let right = "";
+        if (p.status === "running") {
+          if (endMs == null || now == null) {
+            right = `<span class="badge badge-warning">Activation...</span>`;
+          } else {
+            const rem = endMs - now;
+            const total = Number(p.durationSeconds) * 1000;
+            const pct = Math.min(100, Math.max(0, ((total - rem) / total) * 100));
+            if (rem <= 0) {
+              right = `<span class="badge badge-warning">Clôture en cours...</span>`;
+              triggerSettle(p.id);
+            } else {
+              right = `<div style="min-width:150px;"><div class="countdown" style="font-size:0.95rem;">${formatRemaining(rem)}</div><div class="progress" style="margin-top:6px;"><span style="width:${pct.toFixed(1)}%"></span></div></div>`;
+            }
+          }
+        } else {
+          right = `<div style="text-align:right;"><span class="badge badge-success">Terminée</span><div style="font-size:0.8rem; margin-top:4px; color:#047857; font-weight:700;">+${esc(formatCFA(p.creditedAmount ?? p.totalPayout))}</div></div>`;
+        }
+        const endTxt = endMs ? new Date(endMs).toLocaleString("fr-FR") : "—";
+        html += `
+          <div class="list-row" style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+            <div style="min-width:0;">
+              <strong>${esc(p.actionTitle)}</strong>
+              <div style="font-size:0.78rem; color:var(--text-muted);">Mise : ${esc(formatCFA(p.stakeAmount))} • Bénéfice ${esc(p.profitPercent)} % = ${esc(formatCFA(p.profitAmount))}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">Fin prévue : ${esc(endTxt)}</div>
+            </div>
+            ${right}
+          </div>`;
+      });
+      box.innerHTML = html;
+    }
+
+    function triggerSettle(partId) {
+      if (settleBusy[partId]) return;
+      const last = settleAttemptAt[partId] || 0;
+      if (performance.now() - last < 15000) return;
+      settleAttemptAt[partId] = performance.now();
+      settleParticipation(partId);
+    }
+
+    async function settleParticipation(partId) {
+      if (settleBusy[partId] || !currentUser) return;
+      settleBusy[partId] = true;
+      try {
+        const synced = await syncServerTime();
+        if (!synced) return;
+        const pRef = doc(db, "action_participations", partId);
+        await runTransaction(db, async (tx) => {
+          const pSnap = await tx.get(pRef);
+          if (!pSnap.exists()) return;
+          const p = pSnap.data();
+          if (p.status !== "running") return;
+          if (p.userId !== currentUser.uid) return;
+          const endMs = partEndMs(p);
+          if (endMs == null || serverNowMs() < endMs) return;
+
+          const stake = Number(p.stakeAmount);
+          const profit = Number(p.profitAmount);
+          const total = Number(p.totalPayout);
+          const userRef = doc(db, "users", p.userId);
+
+          tx.update(pRef, { status: "completed", settledAt: serverTimestamp(), creditedAmount: total });
+          tx.update(userRef, { balance: increment(total), totalEarnings: increment(profit) });
+          tx.set(doc(db, "transactions", `settle_${partId}`), {
+            userId: p.userId,
+            type: "action_payout",
+            description: `Action terminée : ${p.actionTitle} (Mise ${stake} + Bénéfice ${profit})`,
+            amount: total,
+            status: "completed",
+            createdAt: serverTimestamp()
+          });
+          tx.set(doc(db, "notifications", `settle_${partId}`), {
+            userId: p.userId,
+            kind: "credit",
+            title: "Action terminée",
+            message: `Votre action « ${p.actionTitle} » est terminée.\nMise : ${formatCFA(stake)}\nBénéfice : ${formatCFA(profit)}`,
+            amount: total,
+            read: false,
+            createdAt: serverTimestamp()
+          });
+        });
+      } catch (err) {
+      } finally {
+        settleBusy[partId] = false;
+      }
+    }
+
+    setInterval(() => {
+      if (currentUser && myParticipations.length) renderParticipations();
+    }, 1000);
+
+    const WHEEL_PRIZES = Object.freeze([
+      Object.freeze({ label: "50 F CFA", amount: 50 }),
+      Object.freeze({ label: "150 F CFA", amount: 150 }),
+      Object.freeze({ label: "500 F CFA", amount: 500 }),
+      Object.freeze({ label: "Perdu", amount: 0 })
+    ]);
+    let wheelAuths = [];
+    let spinBusy = false;
+
+    function attachWheelListener() {
+      const q = query(collection(db, "wheel_authorizations"), where("userId", "==", currentUser.uid), where("used", "==", false));
+      liveUnsubs.push(onSnapshot(q, (snap) => {
+        wheelAuths = [];
+        snap.forEach(d => wheelAuths.push({ id: d.id, ...d.data() }));
+        wheelAuths.sort((a, b) => (a.createdAt?.toMillis?.() || 0) - (b.createdAt?.toMillis?.() || 0));
+        updateWheelUI();
+      }, () => {}));
+    }
+
+    function updateWheelUI() {
+      const btn = document.getElementById("spin-wheel-btn");
+      const msg = document.getElementById("spin-msg");
+      const n = wheelAuths.length;
+      btn.disabled = spinBusy || n === 0;
+      if (spinBusy) {
+        btn.textContent = "Rotation...";
+      } else if (n > 0) {
+        btn.textContent = `Tourner la roue (${n})`;
+        msg.textContent = `Vous disposez de ${n} tour${n > 1 ? "s" : ""} de roue grâce à vos parrainages.`;
+      } else {
+        btn.textContent = "Roue verrouillée";
+        msg.textContent = "Parrainez un nouveau membre avec votre code ou votre lien : un tour de roue vous sera accordé dès que son inscription est confirmée.";
+      }
+    }
+
+    document.getElementById("spin-wheel-btn").addEventListener("click", async function() {
+      if (spinBusy) return;
+      if (guardBlocked()) return;
+      const authDoc = wheelAuths[0];
+      if (!authDoc) {
+        return showPopup({ type: "warning", title: "Roue verrouillée", message: "Vous devez parrainer un nouveau membre pour débloquer un tour de roue." });
+      }
+      spinBusy = true; updateWheelUI();
+      const display = document.getElementById("wheel-display");
+      const anim = setInterval(() => { display.textContent = WHEEL_PRIZES[Math.floor(Math.random() * WHEEL_PRIZES.length)].label; }, 90);
+      try {
+        const rnd = new Uint32Array(1); crypto.getRandomValues(rnd);
+        const won = WHEEL_PRIZES[rnd[0] % WHEEL_PRIZES.length];
+        const authRef = doc(db, "wheel_authorizations", authDoc.id);
+        const userRef = doc(db, "users", currentUser.uid);
+
+        await runTransaction(db, async (tx) => {
+          const aSnap = await tx.get(authRef);
+          if (!aSnap.exists()) throw new AppError("Autorisation introuvable.");
+          const a = aSnap.data();
+          if (a.userId !== currentUser.uid || a.used === true) throw new AppError("Cette autorisation a déjà été utilisée.");
+
+          tx.update(authRef, { used: true, usedAt: serverTimestamp(), prizeLabel: won.label, prizeAmount: won.amount });
+          tx.set(doc(db, "wheel_spins", `spin_${authDoc.id}`), {
+            userId: currentUser.uid,
+            userName: currentProfile.fullName || "",
+            authId: authDoc.id,
+            referredUserId: a.referredUserId || null,
+            label: won.label,
+            amount: won.amount,
+            createdAt: serverTimestamp()
+          });
+          if (won.amount > 0) {
+            tx.update(userRef, { balance: increment(won.amount), totalEarnings: increment(won.amount) });
+            tx.set(doc(collection(db, "transactions")), {
+              userId: currentUser.uid,
+              type: "bonus_wheel",
+              description: `Gain Roue de la fortune (${won.label})`,
+              amount: won.amount,
+              status: "completed",
+              createdAt: serverTimestamp()
+            });
+          }
+        });
+
+        await sleep(900);
+        clearInterval(anim);
+        display.textContent = won.label;
+        if (won.amount > 0) {
+          showPopup({ type: "credit", title: "Félicitations !", message: "Vous avez gagné un bonus à la roue de la fortune.", amount: won.amount });
+        } else {
+          showPopup({ type: "info", title: "Dommage !", message: "C'est perdu pour cette fois. Parrainez un autre membre pour retenter votre chance." });
+        }
+      } catch (err) {
+        clearInterval(anim);
+        display.textContent = "INVER BONUS";
+        showPopup({ type: "error", title: "Roue indisponible", message: userMsg(err, "Une erreur est survenue.") });
+      } finally {
+        spinBusy = false; updateWheelUI();
+      }
+    });
+
+    let activateBusy = false;
+    window.doActivateLevel = async function(lvl) {
+      if (activateBusy) return;
+      if (guardBlocked()) return;
+      lvl = Number(lvl);
+      const info = ACTIVATION_LEVELS[lvl];
+      if (!info) return;
+      const prevLevel = Number(currentProfile.level || 0);
+      if (prevLevel >= lvl) {
+        return showPopup({ type: "info", title: "Niveau déjà actif", message: prevLevel === lvl ? `Votre Niveau ${lvl} est déjà actif.` : `Votre Niveau ${prevLevel} est déjà supérieur au Niveau ${lvl}.` });
+      }
+      if (currentProfile.balance < info.price) {
+        return showPopup({ type: "warning", title: "Solde insuffisant", message: `Votre solde (${formatCFA(currentProfile.balance)}) ne permet pas d'activer le Niveau ${lvl}. Veuillez recharger votre compte.` });
+      }
+      const ok = await confirmPopup({
+        type: "warning",
+        title: `Activer le Niveau ${lvl} ?`,
+        message: "Ce montant sera débité de votre solde.",
+        amount: -info.price,
+        confirmText: "Activer"
+      });
+      if (!ok) return;
+      if (activateBusy) return;
+      activateBusy = true;
+
+      try {
+        const userRef = doc(db, "users", currentUser.uid);
+        await runTransaction(db, async (tx) => {
+          const uSnap = await tx.get(userRef);
+          if (!uSnap.exists()) throw new AppError("Compte introuvable.");
+          const u = uSnap.data();
+          if (u.status === "blocked") throw new AppError("Votre compte est bloqué par l'administration.");
+          if (Number(u.level || 0) >= lvl) throw new AppError("Ce niveau ou un niveau supérieur est déjà actif sur votre compte.");
+          if (Number(u.balance || 0) < info.price) throw new AppError("Solde insuffisant pour cette activation.");
+          tx.update(userRef, {
+            balance: increment(-info.price),
+            level: lvl
+          });
+          tx.set(doc(collection(db, "transactions")), {
+            userId: currentUser.uid,
+            type: "activation",
+            description: `Activation Niveau ${lvl}`,
+            amount: -info.price,
+            status: "completed",
+            createdAt: serverTimestamp()
+          });
+        });
+
+        if (currentProfile.referredBy) {
+          try {
+            const sponsorRef = doc(db, "users", currentProfile.referredBy);
+            const sponsorSnap = await getDoc(sponsorRef);
+            if (sponsorSnap.exists()) {
+              const sponsor = sponsorSnap.data();
+              const sponsorLevel = sponsor.level || 0;
+              if (sponsorLevel >= 1 && sponsor.status === "active") {
+                const effectiveLvl = Math.min(sponsorLevel, lvl);
+                const rate = ACTIVATION_LEVELS[effectiveLvl].rate;
+                const commission = Math.round(info.price * rate);
+
+                await updateDoc(sponsorRef, {
+                  balance: increment(commission),
+                  totalCommissions: increment(commission),
+                  totalEarnings: increment(commission),
+                  activeReferralsCount: increment(prevLevel === 0 ? 1 : 0)
+                });
+
+                await addDoc(collection(db, "transactions"), {
+                  userId: currentProfile.referredBy,
+                  type: "commission",
+                  description: `Commission parrainage (${rate*100}%) - Filleul ${currentProfile.fullName}`,
+                  amount: commission,
+                  status: "completed",
+                  createdAt: serverTimestamp()
+                });
+              }
+            }
+          } catch (cErr) {}
+        }
+
+        closeModal("activate-modal");
+        showPopup({ type: "success", title: "Compte activé", message: `Votre Niveau ${lvl} est maintenant actif.`, amount: -info.price });
+      } catch(err) {
+        showPopup({ type: "error", title: "Activation impossible", message: userMsg(err, "Une erreur est survenue. Veuillez réessayer.") });
+      } finally {
+        activateBusy = false;
+      }
+    };
+
+    let withdrawBusy = false;
+    let lastWithdrawAt = 0;
+    document.getElementById("withdraw-form").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      if (withdrawBusy) return;
+      if (guardBlocked()) return;
+      const operator = document.getElementById("w-op").value;
+      const amount = Number(document.getElementById("w-amt").value);
+      const phone = normalizePhone(document.getElementById("w-phone").value);
+      const confirmPhone = normalizePhone(document.getElementById("w-phone-confirm").value);
+
+      if (!ALLOWED_OPERATORS.includes(operator)) return showPopup({ type: "error", title: "Opérateur invalide", message: "Veuillez choisir un opérateur valide." });
+      if (!ALLOWED_WITHDRAW_AMOUNTS.includes(amount)) return showPopup({ type: "error", title: "Montant invalide", message: "Veuillez choisir un montant de retrait valide." });
+      if (!PHONE_RE.test(phone)) return showPopup({ type: "error", title: "Numéro invalide", message: "Veuillez saisir un numéro de réception valide. Exemple : +22890000000" });
+      if (phone !== confirmPhone) return showPopup({ type: "error", title: "Numéros différents", message: "Les numéros de téléphone ne correspondent pas." });
+      if (currentProfile.balance < amount) return showPopup({ type: "warning", title: "Solde insuffisant", message: "Votre solde disponible est insuffisant pour ce retrait." });
+      if (Date.now() - lastWithdrawAt < ACTION_COOLDOWN_MS) return;
+
+      withdrawBusy = true;
+      lastWithdrawAt = Date.now();
+      const btn = document.getElementById("withdraw-submit");
+      btn.disabled = true;
+
+      try {
+        const fee = Math.round(amount * 0.15);
+        const net = amount - fee;
+        const userRef = doc(db, "users", currentUser.uid);
+        const wdRef = doc(collection(db, "withdrawals"));
+        const txRef = doc(collection(db, "transactions"));
+
+        await runTransaction(db, async (tx) => {
+          const uSnap = await tx.get(userRef);
+          if (!uSnap.exists()) throw new AppError("Compte introuvable.");
+          const u = uSnap.data();
+          if (u.status === "blocked") throw new AppError("Votre compte est bloqué par l'administration.");
+          if (Number(u.balance || 0) < amount) throw new AppError("Votre solde disponible est insuffisant pour ce retrait.");
+
+          tx.update(userRef, {
+            balance: increment(-amount),
+            reservedBalance: increment(amount)
+          });
+          tx.set(wdRef, {
+            userId: currentUser.uid,
+            userName: currentProfile.fullName,
+            operator,
+            phone,
+            requestedAmount: amount,
+            feeAmount: fee,
+            netAmount: net,
+            status: "pending",
+            createdAt: serverTimestamp()
+          });
+          tx.set(txRef, {
+            userId: currentUser.uid,
+            type: "withdrawal",
+            description: `Demande retrait ${operator} (${phone}) - Net: ${net} F CFA`,
+            amount: -amount,
+            status: "pending",
+            createdAt: serverTimestamp()
+          });
+        });
+
+        closeModal("withdraw-modal");
+        showPopup({ type: "debit", title: "Demande de retrait envoyée", message: `Montant net à recevoir : ${formatCFA(net)} (frais : ${formatCFA(fee)}).\nVotre demande est en attente de validation.`, amount: -amount });
+      } catch(err) {
+        showPopup({ type: "error", title: "Retrait impossible", message: userMsg(err, "Une erreur est survenue. Veuillez réessayer.") });
+      } finally {
+        withdrawBusy = false;
+        btn.disabled = false;
+      }
+    });
+
+    const TX_TYPE_LABELS = { admin_credit: "Crédit assistance", admin_debit: "Débit assistance" };
+    function loadCompteData() {
+      const tbody = document.getElementById("tx-tbody");
+      const unsub = onSnapshot(query(collection(db, "transactions"), where("userId", "==", currentUser.uid)), (snap) => {
+        const rows = [];
+        snap.forEach(d => rows.push(d.data()));
+        rows.sort((a, b) => (b.createdAt?.toMillis?.() ?? Infinity) - (a.createdAt?.toMillis?.() ?? Infinity));
+        if (!rows.length) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Aucune transaction.</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = "";
+        rows.forEach(t => {
+          const tr = document.createElement("tr");
+          const typeLabel = TX_TYPE_LABELS[t.type] || t.type;
+          tr.innerHTML = `
+            <td data-label="Date" style="font-size:0.78rem; color:var(--text-muted);">${t.createdAt && t.createdAt.toDate ? esc(t.createdAt.toDate().toLocaleString("fr-FR")) : "Récemment"}</td>
+            <td data-label="Type"><span class="badge badge-info">${esc(typeLabel)}</span></td>
+            <td data-label="Description">${esc(t.description)}</td>
+            <td data-label="Montant" style="font-weight:700; color:${t.amount > 0 ? '#047857' : 'var(--text-main)'};">${esc(formatCFA(t.amount))}</td>
+            <td data-label="Statut"><span class="badge ${t.status === 'completed' ? 'badge-success' : 'badge-warning'}">${esc(t.status)}</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }, () => {});
+      liveUnsubs.push(unsub);
+    }
+
+    const chatMsgs = document.getElementById("chat-msgs");
+    const BASE_TITLE = document.title;
+    let chatMessages = [];
+    let chatMeta = null;
+    let chatLocalReadAt = 0;
+    let chatMarkBusy = false;
+    let lastChatSentAt = 0;
+
+    const tsMs = (v) => (v && typeof v.toMillis === "function") ? v.toMillis() : 0;
+    const isAdminMsg = (m) => m.senderRole === "admin" || m.senderRole === "assistant";
+    const isChatOpen = () => document.getElementById("chat-window").classList.contains("open");
+
+    function chatUnreadCount() {
+      const lastRead = Math.max(tsMs(chatMeta && chatMeta.userLastReadAt), chatLocalReadAt);
+      return chatMessages.filter(m => isAdminMsg(m) && tsMs(m.createdAt) > lastRead).length;
+    }
+
+    function updateChatBadge() {
+      const n = chatUnreadCount();
+      const label = n > 99 ? "99+" : String(n);
+      const fab = document.getElementById("chat-fab-badge");
+      fab.textContent = label;
+      fab.style.display = n > 0 ? "flex" : "none";
+      document.getElementById("blocked-chat-count").textContent = n > 0 ? `(${label})` : "";
+      document.title = n > 0 ? `(${label}) ${BASE_TITLE}` : BASE_TITLE;
+      return n;
+    }
+
+    async function markChatRead() {
+      if (!currentUser || chatMarkBusy) return;
+      if (!isChatOpen() || document.visibilityState !== "visible") return;
+      if (chatUnreadCount() === 0) return;
+      chatLocalReadAt = Math.max(chatLocalReadAt, ...chatMessages.filter(isAdminMsg).map(m => tsMs(m.createdAt)));
+      updateChatBadge();
+      chatMarkBusy = true;
+      try {
+        await setDoc(doc(db, "support_chats", currentUser.uid), { userLastReadAt: serverTimestamp() }, { merge: true });
+      } catch (e) {}
+      setTimeout(() => { chatMarkBusy = false; }, 1200);
+    }
+
+    function renderChat() {
+      chatMsgs.innerHTML = "";
+      const welcome = document.createElement("div");
+      welcome.className = "cbub them";
+      welcome.textContent = "Bonjour ! Comment l'assistance INVER peut-elle vous aider ?";
+      chatMsgs.appendChild(welcome);
+      let lastDay = "";
+      chatMessages.forEach(m => {
+        const ms = tsMs(m.createdAt);
+        const d = new Date(ms);
+        if (ms) {
+          const day = d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+          if (day !== lastDay) {
+            const sep = document.createElement("div");
+            sep.className = "cday";
+            sep.textContent = day;
+            chatMsgs.appendChild(sep);
+            lastDay = day;
+          }
+        }
+        const b = document.createElement("div");
+        b.className = `cbub ${m.senderRole === "user" ? "me" : "them"}`;
+        b.appendChild(document.createTextNode(m.text || ""));
+        if (ms) {
+          const t = document.createElement("span");
+          t.className = "ct";
+          t.textContent = d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+          b.appendChild(t);
+        }
+        chatMsgs.appendChild(b);
+      });
+      chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    }
+
+    function resetChatState() {
+      chatMessages = [];
+      chatMeta = null;
+      chatLocalReadAt = 0;
+      chatMarkBusy = false;
+      document.getElementById("chat-window").classList.remove("open");
+      document.body.classList.remove("chat-open");
+      renderChat();
+      updateChatBadge();
+    }
+
+    function attachChatListeners() {
+      const uid = currentUser.uid;
+      liveUnsubs.push(onSnapshot(doc(db, "support_chats", uid), (snap) => {
+        chatMeta = snap.exists() ? snap.data({ serverTimestamps: "estimate" }) : null;
+        updateChatBadge();
+        markChatRead();
+      }, () => {}));
+      liveUnsubs.push(onSnapshot(query(collection(db, "support_chats", uid, "messages")), (snapshot) => {
+        chatMessages = [];
+        snapshot.forEach(docSnap => chatMessages.push({ id: docSnap.id, ...docSnap.data({ serverTimestamps: "estimate" }) }));
+        chatMessages.sort((a, b) => tsMs(a.createdAt) - tsMs(b.createdAt));
+        renderChat();
+        updateChatBadge();
+        markChatRead();
+      }, () => {}));
+    }
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") markChatRead();
+    });
+
+    document.getElementById("chat-form").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      if (!currentUser || !currentProfile) return;
+      const input = document.getElementById("chat-input");
+      const text = cleanText(input.value, 2000);
+      if (!text) return;
+      if (Date.now() - lastChatSentAt < CHAT_MIN_GAP_MS) return;
+      lastChatSentAt = Date.now();
+      input.value = "";
+
+      try {
+        await setDoc(doc(db, "support_chats", currentUser.uid), {
+          userId: currentUser.uid,
+          userName: currentProfile.fullName,
+          userPhone: currentProfile.phone,
+          lastMessage: text,
+          updatedAt: serverTimestamp(),
+          userLastReadAt: serverTimestamp()
+        }, { merge: true });
+
+        await addDoc(collection(db, "support_chats", currentUser.uid, "messages"), {
+          senderId: currentUser.uid,
+          senderRole: "user",
+          text,
+          createdAt: serverTimestamp()
+        });
+      } catch (err) {
+        showPopup({ type: "error", title: "Message non envoyé", message: "Votre message n'a pas pu être envoyé. Veuillez réessayer." });
+      }
+    });
+  </script>
 </body>
 </html>
