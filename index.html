@@ -307,6 +307,38 @@
     .img-viewer-close { position: absolute; top: calc(12px + env(safe-area-inset-top)); right: 12px; width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(255, 255, 255, 0.94); color: var(--text-main); font-size: 1.1rem; cursor: pointer; }
     .img-viewer-open { color: #fff; font-size: 0.85rem; text-decoration: underline; }
   </style>
+  <style>
+    /* ===== Discussion de groupe (ajout) ===== */
+    .gchat-fab { bottom: calc(148px + env(safe-area-inset-bottom)); }
+    @media (max-width: 640px) { .gchat-fab { bottom: calc(142px + env(safe-area-inset-bottom)); } }
+    @media (max-height: 520px) and (orientation: landscape) { .gchat-fab { bottom: calc(126px + env(safe-area-inset-bottom)); } }
+    body.blocked-active .gchat-window { display: none !important; }
+    .gchat-window { overscroll-behavior: contain; }
+    .gbub { position: relative; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; touch-action: pan-y; }
+    .gbub .gname { display: block; font-size: 0.72rem; font-weight: 700; margin-bottom: 2px; }
+    .gbub.has-img .gname, .gbub.has-img .gquote, .gbub.has-img .greacts { margin-left: 6px; margin-right: 6px; }
+    .gquote { border-left: 3px solid var(--primary); background: rgba(15, 23, 42, 0.07); border-radius: 6px; padding: 4px 8px; margin-bottom: 4px; font-size: 0.74rem; cursor: pointer; overflow: hidden; }
+    .gbub.me .gquote { border-left-color: #06281e; background: rgba(6, 40, 30, 0.12); }
+    .gquote b { display: block; font-size: 0.72rem; }
+    .gquote span { display: block; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+    .greacts { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+    .greact { border: 1px solid var(--border); background: #fff; color: var(--text-main); border-radius: 999px; padding: 1px 7px; font-size: 0.74rem; cursor: pointer; min-height: 0; line-height: 1.5; }
+    .greact.mine { border-color: var(--primary); background: rgba(16, 185, 129, 0.16); }
+    .gbub.flash { animation: gflash 1.4s ease; }
+    @keyframes gflash { 0%, 60% { box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.55); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+    .gchat-empty { align-self: center; font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 8px 12px; }
+    .gchat-reply { display: none; align-items: center; gap: 8px; padding: 6px 8px; background: #fff; border-top: 1px solid var(--border); }
+    .gchat-reply-body { flex: 1; min-width: 0; border-left: 3px solid var(--primary); background: var(--bg-input); border-radius: 6px; padding: 4px 8px; font-size: 0.78rem; }
+    .gchat-reply-body b { display: block; font-size: 0.74rem; }
+    .gchat-reply-body span { display: block; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gchat-menu-back { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.18); display: none; z-index: 5; }
+    .gchat-menu { position: absolute; z-index: 6; display: none; flex-direction: column; background: #fff; border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 14px 34px -10px rgba(15, 23, 42, 0.35); padding: 6px; min-width: 214px; max-width: calc(100% - 16px); }
+    .gchat-menu-emojis { display: flex; justify-content: space-between; gap: 2px; padding: 2px 2px 6px 2px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+    .gchat-menu-emojis button { background: none; border: none; font-size: 1.45rem; cursor: pointer; border-radius: 10px; padding: 2px 5px; min-height: 0; line-height: 1.3; }
+    .gchat-menu-emojis button:hover, .gchat-menu-emojis button.mine { background: rgba(16, 185, 129, 0.16); }
+    .gchat-menu-item { background: none; border: none; text-align: left; padding: 9px 10px; border-radius: 10px; font-size: 0.88rem; cursor: pointer; color: var(--text-main); display: flex; align-items: center; gap: 10px; min-height: 40px; }
+    .gchat-menu-item:hover { background: var(--bg-input); }
+  </style>
 </head>
 <body>
 
@@ -357,8 +389,8 @@
         </div>
         <div class="form-group">
           <label class="form-label">Code d'invitation (Parrain)</label>
-          <input type="text" id="reg-invite" class="form-control" placeholder="EX: INVER2026" required maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false" style="text-transform: uppercase;">
-          <small style="color:var(--text-muted); font-size:0.75rem;">()</small>
+          <input type="text" id="reg-invite" class="form-control" placeholder="EX: INVERHFJG" required maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false" style="text-transform: uppercase;">
+          <small style="color:var(--text-muted); font-size:0.75rem;"></small>
         </div>
         <div class="form-group" style="display:flex; align-items:flex-start; gap:8px;">
           <input type="checkbox" id="reg-privacy" required style="margin-top:4px; width:18px; height:18px; accent-color:var(--primary);">
@@ -497,7 +529,7 @@
             <button type="button" id="copy-link-btn" class="btn btn-primary btn-full" style="margin-top:10px;">Copier le lien de parrainage unique</button>
           </div>
         </div>
-        <div class="grid-2" style="margin-top:18px;">
+        <div class="grid-2" style="margin-top:18px; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));">
           <div class="stat">
             <div style="font-size:0.8rem; color:var(--text-muted);">Total filleuls</div>
             <div id="ref-total" style="font-size:1.4rem; font-weight:800; margin-top:4px;">0</div>
@@ -505,6 +537,10 @@
           <div class="stat">
             <div style="font-size:0.8rem; color:var(--text-muted);">Filleuls actifs</div>
             <div id="ref-active" style="font-size:1.4rem; font-weight:800; color:var(--primary); margin-top:4px;">0</div>
+          </div>
+          <div class="stat">
+            <div style="font-size:0.8rem; color:var(--text-muted);">Commissions des filleuls actifs</div>
+            <div id="ref-commissions" style="font-size:1.1rem; font-weight:800; color:var(--primary); margin-top:4px;">0 F CFA</div>
           </div>
         </div>
       </div>
@@ -552,6 +588,16 @@
           <strong>Niveau 3 — 18 500 F CFA</strong>
           <p style="font-size:0.82rem; color:var(--text-muted); margin:2px 0 10px 0;">Gain quotidien : 500 F CFA / jour</p>
           <button class="btn btn-primary btn-full" style="padding:8px;" onclick="doActivateLevel(3)">Activer Niveau 3</button>
+        </div>
+        <div class="list-row">
+          <strong>Niveau 4 — 27 000 F CFA</strong>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin:2px 0 10px 0;">Gain quotidien : 900 F CFA / jour</p>
+          <button class="btn btn-primary btn-full" style="padding:8px;" onclick="doActivateLevel(4)">Activer Niveau 4</button>
+        </div>
+        <div class="list-row">
+          <strong>Niveau 5 — 37 000 F CFA</strong>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin:2px 0 10px 0;">Gain quotidien : 1 250 F CFA / jour</p>
+          <button class="btn btn-primary btn-full" style="padding:8px;" onclick="doActivateLevel(5)">Activer Niveau 5</button>
         </div>
       </div>
     </div>
@@ -698,11 +744,42 @@
     </form>
   </div>
 
+  <button id="gchat-fab" class="chat-fab gchat-fab" onclick="toggleGroupChat()" style="display:none;" title="Discussion de groupe" aria-label="Discussion de groupe">👥<span id="gchat-fab-badge" class="fab-badge">0</span></button>
+  <div id="gchat-window" class="chat-window gchat-window" role="dialog" aria-label="Discussion de groupe">
+    <div class="chat-head">
+      <span>Discussion de groupe</span>
+      <span class="chat-head-tools">
+        <button type="button" class="chat-close" onclick="toggleGroupChat()" aria-label="Fermer la discussion de groupe">✕</button>
+      </span>
+    </div>
+    <div id="gchat-msgs" class="chat-msgs">
+      <div class="gchat-empty">Chargement de la discussion...</div>
+    </div>
+    <div id="gchat-menu-back" class="gchat-menu-back"></div>
+    <div id="gchat-menu" class="gchat-menu" role="menu"></div>
+    <div id="gchat-reply" class="gchat-reply">
+      <div class="gchat-reply-body"><b id="gchat-reply-name"></b><span id="gchat-reply-text"></span></div>
+      <button type="button" id="gchat-reply-cancel" class="btn btn-outline" style="padding:4px 10px;" aria-label="Annuler la réponse">✕</button>
+    </div>
+    <div id="gchat-preview" class="chat-preview">
+      <img id="gchat-preview-img" alt="Aperçu de l'image">
+      <div class="chat-preview-info"><span id="gchat-preview-name"></span><small id="gchat-preview-status">Prête à être envoyée</small></div>
+      <button type="button" id="gchat-preview-remove" class="btn btn-outline" style="padding:4px 10px;" aria-label="Retirer l'image">✕</button>
+    </div>
+    <form id="gchat-form" class="chat-form">
+      <input type="file" id="gchat-file" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;">
+      <button type="button" id="gchat-img-btn" class="btn btn-outline" style="padding:8px 10px;" title="Envoyer une image" aria-label="Envoyer une image">📷</button>
+      <input type="text" id="gchat-input" class="form-control" placeholder="Écrire au groupe..." autocomplete="off" maxlength="2000">
+      <button type="submit" id="gchat-send-btn" class="btn btn-primary" style="padding:8px 12px;">Envoyer</button>
+    </form>
+  </div>
+
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js";
     import { getFirestore, doc, getDoc, getDocFromServer, getDocs, collection, query, where, onSnapshot, addDoc, setDoc, updateDoc, deleteDoc, runTransaction, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js";
+    import { orderBy, limit } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCNWjPVDO6HJC8PIGCEpbFqNlzhWo7d_Go",
@@ -720,7 +797,9 @@
     const ACTIVATION_LEVELS = Object.freeze({
       1: Object.freeze({ price: 3500, dailyGain: 125, rate: 0.20 }),
       2: Object.freeze({ price: 6500, dailyGain: 200, rate: 0.20 }),
-      3: Object.freeze({ price: 18500, dailyGain: 500, rate: 0.25 })
+      3: Object.freeze({ price: 18500, dailyGain: 500, rate: 0.25 }),
+      4: Object.freeze({ price: 27000, dailyGain: 900, rate: 0.25 }),
+      5: Object.freeze({ price: 37000, dailyGain: 1250, rate: 0.25 })
     });
     const ALLOWED_WITHDRAW_AMOUNTS = Object.freeze([2000, 9000, 15000]);
     const ALLOWED_OPERATORS = Object.freeze(["Moov Money", "Mixx by Yas"]);
@@ -1475,7 +1554,7 @@
         if (!phoneCheck.empty) throw new AppError("Ce numéro de téléphone est déjà associé à un compte.");
 
         const usersSnap = await getDocs(collection(db, "users"));
-        const isFirstUser = (usersSnap.empty && inviteCode === "INV2026") || inviteCode === "INVER2026";
+        const isFirstUser = (usersSnap.empty && inviteCode === "") || inviteCode === "";
 
         let referrerId = null;
         if (!isFirstUser) {
@@ -1644,6 +1723,7 @@
       document.getElementById("my-link-input").value = currentProfile.inviteCode ? buildReferralLink(currentProfile.inviteCode) : "";
       document.getElementById("ref-total").textContent = currentProfile.referralsCount || 0;
       document.getElementById("ref-active").textContent = currentProfile.activeReferralsCount || 0;
+      document.getElementById("ref-commissions").textContent = formatCFA(currentProfile.totalCommissions || 0);
 
       applyBlockedState();
       renderActionsGrid();
@@ -2544,8 +2624,19 @@
       setTimeout(() => { chatMarkBusy = false; }, 1200);
     }
 
+    const chatImgPreloaded = new Set();
     function renderChat() {
       const renderStamp = Date.now();
+      // Précharge toutes les images de la discussion dès réception (même fenêtre fermée) : elles s'affichent immédiatement.
+      chatMessages.forEach(m => {
+        const u = safeImageUrl(m.imageUrl);
+        if (u && !chatImgPreloaded.has(u)) {
+          chatImgPreloaded.add(u);
+          const pre = new Image();
+          pre.referrerPolicy = "no-referrer";
+          pre.src = u;
+        }
+      });
       chatMsgs.innerHTML = "";
       const welcome = document.createElement("div");
       welcome.className = "cbub them";
@@ -2567,27 +2658,6 @@
         }
         const b = document.createElement("div");
         const imgUrl = safeImageUrl(m.imageUrl);
-        const ownMsg = m.senderRole === "user" && m.senderId === (currentUser && currentUser.uid);
-        if (ownMsg && m.id === chatEditingId) {
-          b.className = "cbub me editing";
-          const ta = document.createElement("textarea");
-          ta.className = "form-control";
-          ta.id = "chat-edit-input";
-          ta.rows = 2;
-          ta.maxLength = 2000;
-          ta.value = chatEditDraft;
-          b.appendChild(ta);
-          const ac = document.createElement("span");
-          ac.className = "acts";
-          [["save", "Enregistrer"], ["cancel", "Annuler"]].forEach(([k, label]) => {
-            const x = document.createElement("button");
-            x.type = "button"; x.className = "act"; x.dataset.msgAct = k; x.dataset.mid = m.id; x.textContent = label;
-            ac.appendChild(x);
-          });
-          b.appendChild(ac);
-          chatMsgs.appendChild(b);
-          return;
-        }
         b.className = `cbub ${m.senderRole === "user" ? "me" : "them"}${imgUrl ? " has-img" : ""}`;
         if (m.forwarded) {
           const fw = document.createElement("span");
@@ -2599,7 +2669,8 @@
           const img = document.createElement("img");
           img.className = "cimg";
           img.alt = cleanText(m.imageName, 80) || "Image envoyée";
-          img.loading = "lazy";
+          img.loading = "eager";
+          img.decoding = "async";
           img.referrerPolicy = "no-referrer";
           img.setAttribute("role", "button");
           img.tabIndex = 0;
@@ -2625,21 +2696,10 @@
         if (ms) {
           const t = document.createElement("span");
           t.className = "ct";
-          t.textContent = (m.edited ? "modifié • " : "") + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+          t.textContent = d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
           b.appendChild(t);
         }
-        // Seul l'auteur peut modifier / supprimer ses propres messages (les messages de l'assistant restent protégés).
-        // Le transfert n'a pas de sens ici : le membre n'a qu'une seule conversation (avec l'assistance).
-        if (ownMsg && !m._pending && (m.text || imgUrl)) {
-          const ac = document.createElement("span");
-          ac.className = "acts";
-          [["edit", "Modifier"], ["delete", "Supprimer"]].forEach(([k, label]) => {
-            const x = document.createElement("button");
-            x.type = "button"; x.className = "act"; x.dataset.msgAct = k; x.dataset.mid = m.id; x.textContent = label;
-            ac.appendChild(x);
-          });
-          b.appendChild(ac);
-        }
+        // Message envoyé = définitif : ni modification ni suppression côté membre.
         chatMsgs.appendChild(b);
       });
       if (chatEditingId) {
@@ -2657,48 +2717,6 @@
     async function syncMyLastMessage(list) {
       try { await setDoc(doc(db, "support_chats", currentUser.uid), { lastMessage: latestUserLabel(list) }, { merge: true }); } catch (e) {}
     }
-
-    chatMsgs.addEventListener("click", async (e) => {
-      const b = e.target.closest("[data-msg-act]");
-      if (!b || !currentUser || chatMsgBusy) return;
-      const id = b.dataset.mid;
-      const act = b.dataset.msgAct;
-      const m = chatMessages.find(x => x.id === id);
-      if (!m || m.senderRole !== "user" || m.senderId !== currentUser.uid) return;
-      if (act === "edit") {
-        chatEditingId = id; chatEditDraft = m.text || ""; renderChat();
-      } else if (act === "cancel") {
-        chatEditingId = null; chatEditDraft = ""; renderChat();
-      } else if (act === "save") {
-        const text = cleanText(chatEditDraft, 2000);
-        if (!text && !safeImageUrl(m.imageUrl)) return showPopup({ type: "warning", title: "Message vide", message: "Un message ne peut pas être vide. Utilisez « Supprimer » pour le retirer." });
-        if (text === (m.text || "")) { chatEditingId = null; chatEditDraft = ""; return renderChat(); }
-        chatMsgBusy = true;
-        try {
-          await updateDoc(doc(db, "support_chats", currentUser.uid, "messages", id), { text, edited: true, editedAt: serverTimestamp() });
-          await syncMyLastMessage(chatMessages.map(x => x.id === id ? { ...x, text } : x));
-          chatEditingId = null; chatEditDraft = "";
-        } catch (err) {
-          showPopup({ type: "error", title: "Modification impossible", message: "Votre message n'a pas pu être modifié. Veuillez réessayer." });
-        } finally { chatMsgBusy = false; renderChat(); }
-      } else if (act === "delete") {
-        const ok = await confirmPopup({ type: "warning", title: "Supprimer ce message ?", message: "Seul ce message sera supprimé de la discussion. Cette action est définitive.", confirmText: "Supprimer" });
-        if (!ok) return;
-        chatMsgBusy = true;
-        try {
-          await deleteDoc(doc(db, "support_chats", currentUser.uid, "messages", id));
-          if (chatEditingId === id) { chatEditingId = null; chatEditDraft = ""; }
-          await syncMyLastMessage(chatMessages.filter(x => x.id !== id));
-        } catch (err) {
-          showPopup({ type: "error", title: "Suppression impossible", message: "Le message n'a pas pu être supprimé. Veuillez réessayer." });
-        } finally { chatMsgBusy = false; }
-      }
-    });
-    chatMsgs.addEventListener("input", (e) => { if (e.target.id === "chat-edit-input") chatEditDraft = e.target.value; });
-    chatMsgs.addEventListener("keydown", (e) => {
-      if (e.target.id !== "chat-edit-input") return;
-      if (e.key === "Escape") { chatEditingId = null; chatEditDraft = ""; renderChat(); }
-    });
 
     function resetChatState() {
       chatMessages = [];
@@ -2853,47 +2871,63 @@
       });
     }
 
-    async function postImageToWorker(blob, mime, cfg) {
+    // Envoi R2 par PUT : {workerUrl}/{clé} avec uniquement les en-têtes Content-Type et X-Upload-Token (aucun en-tête personnalisé supplémentaire, pour ne pas bloquer le préflight CORS)
+    async function r2Diagnose(base) {
+      // Si une requête "no-cors" aboutit, le Worker est joignable : l'échec précédent vient donc du CORS
+      try { await fetch(base + "/", { method: "GET", mode: "no-cors", credentials: "omit", cache: "no-store" }); return "cors"; }
+      catch (e) { return "network"; }
+    }
+    async function postImageToWorker(blob, mime, cfg, keyOwner) {
       const ext = CHAT_IMG_EXT[mime];
       const rnd = Array.from(crypto.getRandomValues(new Uint8Array(6)), x => x.toString(16).padStart(2, "0")).join("");
-      const key = `${cfg.folder}/${currentUser.uid}/${Date.now()}_${rnd}.${ext}`;
-      const fd = new FormData();
-      fd.append("file", blob, `${rnd}.${ext}`);
-      fd.append("key", key);
-      fd.append("contentType", mime);
-
-      const headers = {};
-      try { headers["Authorization"] = `Bearer ${await currentUser.getIdToken()}`; } catch (e) {}
+      // Clé unique : dossier / propriétaire / horodatage / aléatoire (jamais d'écrasement d'un fichier existant)
+      const key = `${cfg.folder}/${keyOwner}/${Date.now()}_${rnd}.${ext}`;
+      const base = cfg.workerUrl.replace(/\/+$/, "");
+      const target = `${base}/${key.split("/").map(encodeURIComponent).join("/")}`;
+      const headers = { "Content-Type": mime };
       if (cfg.uploadToken) headers["X-Upload-Token"] = cfg.uploadToken;
-
       const ctrl = new AbortController();
       const timer = setTimeout(() => ctrl.abort(), 60000);
       let res;
       try {
-        res = await fetch(cfg.workerUrl, { method: "POST", body: fd, headers, signal: ctrl.signal, credentials: "omit", referrerPolicy: "no-referrer" });
+        res = await fetch(target, { method: "PUT", body: blob, headers, signal: ctrl.signal, credentials: "omit", referrerPolicy: "no-referrer" });
       } catch (e) {
-        throw new AppError(e && e.name === "AbortError"
-          ? "L'envoi de l'image a pris trop de temps. Vérifiez votre connexion puis réessayez."
-          : "Impossible de joindre le service d'envoi d'images. Vérifiez votre connexion puis réessayez.");
-      } finally {
-        clearTimeout(timer);
+        if (e && e.name === "AbortError") throw new AppError("Délai dépassé : le Worker n'a pas répondu en 60 secondes.");
+        const kind = await r2Diagnose(base);
+        throw new AppError(kind === "cors"
+          ? `Erreur CORS : le Worker est joignable mais refuse les requêtes de cette page (${location.origin}). Il doit répondre à OPTIONS et autoriser la méthode PUT, ainsi que les en-têtes Content-Type et X-Upload-Token.`
+          : "Erreur réseau : impossible de joindre le Worker. Vérifiez votre connexion et l'URL du Worker.");
+      } finally { clearTimeout(timer); }
+      let raw = "";
+      try { raw = await res.text(); } catch (e) {}
+      const detail = raw.replace(/\s+/g, " ").trim().slice(0, 200);
+      if (!res.ok) {
+        const st = res.status;
+        const more = detail ? ` Réponse du Worker : « ${detail} »` : "";
+        if (st === 401) throw new AppError("Token invalide (401) : le jeton envoyé dans X-Upload-Token est refusé par le Worker." + more);
+        if (st === 403) throw new AppError("Accès refusé (403) : le Worker refuse cette requête (jeton ou origine non autorisés)." + more);
+        if (st === 404) throw new AppError("Worker introuvable ou route inconnue (404) : vérifiez l'URL du Worker." + more);
+        if (st === 405) throw new AppError("Méthode HTTP incorrecte (405) : le Worker n'accepte pas PUT sur cette adresse." + more);
+        if (st === 413) throw new AppError("Fichier trop volumineux (413) : le Worker refuse cette taille." + more);
+        if (st === 415) throw new AppError("Type de fichier non autorisé (415) : le Worker refuse ce format." + more);
+        if (st >= 500) {
+          if (/MY_BUCKET|binding|undefined|reading 'put'|is not a function/i.test(raw)) throw new AppError(`Binding R2 absent ou incorrect : le Worker ne trouve pas MY_BUCKET (code ${st}). Vérifiez le binding du bucket dans les paramètres du Worker.` + more);
+          throw new AppError(`Erreur serveur du Worker (${st}).` + more);
+        }
+        throw new AppError(`Échec de l'envoi (code ${st}).` + more);
       }
-      if (res.status === 401 || res.status === 403) throw new AppError("Envoi d'image refusé par le serveur.");
-      if (res.status === 413) throw new AppError("Image trop volumineuse pour le serveur.");
-      if (!res.ok) throw new AppError(`Échec de l'envoi de l'image (code ${res.status}).`);
-
       let data = null;
-      try { data = await res.json(); } catch (e) {}
+      try { data = JSON.parse(raw); } catch (e) {}
       let outKey = key;
       let url = null;
       if (data && typeof data === "object") {
         const k = data.key || data.path;
         if (typeof k === "string" && k && k.length <= 300 && !k.includes("..")) outKey = k.replace(/^\/+/, "");
-        const cand = data.url || data.publicUrl || data.imageUrl;
-        if (typeof cand === "string") url = httpsUrlOrNull(cand);
+        const cand = typeof (data.url || data.publicUrl || data.imageUrl) === "string" ? httpsUrlOrNull(data.url || data.publicUrl || data.imageUrl) : null;
+        if (cand && cand.startsWith(cfg.publicUrl + "/")) url = cand;
       }
+      // URL publique = URL publique R2 + "/" + clé du fichier
       if (!url) url = `${cfg.publicUrl}/${outKey.split("/").map(encodeURIComponent).join("/")}`;
-      if (!url.startsWith(cfg.publicUrl + "/")) throw new AppError("Le serveur a renvoyé un lien d'image invalide.");
       return { url, key: outKey };
     }
 
@@ -2910,7 +2944,7 @@
         } catch (e) {}
       }
       if (blob.size > cfg.maxBytes) throw new AppError(`Image trop volumineuse (maximum ${cfg.maxMB} Mo).`);
-      const up = await postImageToWorker(blob, mime, cfg);
+      const up = await postImageToWorker(blob, mime, cfg, currentUser.uid);
       await checkImageLoads(up.url);
       return { url: up.url, key: up.key, name: cleanText(pending.file.name, 80) || "image", size: blob.size, type: mime };
     }
@@ -3041,6 +3075,551 @@
         showPopup({ type: "error", title: "Message non envoyé", message: "Votre message n'a pas pu être envoyé. Veuillez réessayer." });
       } finally {
         if (pending) setChatImgBusy(false);
+      }
+    });
+
+    // ===================== Discussion de groupe (ajout) =====================
+    // Messages : collection "group_messages" · Réactions : collection "group_reactions" (1 document par membre et par message)
+    const GROUP_MSG_COL = "group_messages";
+    const GROUP_REACT_COL = "group_reactions";
+    const GROUP_LIMIT = 200;
+    const GROUP_EMOJIS = Object.freeze(["👍", "❤️", "😂", "😮", "😢", "🙏"]);
+    const gWin = document.getElementById("gchat-window");
+    const gMsgs = document.getElementById("gchat-msgs");
+    const gFab = document.getElementById("gchat-fab");
+    const gMenu = document.getElementById("gchat-menu");
+    const gMenuBack = document.getElementById("gchat-menu-back");
+    let gMessages = [];
+    let gReactions = [];
+    let gUnsubs = [];
+    let gActiveUid = null;
+    let gReply = null;
+    let gPendingImage = null;
+    let gImgBusy = false;
+    let gLastSentAt = 0;
+    let gMenuMsg = null;
+    let gMenuOpenedAt = 0;
+    let gSuppressClickUntil = 0;
+    let gReady = false;
+    const gPreloaded = new Set();
+    const gIsOpen = () => gWin.classList.contains("open");
+    const gSeenKey = () => "inver_gseen_" + (gActiveUid || "");
+
+    function gSyncBodyLock() {
+      const any = gIsOpen() || document.getElementById("chat-window").classList.contains("open");
+      document.body.classList.toggle("chat-open", any);
+    }
+    function gNameColor(name) {
+      let h = 0;
+      const s = String(name || "");
+      for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 360;
+      return `hsl(${h}, 55%, 36%)`;
+    }
+    function gSnippet(m, max = 90) {
+      return cleanText(m.text, max) || (safeImageUrl(m.imageUrl) ? "📷 Image" : "");
+    }
+    function gMyUid() { return currentUser ? currentUser.uid : null; }
+
+    function gUnreadCount() {
+      const seen = storeGet(gSeenKey()) || 0;
+      const me = gMyUid();
+      return gMessages.filter(m => m.senderId !== me && tsMs(m.createdAt) > seen).length;
+    }
+    function gMarkSeen() {
+      if (!gActiveUid) return;
+      const last = gMessages.reduce((a, m) => Math.max(a, tsMs(m.createdAt)), 0);
+      storeSet(gSeenKey(), Math.max(last, Date.now() - 1000));
+      gUpdateBadge();
+    }
+    function gUpdateBadge() {
+      const badge = document.getElementById("gchat-fab-badge");
+      const n = (!gIsOpen() && gReady) ? gUnreadCount() : 0;
+      badge.textContent = n > 99 ? "99+" : String(n);
+      badge.style.display = n > 0 ? "flex" : "none";
+    }
+
+    function gReactionsFor(msgId) {
+      return gReactions.filter(r => r.messageId === msgId);
+    }
+
+    function renderGroupChat() {
+      const nearBottom = gMsgs.scrollHeight - gMsgs.scrollTop - gMsgs.clientHeight < 120;
+      const prevTop = gMsgs.scrollTop;
+      const me = gMyUid();
+      const renderStamp = Date.now();
+      gMessages.forEach(m => {
+        const u = safeImageUrl(m.imageUrl);
+        if (u && !gPreloaded.has(u)) {
+          gPreloaded.add(u);
+          const pre = new Image();
+          pre.referrerPolicy = "no-referrer";
+          pre.src = u;
+        }
+      });
+      gMsgs.innerHTML = "";
+      if (!gReady) {
+        const l = document.createElement("div");
+        l.className = "gchat-empty";
+        l.textContent = "Chargement de la discussion...";
+        gMsgs.appendChild(l);
+        return;
+      }
+      if (!gMessages.length) {
+        const e = document.createElement("div");
+        e.className = "gchat-empty";
+        e.textContent = "Aucun message pour le moment. Soyez le premier à écrire au groupe !";
+        gMsgs.appendChild(e);
+      }
+      let lastDay = "";
+      gMessages.forEach(m => {
+        const ms = tsMs(m.createdAt);
+        const d = new Date(ms);
+        if (ms) {
+          const day = d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+          if (day !== lastDay) {
+            const sep = document.createElement("div");
+            sep.className = "cday";
+            sep.textContent = day;
+            gMsgs.appendChild(sep);
+            lastDay = day;
+          }
+        }
+        const own = m.senderId === me;
+        const imgUrl = safeImageUrl(m.imageUrl);
+        const b = document.createElement("div");
+        b.className = `cbub gbub ${own ? "me" : "them"}${imgUrl ? " has-img" : ""}`;
+        b.dataset.id = m.id;
+
+        const nm = document.createElement("span");
+        nm.className = "gname";
+        nm.textContent = own ? "Vous" : (cleanText(m.senderName, 60) || "Membre");
+        nm.style.color = own ? "#06281e" : gNameColor(m.senderName);
+        b.appendChild(nm);
+
+        if (m.replyTo && m.replyTo.id) {
+          const q = document.createElement("div");
+          q.className = "gquote";
+          q.dataset.goto = m.replyTo.id;
+          const qn = document.createElement("b");
+          qn.textContent = cleanText(m.replyTo.name, 60) || "Membre";
+          const qt = document.createElement("span");
+          qt.textContent = cleanText(m.replyTo.text, 90) || (m.replyTo.image ? "📷 Image" : "Message");
+          q.appendChild(qn); q.appendChild(qt);
+          b.appendChild(q);
+        }
+
+        if (imgUrl) {
+          const img = document.createElement("img");
+          img.className = "cimg";
+          img.alt = cleanText(m.imageName, 80) || "Image envoyée";
+          img.loading = "eager";
+          img.decoding = "async";
+          img.referrerPolicy = "no-referrer";
+          img.setAttribute("role", "button");
+          img.tabIndex = 0;
+          img.addEventListener("load", () => { if (Date.now() - renderStamp < 3000 && nearBottom) gMsgs.scrollTop = gMsgs.scrollHeight; });
+          img.addEventListener("error", () => {
+            const f = document.createElement("div");
+            f.className = "cimg-fail";
+            f.textContent = "Image indisponible";
+            img.replaceWith(f);
+          });
+          img.addEventListener("click", () => { if (Date.now() > gSuppressClickUntil) openImageViewer(imgUrl, img.alt); });
+          img.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); openImageViewer(imgUrl, img.alt); } });
+          b.appendChild(img);
+          if (m.text) {
+            const tx = document.createElement("div");
+            tx.className = "cimg-text";
+            tx.textContent = m.text;
+            b.appendChild(tx);
+          }
+        } else {
+          b.appendChild(document.createTextNode(m.text || ""));
+        }
+
+        const rs = gReactionsFor(m.id);
+        if (rs.length) {
+          const row = document.createElement("div");
+          row.className = "greacts";
+          const byEmoji = new Map();
+          rs.forEach(r => {
+            if (!byEmoji.has(r.emoji)) byEmoji.set(r.emoji, []);
+            byEmoji.get(r.emoji).push(r.userId);
+          });
+          byEmoji.forEach((uids, emoji) => {
+            const c = document.createElement("button");
+            c.type = "button";
+            c.className = "greact" + (uids.includes(me) ? " mine" : "");
+            c.dataset.react = emoji;
+            c.dataset.mid = m.id;
+            c.textContent = `${emoji} ${uids.length}`;
+            row.appendChild(c);
+          });
+          b.appendChild(row);
+        }
+
+        if (ms) {
+          const t = document.createElement("span");
+          t.className = "ct";
+          t.textContent = d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+          b.appendChild(t);
+        }
+        gMsgs.appendChild(b);
+      });
+      const lastOwn = gMessages.length && gMessages[gMessages.length - 1].senderId === me;
+      if (nearBottom || lastOwn || !prevTop) gMsgs.scrollTop = gMsgs.scrollHeight;
+      else gMsgs.scrollTop = prevTop;
+    }
+
+    function startGroupListeners(user) {
+      if (gActiveUid === user.uid && gUnsubs.length) return;
+      stopGroupListeners();
+      gActiveUid = user.uid;
+      if (storeGet(gSeenKey()) == null) storeSet(gSeenKey(), Date.now());
+      gUnsubs.push(onSnapshot(
+        query(collection(db, GROUP_MSG_COL), orderBy("createdAt", "desc"), limit(GROUP_LIMIT)),
+        (snap) => {
+          const list = [];
+          snap.forEach(ds => list.push({ id: ds.id, _pending: ds.metadata.hasPendingWrites, ...ds.data({ serverTimestamps: "estimate" }) }));
+          list.sort((a, b) => tsMs(a.createdAt) - tsMs(b.createdAt));
+          gMessages = list;
+          gReady = true;
+          renderGroupChat();
+          if (gIsOpen()) gMarkSeen(); else gUpdateBadge();
+        },
+        () => {
+          gReady = true;
+          gMessages = [];
+          renderGroupChat();
+          const f = document.createElement("div");
+          f.className = "gchat-empty";
+          f.textContent = "La discussion de groupe est momentanément indisponible.";
+          gMsgs.appendChild(f);
+        }
+      ));
+      gUnsubs.push(onSnapshot(collection(db, GROUP_REACT_COL), (snap) => {
+        const list = [];
+        snap.forEach(ds => { const x = ds.data(); if (x && x.messageId && x.emoji) list.push({ id: ds.id, messageId: x.messageId, userId: x.userId, emoji: x.emoji }); });
+        gReactions = list;
+        renderGroupChat();
+      }, () => {}));
+    }
+    function stopGroupListeners() {
+      gUnsubs.forEach(u => { try { u(); } catch (e) {} });
+      gUnsubs = [];
+      gMessages = []; gReactions = []; gReady = false; gActiveUid = null;
+      gClearReply(); gClearPreview(); gCloseMenu();
+      gWin.classList.remove("open");
+      gSyncBodyLock();
+      gMsgs.innerHTML = '<div class="gchat-empty">Chargement de la discussion...</div>';
+      gUpdateBadge();
+    }
+
+    // Le bouton n'apparaît que lorsque l'application est affichée à un membre connecté.
+    function syncGroupFab() {
+      const visible = !!auth.currentUser && mainAppView.style.display !== "none" && mainAppView.style.display !== "";
+      gFab.style.display = visible ? "flex" : "none";
+      if (visible) startGroupListeners(auth.currentUser); else stopGroupListeners();
+    }
+    onAuthStateChanged(auth, () => { setTimeout(syncGroupFab, 0); });
+    new MutationObserver(syncGroupFab).observe(mainAppView, { attributes: true, attributeFilter: ["style"] });
+    setTimeout(syncGroupFab, 0);
+
+    window.toggleGroupChat = function() {
+      const opening = !gIsOpen();
+      if (opening && document.getElementById("chat-window").classList.contains("open")) window.toggleChat();
+      gWin.classList.toggle("open", opening);
+      gSyncBodyLock();
+      gCloseMenu();
+      if (opening) {
+        gMsgs.scrollTop = gMsgs.scrollHeight;
+        gMarkSeen();
+      } else {
+        gUpdateBadge();
+      }
+    };
+    // Ouvrir l'assistant ferme la discussion de groupe (même emplacement à l'écran).
+    document.getElementById("chat-fab").addEventListener("click", () => {
+      if (gIsOpen()) { gWin.classList.remove("open"); gCloseMenu(); gSyncBodyLock(); gUpdateBadge(); }
+    });
+
+    // ----- Réponse -----
+    function gSetReply(m) {
+      gReply = { id: m.id, name: cleanText(m.senderName, 60) || "Membre", text: gSnippet(m, 120), image: !!safeImageUrl(m.imageUrl) };
+      document.getElementById("gchat-reply-name").textContent = m.senderId === gMyUid() ? "Vous" : gReply.name;
+      document.getElementById("gchat-reply-text").textContent = gReply.text || "Message";
+      document.getElementById("gchat-reply").style.display = "flex";
+      document.getElementById("gchat-input").focus();
+    }
+    function gClearReply() {
+      gReply = null;
+      document.getElementById("gchat-reply").style.display = "none";
+    }
+    document.getElementById("gchat-reply-cancel").addEventListener("click", gClearReply);
+
+    function gScrollToMessage(id) {
+      let el = null;
+      gMsgs.querySelectorAll(".gbub").forEach(x => { if (x.dataset.id === id) el = x; });
+      if (!el) return showPopup({ type: "info", title: "Message introuvable", message: "Le message d'origine est trop ancien et n'est plus affiché dans la conversation." });
+      el.scrollIntoView({ block: "center", behavior: "smooth" });
+      el.classList.remove("flash");
+      void el.offsetWidth;
+      el.classList.add("flash");
+      setTimeout(() => el.classList.remove("flash"), 1500);
+    }
+
+    // ----- Réactions emoji -----
+    async function gToggleReaction(msgId, emoji) {
+      const me = gMyUid();
+      if (!me || !currentProfile) return;
+      const ref = doc(db, GROUP_REACT_COL, `${msgId}_${me}`);
+      const mine = gReactions.find(r => r.id === `${msgId}_${me}`);
+      try {
+        if (mine && mine.emoji === emoji) await deleteDoc(ref);
+        else await setDoc(ref, { messageId: msgId, userId: me, userName: currentProfile.fullName || "", emoji, createdAt: serverTimestamp() });
+      } catch (e) {
+        showPopup({ type: "error", title: "Réaction impossible", message: "Votre réaction n'a pas pu être enregistrée. Veuillez réessayer." });
+      }
+    }
+    gMsgs.addEventListener("click", (e) => {
+      if (Date.now() < gSuppressClickUntil) return;
+      const chip = e.target.closest("[data-react]");
+      if (chip) { gToggleReaction(chip.dataset.mid, chip.dataset.react); return; }
+      const q = e.target.closest("[data-goto]");
+      if (q) gScrollToMessage(q.dataset.goto);
+    });
+
+    // ----- Menu contextuel (appui long / clic droit) -----
+    function gCloseMenu() {
+      gMenu.style.display = "none";
+      gMenuBack.style.display = "none";
+      gMenuMsg = null;
+    }
+    async function gCopy(text) {
+      try {
+        if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(text);
+        else throw new Error("fallback");
+      } catch (e) {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.cssText = "position:fixed;left:-9999px;top:0;opacity:0;";
+        document.body.appendChild(ta);
+        ta.focus(); ta.select();
+        try { document.execCommand("copy"); } catch (e2) {}
+        ta.remove();
+      }
+      showPopup({ type: "success", title: "Copié", message: "Le message a été copié." });
+    }
+    async function gForwardToAssistant(m) {
+      if (!currentUser || !currentProfile) return;
+      const author = m.senderId === currentUser.uid ? "moi" : (cleanText(m.senderName, 60) || "un membre");
+      const body = cleanText(`↪ Transféré du groupe (${author}) : ${m.text || ""}`, 2000);
+      try {
+        await setDoc(doc(db, "support_chats", currentUser.uid), {
+          userId: currentUser.uid,
+          userName: currentProfile.fullName,
+          userPhone: currentProfile.phone,
+          lastMessage: m.text ? body : "📷 Image",
+          updatedAt: serverTimestamp(),
+          userLastReadAt: serverTimestamp()
+        }, { merge: true });
+        const payload = { senderId: currentUser.uid, senderRole: "user", text: body, createdAt: serverTimestamp() };
+        const u = safeImageUrl(m.imageUrl);
+        if (u) {
+          payload.type = "image";
+          payload.imageUrl = u;
+          if (typeof m.imageKey === "string") payload.imageKey = m.imageKey;
+          payload.imageName = cleanText(m.imageName, 80) || "image";
+          if (Number.isFinite(m.imageSize)) payload.imageSize = m.imageSize;
+          if (typeof m.imageType === "string") payload.imageType = m.imageType;
+        }
+        await addDoc(collection(db, "support_chats", currentUser.uid, "messages"), payload);
+        gWin.classList.remove("open");
+        gSyncBodyLock();
+        gUpdateBadge();
+        window.openChatWindow();
+      } catch (e) {
+        showPopup({ type: "error", title: "Transfert impossible", message: "Le message n'a pas pu être transféré à l'assistant. Veuillez réessayer." });
+      }
+    }
+    function gOpenMenu(m, clientX, clientY) {
+      gMenuMsg = m;
+      gMenuOpenedAt = Date.now();
+      const me = gMyUid();
+      const myReact = gReactions.find(r => r.id === `${m.id}_${me}`);
+      gMenu.innerHTML = "";
+      const em = document.createElement("div");
+      em.className = "gchat-menu-emojis";
+      GROUP_EMOJIS.forEach(x => {
+        const b = document.createElement("button");
+        b.type = "button"; b.textContent = x; b.dataset.menuEmoji = x;
+        b.setAttribute("aria-label", "Réagir avec " + x);
+        if (myReact && myReact.emoji === x) b.className = "mine";
+        em.appendChild(b);
+      });
+      gMenu.appendChild(em);
+      const items = [];
+      if (m.text || safeImageUrl(m.imageUrl)) items.push(["copy", "📋", "Copier"]);
+      items.push(["reply", "↩️", "Répondre"]);
+      items.push(["forward", "🤖", "Transférer à l'assistant"]);
+      items.forEach(([k, ic, label]) => {
+        const b = document.createElement("button");
+        b.type = "button"; b.className = "gchat-menu-item"; b.dataset.menuAct = k;
+        b.textContent = `${ic}  ${label}`;
+        gMenu.appendChild(b);
+      });
+      gMenuBack.style.display = "block";
+      gMenu.style.display = "flex";
+      const r = gWin.getBoundingClientRect();
+      const w = gMenu.offsetWidth, h = gMenu.offsetHeight;
+      let x = clientX - r.left, y = clientY - r.top;
+      x = Math.max(8, Math.min(x, r.width - w - 8));
+      y = Math.max(8, Math.min(y, r.height - h - 8));
+      gMenu.style.left = x + "px";
+      gMenu.style.top = y + "px";
+    }
+    gMenuBack.addEventListener("click", gCloseMenu);
+    gMenuBack.addEventListener("contextmenu", (e) => { e.preventDefault(); gCloseMenu(); });
+    gMenu.addEventListener("click", async (e) => {
+      const m = gMenuMsg;
+      if (!m) return;
+      const emo = e.target.closest("[data-menu-emoji]");
+      const act = e.target.closest("[data-menu-act]");
+      if (emo) { gCloseMenu(); gToggleReaction(m.id, emo.dataset.menuEmoji); return; }
+      if (!act) return;
+      gCloseMenu();
+      if (act.dataset.menuAct === "copy") gCopy(m.text || safeImageUrl(m.imageUrl) || "");
+      else if (act.dataset.menuAct === "reply") gSetReply(m);
+      else if (act.dataset.menuAct === "forward") gForwardToAssistant(m);
+    });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && gMenuMsg) gCloseMenu(); });
+
+    // Appui long (tactile) et clic droit (ordinateur)
+    let gPressTimer = null, gPressX = 0, gPressY = 0;
+    function gMsgFromTarget(t) {
+      const el = t.closest && t.closest(".gbub");
+      return el ? gMessages.find(x => x.id === el.dataset.id) : null;
+    }
+    gMsgs.addEventListener("touchstart", (e) => {
+      const m = gMsgFromTarget(e.target);
+      if (!m || e.touches.length !== 1) return;
+      gPressX = e.touches[0].clientX; gPressY = e.touches[0].clientY;
+      clearTimeout(gPressTimer);
+      gPressTimer = setTimeout(() => {
+        gPressTimer = null;
+        gSuppressClickUntil = Date.now() + 700;
+        if (navigator.vibrate) { try { navigator.vibrate(15); } catch (e2) {} }
+        gOpenMenu(m, gPressX, gPressY);
+      }, 450);
+    }, { passive: true });
+    gMsgs.addEventListener("touchmove", (e) => {
+      if (!gPressTimer) return;
+      const t = e.touches[0];
+      if (Math.abs(t.clientX - gPressX) > 10 || Math.abs(t.clientY - gPressY) > 10) { clearTimeout(gPressTimer); gPressTimer = null; }
+    }, { passive: true });
+    ["touchend", "touchcancel"].forEach(ev => gMsgs.addEventListener(ev, () => { clearTimeout(gPressTimer); gPressTimer = null; }, { passive: true }));
+    gMsgs.addEventListener("contextmenu", (e) => {
+      const m = gMsgFromTarget(e.target);
+      if (!m) return;
+      e.preventDefault();
+      if (Date.now() - gMenuOpenedAt < 900) return;
+      gOpenMenu(m, e.clientX, e.clientY);
+    });
+
+    // ----- Image -----
+    function gSetBusy(busy, msg) {
+      gImgBusy = busy;
+      document.getElementById("gchat-send-btn").disabled = busy;
+      document.getElementById("gchat-img-btn").disabled = busy;
+      document.getElementById("gchat-preview-remove").disabled = busy;
+      const st = document.getElementById("gchat-preview-status");
+      if (st) st.textContent = busy ? (msg || "Envoi en cours...") : "Prête à être envoyée";
+    }
+    function gSetPreview(file, mime) {
+      gClearPreview();
+      gPendingImage = { file, mime, previewUrl: URL.createObjectURL(file) };
+      document.getElementById("gchat-preview-img").src = gPendingImage.previewUrl;
+      document.getElementById("gchat-preview-name").textContent = cleanText(file.name, 60) || "image";
+      document.getElementById("gchat-preview-status").textContent = "Prête à être envoyée";
+      document.getElementById("gchat-preview").style.display = "flex";
+    }
+    function gClearPreview() {
+      if (gPendingImage && gPendingImage.previewUrl) { try { URL.revokeObjectURL(gPendingImage.previewUrl); } catch (e) {} }
+      gPendingImage = null;
+      const box = document.getElementById("gchat-preview");
+      if (box) box.style.display = "none";
+      const im = document.getElementById("gchat-preview-img");
+      if (im) im.removeAttribute("src");
+    }
+    document.getElementById("gchat-img-btn").addEventListener("click", () => {
+      if (gImgBusy) return;
+      document.getElementById("gchat-file").click();
+    });
+    document.getElementById("gchat-preview-remove").addEventListener("click", () => { if (!gImgBusy) gClearPreview(); });
+    document.getElementById("gchat-file").addEventListener("change", async (e) => {
+      const input = e.target;
+      const file = input.files && input.files[0];
+      input.value = "";
+      if (!file || gImgBusy || !currentUser) return;
+      if (file.size === 0) return showPopup({ type: "error", title: "Image invalide", message: "Le fichier sélectionné est vide." });
+      if (file.size > CHAT_IMG_HARD_MAX) return showPopup({ type: "error", title: "Image trop volumineuse", message: "Choisissez une image de moins de 15 Mo." });
+      const mime = await sniffImageMime(file);
+      if (!mime || !CHAT_IMG_TYPES.includes(mime)) {
+        return showPopup({ type: "error", title: "Format non pris en charge", message: "Seules les images JPG, PNG, WebP et GIF sont acceptées." });
+      }
+      gSetPreview(file, mime);
+    });
+
+    // ----- Envoi -----
+    document.getElementById("gchat-form").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      if (!currentUser || !currentProfile || gImgBusy) return;
+      const input = document.getElementById("gchat-input");
+      const text = cleanText(input.value, 2000);
+      const pending = gPendingImage;
+      if (!text && !pending) return;
+      if (Date.now() - gLastSentAt < CHAT_MIN_GAP_MS) return;
+      gLastSentAt = Date.now();
+
+      let imageData = null;
+      if (pending) {
+        gSetBusy(true, "Envoi de l'image...");
+        try {
+          imageData = await uploadChatImage(pending);
+        } catch (err) {
+          gSetBusy(false);
+          gLastSentAt = 0;
+          showPopup({ type: "error", title: "Image non envoyée", message: userMsg(err, "L'image n'a pas pu être envoyée. Veuillez réessayer.") + "\n\nVous pouvez réessayer, retirer l'image ou envoyer votre message sans image." });
+          return;
+        }
+      } else {
+        input.value = "";
+      }
+
+      try {
+        const payload = {
+          senderId: currentUser.uid,
+          senderName: cleanText(currentProfile.fullName, 60) || "Membre",
+          text,
+          createdAt: serverTimestamp()
+        };
+        if (gReply) payload.replyTo = { id: gReply.id, name: gReply.name, text: gReply.text, image: !!gReply.image };
+        if (imageData) {
+          payload.type = "image";
+          payload.imageUrl = imageData.url;
+          payload.imageKey = imageData.key;
+          payload.imageName = imageData.name;
+          payload.imageSize = imageData.size;
+          payload.imageType = imageData.type;
+        }
+        await addDoc(collection(db, GROUP_MSG_COL), payload);
+        if (pending) { input.value = ""; gClearPreview(); }
+        gClearReply();
+      } catch (err) {
+        if (!pending) input.value = text;
+        showPopup({ type: "error", title: "Message non envoyé", message: "Votre message n'a pas pu être envoyé. Veuillez réessayer." });
+      } finally {
+        if (pending) gSetBusy(false);
       }
     });
   </script>
