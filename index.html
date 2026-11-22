@@ -338,6 +338,8 @@
     .gchat-menu-emojis button:hover, .gchat-menu-emojis button.mine { background: rgba(16, 185, 129, 0.16); }
     .gchat-menu-item { background: none; border: none; text-align: left; padding: 9px 10px; border-radius: 10px; font-size: 0.88rem; cursor: pointer; color: var(--text-main); display: flex; align-items: center; gap: 10px; min-height: 40px; }
     .gchat-menu-item:hover { background: var(--bg-input); }
+  <style>
+    .cbub .cimg.cimg-loading { min-height: 140px; color: transparent; }
   </style>
 </head>
 <body>
@@ -2624,18 +2626,43 @@
       setTimeout(() => { chatMarkBusy = false; }, 1200);
     }
 
-    const chatImgPreloaded = new Set();
+    // Les éléments <img> sont créés UNE fois par image et réutilisés à chaque rendu : ils restent chargés (pas de rechargement ni de texte alternatif affiché).
+    const chatImgCache = new Map();
+    function getChatImgEl(scope, url, alt, container) {
+      const key = scope + "|" + url;
+      const cached = chatImgCache.get(key);
+      if (cached) return cached;
+      const img = document.createElement("img");
+      img.className = "cimg cimg-loading";
+      img.alt = alt;
+      img.loading = "eager";
+      img.referrerPolicy = "no-referrer";
+      img.setAttribute("role", "button");
+      img.tabIndex = 0;
+      const open = () => { if (scope === "g" && Date.now() < gSuppressClickUntil) return; openImageViewer(url, img.alt); };
+      img.addEventListener("load", () => {
+        img.classList.remove("cimg-loading");
+        if (container.scrollHeight - container.scrollTop - container.clientHeight < 500) container.scrollTop = container.scrollHeight;
+      });
+      img.addEventListener("error", () => {
+        chatImgCache.delete(key);
+        const f = document.createElement("div");
+        f.className = "cimg-fail";
+        f.textContent = "Image indisponible";
+        if (img.parentNode) img.replaceWith(f);
+      });
+      img.addEventListener("click", open);
+      img.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); open(); } });
+      img.src = url;
+      chatImgCache.set(key, img);
+      return img;
+    }
     function renderChat() {
       const renderStamp = Date.now();
-      // Précharge toutes les images de la discussion dès réception (même fenêtre fermée) : elles s'affichent immédiatement.
+      // Création (donc chargement) de toutes les images dès réception, même fenêtre fermée.
       chatMessages.forEach(m => {
         const u = safeImageUrl(m.imageUrl);
-        if (u && !chatImgPreloaded.has(u)) {
-          chatImgPreloaded.add(u);
-          const pre = new Image();
-          pre.referrerPolicy = "no-referrer";
-          pre.src = u;
-        }
+        if (u) getChatImgEl("a", u, cleanText(m.imageName, 80) || "Image envoyée", chatMsgs);
       });
       chatMsgs.innerHTML = "";
       const welcome = document.createElement("div");
@@ -2666,23 +2693,7 @@
           b.appendChild(fw);
         }
         if (imgUrl) {
-          const img = document.createElement("img");
-          img.className = "cimg";
-          img.alt = cleanText(m.imageName, 80) || "Image envoyée";
-          img.loading = "eager";
-          img.decoding = "async";
-          img.referrerPolicy = "no-referrer";
-          img.setAttribute("role", "button");
-          img.tabIndex = 0;
-          img.addEventListener("load", () => { if (Date.now() - renderStamp < 3000) chatMsgs.scrollTop = chatMsgs.scrollHeight; });
-          img.addEventListener("error", () => {
-            const f = document.createElement("div");
-            f.className = "cimg-fail";
-            f.textContent = "Image indisponible";
-            img.replaceWith(f);
-          });
-          img.addEventListener("click", () => openImageViewer(imgUrl, img.alt));
-          img.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); openImageViewer(imgUrl, img.alt); } });
+          const img = getChatImgEl("a", imgUrl, cleanText(m.imageName, 80) || "Image envoyée", chatMsgs);
           b.appendChild(img);
           if (m.text) {
             const tx = document.createElement("div");
@@ -2937,7 +2948,7 @@
       if (!cfg.allowed.includes(pending.mime)) throw new AppError("Ce format d'image n'est pas autorisé par l'administration.");
       let blob = pending.file;
       let mime = pending.mime;
-      if (mime !== "image/gif" && blob.size > 900 * 1024) {
+      if (mime !== "image/gif" && blob.size > 300 * 1024) {
         try {
           const out = await downscaleImage(blob);
           if (out && out.size > 0 && out.size < blob.size) { blob = out; mime = "image/jpeg"; }
@@ -3101,7 +3112,6 @@
     let gMenuOpenedAt = 0;
     let gSuppressClickUntil = 0;
     let gReady = false;
-    const gPreloaded = new Set();
     const gIsOpen = () => gWin.classList.contains("open");
     const gSeenKey = () => "inver_gseen_" + (gActiveUid || "");
 
@@ -3149,12 +3159,7 @@
       const renderStamp = Date.now();
       gMessages.forEach(m => {
         const u = safeImageUrl(m.imageUrl);
-        if (u && !gPreloaded.has(u)) {
-          gPreloaded.add(u);
-          const pre = new Image();
-          pre.referrerPolicy = "no-referrer";
-          pre.src = u;
-        }
+        if (u) getChatImgEl("g", u, cleanText(m.imageName, 80) || "Image envoyée", gMsgs);
       });
       gMsgs.innerHTML = "";
       if (!gReady) {
@@ -3209,23 +3214,7 @@
         }
 
         if (imgUrl) {
-          const img = document.createElement("img");
-          img.className = "cimg";
-          img.alt = cleanText(m.imageName, 80) || "Image envoyée";
-          img.loading = "eager";
-          img.decoding = "async";
-          img.referrerPolicy = "no-referrer";
-          img.setAttribute("role", "button");
-          img.tabIndex = 0;
-          img.addEventListener("load", () => { if (Date.now() - renderStamp < 3000 && nearBottom) gMsgs.scrollTop = gMsgs.scrollHeight; });
-          img.addEventListener("error", () => {
-            const f = document.createElement("div");
-            f.className = "cimg-fail";
-            f.textContent = "Image indisponible";
-            img.replaceWith(f);
-          });
-          img.addEventListener("click", () => { if (Date.now() > gSuppressClickUntil) openImageViewer(imgUrl, img.alt); });
-          img.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); openImageViewer(imgUrl, img.alt); } });
+          const img = getChatImgEl("g", imgUrl, cleanText(m.imageName, 80) || "Image envoyée", gMsgs);
           b.appendChild(img);
           if (m.text) {
             const tx = document.createElement("div");
