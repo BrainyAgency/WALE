@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://images.unsplash.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebaseapp.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self' https: wss://*.firebaseio.com; frame-src https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'">
   <meta name="referrer" content="no-referrer">
   <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
@@ -195,6 +195,14 @@
     .cbub.me { align-self: flex-end; background: var(--primary); color: #06281e; border-bottom-right-radius: 4px; }
     .cbub.them { align-self: flex-start; background: #fff; border: 1px solid var(--border); border-bottom-left-radius: 4px; }
     .cbub .ct { display: block; text-align: right; font-size: 0.66rem; opacity: 0.65; margin-top: 2px; }
+    .cbub .acts { display: flex; gap: 10px; justify-content: flex-end; margin-top: 3px; }
+    .cbub .act { background: none; border: none; padding: 0; font-size: 0.68rem; color: inherit; opacity: 0.65; cursor: pointer; text-decoration: underline; min-height: 0; }
+    .cbub .act:hover { opacity: 1; }
+    .cbub .fwd { display: block; font-size: 0.68rem; opacity: 0.65; margin-bottom: 2px; }
+    .cbub.editing { width: 85%; }
+    .cbub.editing .form-control { min-height: 0; padding: 6px 8px; font-size: 16px; resize: vertical; }
+    .cbub.has-img .acts, .cbub.has-img .fwd { padding: 0 6px; }
+    .chat-head-tools { display: flex; align-items: center; gap: 2px; }
     .cday { align-self: center; font-size: 0.7rem; color: var(--text-muted); background: #fff; border: 1px solid var(--border); border-radius: 999px; padding: 2px 10px; }
     .chat-window { max-height: calc(100vh - 170px); max-height: calc(100dvh - 170px); }
 
@@ -282,6 +290,22 @@
       .chat-fab { bottom: calc(60px + env(safe-area-inset-bottom)); }
       .chat-window { bottom: calc(60px + env(safe-area-inset-bottom)); max-height: calc(100dvh - 80px); }
     }
+    /* ===== Images dans la discussion ===== */
+    .chat-preview { display: none; align-items: center; gap: 8px; padding: 8px; background: #fff; border-top: 1px solid var(--border); }
+    .chat-preview img { width: 44px; height: 44px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); flex-shrink: 0; }
+    .chat-preview-info { flex: 1; min-width: 0; display: flex; flex-direction: column; font-size: 0.8rem; }
+    .chat-preview-info span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+    .chat-preview-info small { color: var(--text-muted); }
+    .cbub.has-img { padding: 4px; }
+    .cbub .cimg { display: block; width: 220px; max-width: 100%; max-height: 260px; object-fit: cover; border-radius: 9px; cursor: zoom-in; background: var(--bg-input); }
+    .cbub .cimg-text { padding: 6px 8px 2px; }
+    .cbub .cimg-fail { padding: 8px; font-size: 0.8rem; opacity: 0.7; }
+    .cbub.has-img .ct { padding: 0 6px 2px; }
+    .img-viewer { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.88); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; z-index: 400; }
+    .img-viewer.open { display: flex; }
+    .img-viewer img { max-width: 100%; max-height: calc(100% - 50px); object-fit: contain; border-radius: 8px; }
+    .img-viewer-close { position: absolute; top: calc(12px + env(safe-area-inset-top)); right: 12px; width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(255, 255, 255, 0.94); color: var(--text-main); font-size: 1.1rem; cursor: pointer; }
+    .img-viewer-open { color: #fff; font-size: 0.85rem; text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -305,7 +329,7 @@
         </div>
         <button type="submit" id="login-submit" class="btn btn-primary btn-full">Se connecter</button>
         <p style="text-align: center; margin-top: 16px; font-size: 0.88rem; color: var(--text-muted);">
-          Pas de compte ? <a href="#" id="to-register" style="color: var(--primary); font-weight: 600;">S'inscrire</a>
+          Pas de compte ? <a href="#inscription" id="to-register" style="color: var(--primary); font-weight: 600;">S'inscrire</a>
         </p>
         <p style="text-align: center; margin-top: 8px; font-size: 0.8rem;">
           <a href="#" data-open-policy class="link-policy">Politique de confidentialité et conditions d'utilisation</a>
@@ -327,6 +351,11 @@
           <input type="password" id="reg-password" class="form-control" placeholder="••••••••" required minlength="6" maxlength="64" autocomplete="new-password">
         </div>
         <div class="form-group">
+          <label class="form-label">Confirmer le mot de passe</label>
+          <input type="password" id="reg-password-confirm" class="form-control" placeholder="••••••••" required minlength="6" maxlength="64" autocomplete="new-password">
+          <small id="reg-password-hint" style="display:none; color:var(--danger); font-size:0.75rem;">Les mots de passe ne correspondent pas.</small>
+        </div>
+        <div class="form-group">
           <label class="form-label">Code d'invitation (Parrain)</label>
           <input type="text" id="reg-invite" class="form-control" placeholder="EX: INVER2026" required maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false" style="text-transform: uppercase;">
           <small style="color:var(--text-muted); font-size:0.75rem;">()</small>
@@ -337,7 +366,7 @@
         </div>
         <button type="submit" id="register-submit" class="btn btn-primary btn-full">Créer mon compte</button>
         <p style="text-align: center; margin-top: 16px; font-size: 0.88rem; color: var(--text-muted);">
-          Déjà un compte ? <a href="#" id="to-login" style="color: var(--primary); font-weight: 600;">Se connecter</a>
+          Déjà un compte ? <a href="#connexion" id="to-login" style="color: var(--primary); font-weight: 600;">Se connecter</a>
         </p>
       </form>
     </div>
@@ -455,10 +484,7 @@
       </div>
 
       <div id="view-parrainage" class="view-pane">
-        <div class="page-head green">
-          <h2 style="font-size: 1.3rem; margin-bottom: 4px;">Système de Parrainage</h2>
-          <p style="color: var(--text-muted); font-size: 0.9rem;">Invitez vos amis : jusqu'à 25% de commission sur leurs activations et un tour de roue pour chaque nouvelle inscription confirmée.</p>
-        </div>
+        Invitez vos amis : jusqu'à 25% de commission sur leurs activations et un tour de roue pour chaque nouvelle inscription confirmée.
         <div class="card">
           <h3 style="font-size: 1.1rem; margin-bottom: 10px;">Vos liens d'invitation</h3>
           <div class="form-group">
@@ -468,6 +494,7 @@
           <div class="form-group" style="margin-bottom:0;">
             <label class="form-label">Lien de parrainage unique</label>
             <input type="text" id="my-link-input" class="form-control" readonly>
+            <button type="button" id="copy-link-btn" class="btn btn-primary btn-full" style="margin-top:10px;">Copier le lien de parrainage unique</button>
           </div>
         </div>
         <div class="grid-2" style="margin-top:18px;">
@@ -554,6 +581,7 @@
         <h2 style="font-size:1.15rem;">Demande de retrait</h2>
         <button onclick="closeModal('withdraw-modal')" class="btn btn-outline" style="padding:4px 10px;">✕</button>
       </div>
+      <button type="button" id="wd-history-btn" class="btn btn-outline btn-full" style="margin-bottom:14px;" onclick="openWithdrawalsHistory()">📋 Mes demandes de retrait <span id="wd-pending-count" style="margin-left:4px; color:#b45309;"></span></button>
       <form id="withdraw-form">
         <div class="form-group">
           <label class="form-label">Opérateur</label>
@@ -574,6 +602,17 @@
         </div>
         <button type="submit" id="withdraw-submit" class="btn btn-primary btn-full">Soumettre le retrait</button>
       </form>
+    </div>
+  </div>
+
+  <div id="withdrawals-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h2 style="font-size:1.15rem;">Mes demandes de retrait</h2>
+        <button type="button" onclick="closeModal('withdrawals-modal')" class="btn btn-outline" style="padding:4px 10px;" aria-label="Fermer">✕</button>
+      </div>
+      <div id="wd-history-list" style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;"><p style="color:var(--text-muted);">Chargement...</p></div>
+      <button type="button" class="btn btn-primary btn-full" onclick="closeModal('withdrawals-modal'); openModal('withdraw-modal');">Nouvelle demande de retrait</button>
     </div>
   </div>
 
@@ -628,18 +667,34 @@
     </div>
   </div>
 
+  <div id="img-viewer" class="img-viewer" role="dialog" aria-modal="true" aria-label="Image">
+    <button type="button" id="img-viewer-close" class="img-viewer-close" aria-label="Fermer">✕</button>
+    <img id="img-viewer-img" alt="">
+    <a id="img-viewer-open" class="img-viewer-open" href="#" target="_blank" rel="noopener noreferrer">Ouvrir l'image</a>
+  </div>
+
   <button id="chat-fab" class="chat-fab" onclick="toggleChat()" style="display:none;" title="Assistant INVER" aria-label="Assistant INVER">💬<span id="chat-fab-badge" class="fab-badge">0</span></button>
   <div id="chat-window" class="chat-window">
     <div class="chat-head">
       <span>Assistant INVER</span>
-      <button type="button" class="chat-close" onclick="toggleChat()" aria-label="Fermer la discussion">✕</button>
+      <span class="chat-head-tools">
+        <button type="button" id="chat-snd-btn" class="chat-close" style="font-size:1rem;" title="Son des nouveaux messages" aria-label="Son des nouveaux messages">🔔</button>
+        <button type="button" class="chat-close" onclick="toggleChat()" aria-label="Fermer la discussion">✕</button>
+      </span>
     </div>
     <div id="chat-msgs" class="chat-msgs">
       <div class="cbub them">Bonjour ! Comment l'assistance INVER peut-elle vous aider ?</div>
     </div>
+    <div id="chat-preview" class="chat-preview">
+      <img id="chat-preview-img" alt="Aperçu de l'image">
+      <div class="chat-preview-info"><span id="chat-preview-name"></span><small id="chat-preview-status">Prête à être envoyée</small></div>
+      <button type="button" id="chat-preview-remove" class="btn btn-outline" style="padding:4px 10px;" aria-label="Retirer l'image">✕</button>
+    </div>
     <form id="chat-form" class="chat-form">
-      <input type="text" id="chat-input" class="form-control" placeholder="Votre message..." required autocomplete="off" maxlength="2000">
-      <button type="submit" class="btn btn-primary" style="padding:8px 12px;">Envoyer</button>
+      <input type="file" id="chat-file" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;">
+      <button type="button" id="chat-img-btn" class="btn btn-outline" style="padding:8px 10px;" title="Envoyer une image" aria-label="Envoyer une image">📷</button>
+      <input type="text" id="chat-input" class="form-control" placeholder="Votre message..." autocomplete="off" maxlength="2000">
+      <button type="submit" id="chat-send-btn" class="btn btn-primary" style="padding:8px 12px;">Envoyer</button>
     </form>
   </div>
 
@@ -647,7 +702,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, getDocFromServer, getDocs, collection, query, where, onSnapshot, addDoc, setDoc, updateDoc, runTransaction, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, getDocFromServer, getDocs, collection, query, where, onSnapshot, addDoc, setDoc, updateDoc, deleteDoc, runTransaction, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCNWjPVDO6HJC8PIGCEpbFqNlzhWo7d_Go",
@@ -901,15 +956,36 @@
     ];
     Object.freeze(ALL_NEWS_CATALOG);
 
+    const NOT_ACTIVATED_LIKE_MSG = "Vous devez activer votre compte (Niveau 1 minimum) avant de pouvoir aimer les publications et actualités. Vous pouvez néanmoins les consulter librement.";
+    let lastNewsActivated = null;
+    function isAccountActivated() {
+      return !!currentProfile && Number(currentProfile.level || 0) >= 1;
+    }
+
     let newsLikeUnsubscribers = [];
     let newsLikeBusy = {};
     let newsCountsById = {};
     let userLikedIds = new Set();
     let userTodayLikesCount = 0;
+    let userLikeEntries = [];
+    let lastLikeDayKey = null;
     let activeDisplayedNews = [];
     let newsSchedulerInterval = null;
     let lastRotationSlot = -1;
     let lastShuffleSlot = -1;
+
+    function applyLikeState() {
+      const todayKey = getServerDateKey();
+      const liked = new Set();
+      let count = 0;
+      if (todayKey) {
+        userLikeEntries.forEach(e => {
+          if (e.dateKey === todayKey) { liked.add(e.newsId); count += 1; }
+        });
+      }
+      userLikedIds = liked;
+      userTodayLikesCount = count;
+    }
 
     function getLikeEntryDateKey(data) {
       if (data && typeof data.dateKey === "string" && data.dateKey.length > 0) return data.dateKey;
@@ -959,7 +1035,7 @@
         const isLiked = userLikedIds.has(item.id);
         const limitReached = !isLiked && userTodayLikesCount >= DAILY_LIKE_LIMIT;
         const isDisabled = !currentUser || Boolean(newsLikeBusy[item.id]) || isLiked || limitReached;
-        const titleAttr = isLiked ? "Vous avez déjà aimé cette publication" : (limitReached ? "Limite quotidienne de J'aime atteinte" : "");
+        const titleAttr = isLiked ? "Vous avez déjà aimé cette publication" : (!isAccountActivated() ? "Activez votre compte pour aimer les publications" : (limitReached ? "Limite quotidienne de J'aime atteinte" : ""));
 
         const article = document.createElement("article");
         article.className = "news-card";
@@ -989,6 +1065,12 @@
     }
 
     function refreshNewsGridIfNeeded(force = false) {
+      const dayKey = getServerDateKey();
+      if (dayKey !== lastLikeDayKey) {
+        lastLikeDayKey = dayKey;
+        applyLikeState();
+        renderNewsCardsDOM();
+      }
       const nowMs = serverNowMs() ?? Date.now();
       const rotationSlot = Math.floor(nowMs / THIRTY_MIN_MS);
       const shuffleSlot = Math.floor(nowMs / FIFTEEN_MIN_MS);
@@ -1017,6 +1099,7 @@
       newsCountsById = {};
       userLikedIds = new Set();
       userTodayLikesCount = 0;
+      userLikeEntries = [];
       renderNewsCardsDOM();
     }
 
@@ -1031,27 +1114,21 @@
         collection(db, "news_likes"),
         (snap) => {
           const nextCounts = {};
-          const nextLikedSet = new Set();
-          const todayKey = getServerDateKey();
-          let todayCount = 0;
+          const entries = [];
 
           snap.forEach(docSnap => {
             const data = docSnap.data();
             const nId = data.newsId;
             if (!nId) return;
             nextCounts[nId] = (nextCounts[nId] || 0) + 1;
-
             if (data.userId === currentUser.uid) {
-              nextLikedSet.add(nId);
-              if (todayKey && getLikeEntryDateKey(data) === todayKey) {
-                todayCount += 1;
-              }
+              entries.push({ newsId: nId, dateKey: getLikeEntryDateKey(data) });
             }
           });
 
           newsCountsById = nextCounts;
-          userLikedIds = nextLikedSet;
-          userTodayLikesCount = todayCount;
+          userLikeEntries = entries;
+          applyLikeState();
           renderNewsCardsDOM();
         },
         () => {}
@@ -1064,13 +1141,22 @@
       if (!currentUser || !newsId) return;
       if (!ALL_NEWS_CATALOG.some(n => n.id === newsId)) return;
       if (guardBlocked()) return;
+      if (!isAccountActivated()) {
+        confirmPopup({
+          type: "warning",
+          title: "Compte non activé",
+          message: NOT_ACTIVATED_LIKE_MSG,
+          confirmText: "Activer mon compte",
+          cancelText: "Plus tard"
+        }).then(ok => { if (ok) openModal("activate-modal"); });
+        return;
+      }
       if (userLikedIds.has(newsId)) return;
       if (newsLikeBusy[newsId]) return;
 
       newsLikeBusy[newsId] = true;
       renderNewsCardsDOM();
 
-      const likeDocRef = doc(db, "news_likes", `${newsId}_${currentUser.uid}`);
       const userRef = doc(db, "users", currentUser.uid);
 
       try {
@@ -1078,12 +1164,24 @@
         const todayKey = getServerDateKey();
         if (!synced || !todayKey) throw new AppError(TIME_ERROR);
         const rewardDocRef = doc(db, "news_daily_rewards", `${currentUser.uid}_${todayKey}`);
+        // Un J'aime par actualité ET par jour : l'identifiant contient la date du jour.
+        const likeDocRef = doc(db, "news_likes", `${newsId}_${currentUser.uid}_${todayKey}`);
 
         const dbLikesSnap = await getDocs(query(collection(db, "news_likes"), where("userId", "==", currentUser.uid)));
         let dbTodayCount = 0;
+        let alreadyLikedToday = false;
         dbLikesSnap.forEach(d => {
-          if (getLikeEntryDateKey(d.data()) === todayKey) dbTodayCount += 1;
+          const dd = d.data();
+          if (getLikeEntryDateKey(dd) === todayKey) {
+            dbTodayCount += 1;
+            if (dd.newsId === newsId) alreadyLikedToday = true;
+          }
         });
+        if (alreadyLikedToday) {
+          userLikeEntries.push({ newsId, dateKey: todayKey });
+          applyLikeState();
+          return;
+        }
 
         let creditedAmount = 0;
         let alreadyLiked = false;
@@ -1098,6 +1196,9 @@
           }
           const rewardSnap = await transaction.get(rewardDocRef);
           const userSnap = await transaction.get(userRef);
+          if (!userSnap.exists() || Number(userSnap.data().level || 0) < 1) {
+            throw new AppError(NOT_ACTIVATED_LIKE_MSG);
+          }
 
           transaction.set(likeDocRef, {
             newsId,
@@ -1199,15 +1300,115 @@
       });
     }
 
-    document.getElementById("to-register").addEventListener("click", (e) => { e.preventDefault(); loginForm.style.display = "none"; registerForm.style.display = "block"; });
-    document.getElementById("to-login").addEventListener("click", (e) => { e.preventDefault(); registerForm.style.display = "none"; loginForm.style.display = "block"; });
+    const REF_STORE_KEY = "inver_ref";
+    const REF_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+    const AUTH_MODE_KEY = "inver_auth_mode";
+    const inviteInput = document.getElementById("reg-invite");
 
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("ref")) {
-      loginForm.style.display = "none";
-      registerForm.style.display = "block";
-      document.getElementById("reg-invite").value = urlParams.get("ref").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 20);
+    function sanitizeInvite(v) {
+      return String(v || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 20);
     }
+    function saveRefCode(code) {
+      const c = sanitizeInvite(code);
+      if (!c) { clearRefCode(); return; }
+      const payload = JSON.stringify({ c, t: Date.now() });
+      try { sessionStorage.setItem(REF_STORE_KEY, payload); } catch (e) {}
+      try { localStorage.setItem(REF_STORE_KEY, payload); } catch (e) {}
+    }
+    function loadRefCode() {
+      const readers = [() => sessionStorage, () => localStorage];
+      for (const get of readers) {
+        try {
+          const o = JSON.parse(get().getItem(REF_STORE_KEY) || "null");
+          if (o && typeof o.c === "string" && Date.now() - Number(o.t || 0) < REF_TTL_MS) {
+            const c = sanitizeInvite(o.c);
+            if (c) return c;
+          }
+        } catch (e) {}
+      }
+      return "";
+    }
+    function clearRefCode() {
+      try { sessionStorage.removeItem(REF_STORE_KEY); } catch (e) {}
+      try { localStorage.removeItem(REF_STORE_KEY); } catch (e) {}
+    }
+
+    function buildReferralLink(code) {
+      const u = new URL(window.location.href);
+      u.search = "";
+      u.hash = "";
+      u.searchParams.set("ref", sanitizeInvite(code));
+      return u.toString();
+    }
+
+    function getUrlAuthIntent() {
+      const sp = new URLSearchParams(window.location.search);
+      const rawHash = (window.location.hash || "").replace(/^#/, "");
+      const hashIsParams = rawHash.includes("=");
+      const hp = new URLSearchParams(hashIsParams ? rawHash : "");
+      const ref = sanitizeInvite(sp.get("ref") || sp.get("code") || sp.get("parrain") || sp.get("invite") || hp.get("ref") || "");
+      const modeRaw = String(sp.get("mode") || sp.get("page") || hp.get("mode") || (hashIsParams ? "" : rawHash)).toLowerCase();
+      let mode = null;
+      if (ref || sp.has("ref") || hp.has("ref")) mode = "register";
+      else if (["inscription", "register", "signup", "sinscrire"].includes(modeRaw)) mode = "register";
+      else if (["connexion", "login", "signin"].includes(modeRaw)) mode = "login";
+      return { mode, ref };
+    }
+
+    function showAuthForm(mode, updateUrl) {
+      const reg = mode === "register";
+      loginForm.style.display = reg ? "none" : "block";
+      registerForm.style.display = reg ? "block" : "none";
+      try { sessionStorage.setItem(AUTH_MODE_KEY, reg ? "register" : "login"); } catch (e) {}
+      if (updateUrl) {
+        try {
+          const u = new URL(window.location.href);
+          u.hash = reg ? "inscription" : "connexion";
+          history.replaceState(null, "", u.toString());
+        } catch (e) {}
+      }
+    }
+
+    function applyAuthIntentFromUrl() {
+      const intent = getUrlAuthIntent();
+      if (intent.ref) {
+        saveRefCode(intent.ref);
+        inviteInput.value = intent.ref;
+      }
+      return intent;
+    }
+
+    document.getElementById("to-register").addEventListener("click", (e) => { e.preventDefault(); showAuthForm("register", true); });
+    document.getElementById("to-login").addEventListener("click", (e) => { e.preventDefault(); showAuthForm("login", true); });
+
+    (function initAuthNavigation() {
+      const intent = applyAuthIntentFromUrl();
+      if (!inviteInput.value) {
+        const stored = loadRefCode();
+        if (stored) inviteInput.value = stored;
+      }
+      let mode = intent.mode;
+      if (!mode) {
+        try { mode = sessionStorage.getItem(AUTH_MODE_KEY); } catch (e) {}
+      }
+      showAuthForm(mode === "register" ? "register" : "login", false);
+    })();
+
+    window.addEventListener("hashchange", () => {
+      const intent = applyAuthIntentFromUrl();
+      if (intent.mode) showAuthForm(intent.mode, false);
+    });
+
+    inviteInput.addEventListener("input", () => { saveRefCode(inviteInput.value); });
+
+    (function initPasswordConfirmHint() {
+      const p1 = document.getElementById("reg-password");
+      const p2 = document.getElementById("reg-password-confirm");
+      const hint = document.getElementById("reg-password-hint");
+      const update = () => { hint.style.display = (p2.value && p1.value !== p2.value) ? "block" : "none"; };
+      p1.addEventListener("input", update);
+      p2.addEventListener("input", update);
+    })();
 
     let loginBusy = false;
     loginForm.addEventListener("submit", async (e) => {
@@ -1240,12 +1441,14 @@
     });
 
     let registerBusy = false;
+    let registrationInProgress = false;
     registerForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (registerBusy) return;
       const fullName = cleanText(document.getElementById("reg-name").value, 60);
       const phone = normalizePhone(document.getElementById("reg-phone").value);
       const password = document.getElementById("reg-password").value;
+      const passwordConfirm = document.getElementById("reg-password-confirm").value;
       const inviteCode = document.getElementById("reg-invite").value.trim().toUpperCase();
       const acceptedPrivacy = document.getElementById("reg-privacy").checked;
 
@@ -1253,6 +1456,7 @@
       if (!NAME_RE.test(fullName)) return showAuthAlert("Nom invalide. Utilisez uniquement des lettres (2 à 60 caractères).");
       if (!PHONE_RE.test(phone)) return showAuthAlert("Numéro de téléphone invalide. Exemple : +22890000000");
       if (password.length < 6 || password.length > 64) return showAuthAlert("Le mot de passe doit contenir entre 6 et 64 caractères.");
+      if (password !== passwordConfirm) return showAuthAlert("Les deux mots de passe ne correspondent pas. Saisissez exactement le même mot de passe dans les deux champs.");
       if (password.replace(/[^0-9]/g, "") === phone.replace(/[^0-9]/g, "")) return showAuthAlert("Le mot de passe ne doit pas être identique à votre numéro de téléphone.");
       if (!INVITE_RE.test(inviteCode)) return showAuthAlert("Code d'invitation invalide.");
 
@@ -1276,10 +1480,11 @@
         let referrerId = null;
         if (!isFirstUser) {
           const refQuery = await getDocs(query(collection(db, "users"), where("inviteCode", "==", inviteCode)));
-          if (refQuery.empty) throw new AppError("Code d'invitation invalide.");
+          if (refQuery.size !== 1) throw new AppError("Code d'invitation invalide.");
           referrerId = refQuery.docs[0].id;
         }
 
+        registrationInProgress = true;
         const authCred = await createUserWithEmailAndPassword(auth, phoneToAuthEmail(phone), password);
         const uid = authCred.user.uid;
         const rndBytes = new Uint8Array(5);
@@ -1306,7 +1511,7 @@
         });
 
         if (referrerId) {
-          await updateDoc(doc(db, "users", referrerId), { referralsCount: increment(1) });
+          try { await updateDoc(doc(db, "users", referrerId), { referralsCount: increment(1) }); } catch (cErr) {}
           try {
             await setDoc(doc(db, "wheel_authorizations", `ref_${uid}`), {
               userId: referrerId,
@@ -1319,6 +1524,7 @@
         }
 
         sessionStorage.setItem("inver_just_logged_in", "1");
+        clearRefCode();
         showAuthAlert("Compte créé avec succès ! Connexion en cours...", "success");
       } catch (err) {
         if (err && err.code === "auth/email-already-in-use") {
@@ -1328,7 +1534,9 @@
         }
       } finally {
         registerBusy = false;
+        registrationInProgress = false;
         btn.disabled = false;
+        if (auth.currentUser) handleAuthUser(auth.currentUser);
       }
     });
 
@@ -1341,13 +1549,20 @@
       myParticipations = [];
       actionsList = [];
       wheelAuths = [];
+      myWithdrawals = [];
+      withdrawalsState = "loading";
       resetChatState();
       resetBlockedState();
       if (timeResyncInterval) { clearInterval(timeResyncInterval); timeResyncInterval = null; }
       timeBase = null;
     }
 
-    onAuthStateChanged(auth, async (user) => {
+    onAuthStateChanged(auth, (user) => {
+      if (registrationInProgress && user) return;
+      handleAuthUser(user);
+    });
+
+    async function handleAuthUser(user) {
       if (!user) {
         stopIdleWatch();
         cleanupLive();
@@ -1357,9 +1572,10 @@
         authView.style.display = "block";
         mainAppView.style.display = "none";
         document.getElementById("chat-fab").style.display = "none";
-        ["activate-modal", "join-modal", "withdraw-modal", "deposit-modal", "policy-modal"].forEach(id => document.getElementById(id).classList.remove("open"));
+        ["activate-modal", "join-modal", "withdraw-modal", "withdrawals-modal", "deposit-modal", "policy-modal", "img-viewer"].forEach(id => document.getElementById(id).classList.remove("open"));
         document.getElementById("login-password").value = "";
         document.getElementById("reg-password").value = "";
+        document.getElementById("reg-password-confirm").value = "";
       } else {
         currentUser = user;
         const userRef = doc(db, "users", user.uid);
@@ -1405,11 +1621,12 @@
         attachNewsLikeListeners();
         loadActionsData();
         loadCompteData();
+        attachWithdrawalsListener();
         attachWheelListener();
         attachNotificationsListener();
         attachChatListeners();
       }
-    });
+    }
 
     function updateUIWithProfile() {
       document.getElementById("topbar-balance").textContent = formatCFA(currentProfile.balance);
@@ -1424,13 +1641,47 @@
       document.getElementById("val-with").textContent = formatCFA(currentProfile.totalWithdrawals);
 
       document.getElementById("my-code-input").value = currentProfile.inviteCode || "";
-      document.getElementById("my-link-input").value = `${window.location.origin}/index.html?ref=${encodeURIComponent(currentProfile.inviteCode || '')}`;
+      document.getElementById("my-link-input").value = currentProfile.inviteCode ? buildReferralLink(currentProfile.inviteCode) : "";
       document.getElementById("ref-total").textContent = currentProfile.referralsCount || 0;
       document.getElementById("ref-active").textContent = currentProfile.activeReferralsCount || 0;
 
       applyBlockedState();
       renderActionsGrid();
+      const activatedNow = isAccountActivated();
+      if (activatedNow !== lastNewsActivated) {
+        lastNewsActivated = activatedNow;
+        renderNewsCardsDOM();
+      }
     }
+
+    document.getElementById("copy-link-btn").addEventListener("click", async () => {
+      if (!currentProfile || !currentProfile.inviteCode) {
+        return showPopup({ type: "warning", title: "Lien indisponible", message: "Votre code de parrainage n'est pas encore chargé. Veuillez réessayer dans un instant." });
+      }
+      const link = buildReferralLink(currentProfile.inviteCode);
+      const input = document.getElementById("my-link-input");
+      input.value = link;
+      let copied = false;
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(link);
+          copied = true;
+        }
+      } catch (e) {}
+      if (!copied) {
+        try {
+          input.focus();
+          input.select();
+          input.setSelectionRange(0, link.length);
+          copied = document.execCommand("copy");
+        } catch (e) {}
+      }
+      if (copied) {
+        showPopup({ type: "success", title: "Lien copié", message: "Votre lien de parrainage unique a été copié. Collez-le dans WhatsApp, Telegram ou un autre message." });
+      } else {
+        showPopup({ type: "info", title: "Copie manuelle", message: "Le lien est sélectionné dans le champ. Appuyez longuement dessus puis choisissez « Copier »." });
+      }
+    });
 
     window.openPolicy = async function() {
       const titleEl = document.getElementById("policy-title");
@@ -1478,7 +1729,7 @@
       document.getElementById("blocked-view").style.display = blocked ? "flex" : "none";
       document.body.classList.toggle("blocked-active", blocked);
       if (blocked && wasBlocked !== true) {
-        ["activate-modal", "join-modal", "withdraw-modal", "deposit-modal", "policy-modal"].forEach(id => document.getElementById(id).classList.remove("open"));
+        ["activate-modal", "join-modal", "withdraw-modal", "withdrawals-modal", "deposit-modal", "policy-modal", "img-viewer"].forEach(id => document.getElementById(id).classList.remove("open"));
       }
       if (wasBlocked === true && !blocked) {
         showPopup({ type: "success", title: "Compte réactivé", message: "Votre compte a été débloqué. Vous pouvez de nouveau utiliser la plateforme." });
@@ -1824,12 +2075,19 @@
       if (currentUser && myParticipations.length) renderParticipations();
     }, 1000);
 
-    const WHEEL_PRIZES = Object.freeze([
-      Object.freeze({ label: "50 F CFA", amount: 50 }),
-      Object.freeze({ label: "150 F CFA", amount: 150 }),
-      Object.freeze({ label: "500 F CFA", amount: 500 }),
-      Object.freeze({ label: "Perdu", amount: 0 })
-    ]);
+    const WHEEL_MAX_PRIZE = 700;
+    const WHEEL_PRIZE_AMOUNTS = Object.freeze([0, 50, 100, 200, 300, 500, 700]);
+    const WHEEL_PRIZES = Object.freeze(WHEEL_PRIZE_AMOUNTS.map(a => Object.freeze({ label: `${a} F CFA`, amount: a })));
+    function isValidWheelPrize(p) {
+      return !!p && Number.isInteger(p.amount) && p.amount >= 0 && p.amount <= WHEEL_MAX_PRIZE
+        && WHEEL_PRIZE_AMOUNTS.includes(p.amount) && p.label === `${p.amount} F CFA`;
+    }
+    function secureRandomIndex(n) {
+      const limit = Math.floor(0x100000000 / n) * n;
+      const buf = new Uint32Array(1);
+      do { crypto.getRandomValues(buf); } while (buf[0] >= limit);
+      return buf[0] % n;
+    }
     let wheelAuths = [];
     let spinBusy = false;
 
@@ -1870,8 +2128,8 @@
       const display = document.getElementById("wheel-display");
       const anim = setInterval(() => { display.textContent = WHEEL_PRIZES[Math.floor(Math.random() * WHEEL_PRIZES.length)].label; }, 90);
       try {
-        const rnd = new Uint32Array(1); crypto.getRandomValues(rnd);
-        const won = WHEEL_PRIZES[rnd[0] % WHEEL_PRIZES.length];
+        const won = WHEEL_PRIZES[secureRandomIndex(WHEEL_PRIZES.length)];
+        if (!isValidWheelPrize(won)) throw new AppError("Gain invalide. Veuillez réessayer.");
         const authRef = doc(db, "wheel_authorizations", authDoc.id);
         const userRef = doc(db, "users", currentUser.uid);
 
@@ -1880,6 +2138,7 @@
           if (!aSnap.exists()) throw new AppError("Autorisation introuvable.");
           const a = aSnap.data();
           if (a.userId !== currentUser.uid || a.used === true) throw new AppError("Cette autorisation a déjà été utilisée.");
+          if (!isValidWheelPrize(won)) throw new AppError("Gain invalide. Veuillez réessayer.");
 
           tx.update(authRef, { used: true, usedAt: serverTimestamp(), prizeLabel: won.label, prizeAmount: won.amount });
           tx.set(doc(db, "wheel_spins", `spin_${authDoc.id}`), {
@@ -2082,6 +2341,80 @@
       }
     });
 
+    let myWithdrawals = [];
+    let withdrawalsState = "loading";
+    const WD_VALIDATED = Object.freeze(["approved", "validated", "valid", "valide", "validé", "completed", "complete", "paid", "confirmed", "success", "done", "accepted"]);
+    const WD_REJECTED = Object.freeze(["rejected", "reject", "rejeté", "rejete", "refused", "refusé", "declined", "denied", "cancelled", "canceled", "failed"]);
+    const WD_PENDING = Object.freeze(["pending", "en_attente", "waiting"]);
+
+    function withdrawalStatusInfo(w) {
+      const raw = String((w && w.status) || "").trim().toLowerCase();
+      if (WD_VALIDATED.includes(raw)) return { kind: "validated", label: "Retrait validé", badge: "badge-success" };
+      if (WD_REJECTED.includes(raw)) return { kind: "rejected", label: "Rejeté", badge: "badge-danger" };
+      if (WD_PENDING.includes(raw)) return { kind: "pending", label: "Retrait en attente", badge: "badge-warning" };
+      return { kind: "unknown", label: raw ? `Statut : ${cleanText(raw, 30)}` : "Statut inconnu", badge: "badge-info" };
+    }
+    const wdMs = (v) => (v && typeof v.toMillis === "function") ? v.toMillis() : 0;
+    const wdDate = (v) => (v && typeof v.toDate === "function") ? v.toDate().toLocaleString("fr-FR") : null;
+
+    function attachWithdrawalsListener() {
+      withdrawalsState = "loading";
+      renderWithdrawalsHistory();
+      const q = query(collection(db, "withdrawals"), where("userId", "==", currentUser.uid));
+      liveUnsubs.push(onSnapshot(q, (snap) => {
+        myWithdrawals = [];
+        snap.forEach(d => myWithdrawals.push({ id: d.id, ...d.data({ serverTimestamps: "estimate" }) }));
+        withdrawalsState = "ready";
+        renderWithdrawalsHistory();
+      }, () => {
+        withdrawalsState = "error";
+        renderWithdrawalsHistory();
+      }));
+    }
+
+    function renderWithdrawalsHistory() {
+      const pendingN = myWithdrawals.filter(w => withdrawalStatusInfo(w).kind === "pending").length;
+      const cnt = document.getElementById("wd-pending-count");
+      if (cnt) cnt.textContent = pendingN > 0 ? `(${pendingN} en attente)` : "";
+      const box = document.getElementById("wd-history-list");
+      if (!box) return;
+      if (withdrawalsState === "loading") { box.innerHTML = `<p style="color:var(--text-muted);">Chargement...</p>`; return; }
+      if (withdrawalsState === "error") { box.innerHTML = `<p style="color:var(--text-muted);">Impossible de charger vos demandes de retrait pour le moment.</p>`; return; }
+      if (!myWithdrawals.length) { box.innerHTML = `<p style="color:var(--text-muted);">Aucune demande de retrait.</p>`; return; }
+      const sorted = [...myWithdrawals].sort((a, b) => wdMs(b.createdAt) - wdMs(a.createdAt));
+      box.innerHTML = sorted.map(w => {
+        const st = withdrawalStatusInfo(w);
+        const amount = typeof w.requestedAmount === "number" ? w.requestedAmount : (typeof w.amount === "number" ? w.amount : null);
+        const created = wdDate(w.createdAt);
+        const means = [w.operator, w.phone].filter(Boolean).map(v => esc(v)).join(" • ");
+        let processed = null;
+        if (st.kind !== "pending") {
+          processed = wdDate(w.processedAt) || wdDate(w.validatedAt) || wdDate(w.approvedAt) || wdDate(w.rejectedAt) || wdDate(w.updatedAt);
+        }
+        const reasonRaw = st.kind === "rejected" ? (w.rejectionReason || w.rejectReason || w.adminNote || w.note || w.reason) : "";
+        const reason = reasonRaw ? cleanText(reasonRaw, 200) : "";
+        const small = (t) => `<div style="font-size:0.78rem; color:var(--text-muted);">${t}</div>`;
+        return `
+          <div class="list-row" style="display:flex; flex-direction:column; gap:6px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+              <strong>${amount !== null ? esc(formatCFA(amount)) : "Montant indisponible"}</strong>
+              <span class="badge ${st.badge}">${esc(st.label)}</span>
+            </div>
+            ${means ? small(`Moyen de paiement : ${means}`) : ""}
+            ${typeof w.netAmount === "number" ? small(`Net à recevoir : ${esc(formatCFA(w.netAmount))}${typeof w.feeAmount === "number" ? ` (frais : ${esc(formatCFA(w.feeAmount))})` : ""}`) : ""}
+            ${created ? small(`Demande du : ${esc(created)}`) : ""}
+            ${processed ? small(`Traité le : ${esc(processed)}`) : ""}
+            ${reason ? small(`Motif : ${esc(reason)}`) : ""}
+          </div>`;
+      }).join("");
+    }
+
+    window.openWithdrawalsHistory = function() {
+      renderWithdrawalsHistory();
+      closeModal("withdraw-modal");
+      openModal("withdrawals-modal");
+    };
+
     const TX_TYPE_LABELS = { admin_credit: "Crédit assistance", admin_debit: "Débit assistance" };
     function loadCompteData() {
       const tbody = document.getElementById("tx-tbody");
@@ -2111,6 +2444,66 @@
     }
 
     const chatMsgs = document.getElementById("chat-msgs");
+    let chatEditingId = null;
+    let chatEditDraft = "";
+    let chatMsgBusy = false;
+    let chatKnownIds = new Set();
+    let chatSnapshotReady = false;
+
+    // ===== Son de notification (message de l'assistant) =====
+    const SND_KEY = "inver_snd";
+    const SND_MIN_GAP_MS = 1200;
+    const SND_MAX_AGE_MS = 2 * 60 * 1000;
+    let audioCtx = null;
+    let lastSoundAt = 0;
+    function soundEnabled() { return storeGet(SND_KEY) !== "off"; }
+    function updateSndBtn() {
+      const b = document.getElementById("chat-snd-btn");
+      if (!b) return;
+      const on = soundEnabled();
+      b.textContent = on ? "🔔" : "🔕";
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+      b.title = on ? "Son activé (cliquer pour couper)" : "Son coupé (cliquer pour activer)";
+    }
+    // Les navigateurs n'autorisent l'audio qu'après une interaction : le contexte est créé/relancé au premier geste.
+    function unlockAudio() {
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        if (!audioCtx) audioCtx = new AC();
+        if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
+      } catch (e) {}
+    }
+    ["pointerdown", "touchstart", "keydown", "click"].forEach(ev => window.addEventListener(ev, unlockAudio, { passive: true }));
+    function playChime() {
+      if (!soundEnabled()) return;
+      const now = Date.now();
+      if (now - lastSoundAt < SND_MIN_GAP_MS) return;
+      try {
+        if (!audioCtx || audioCtx.state !== "running") return;
+        lastSoundAt = now;
+        const t0 = audioCtx.currentTime + 0.01;
+        [[880, 0], [1318.5, 0.13]].forEach(([freq, off]) => {
+          const osc = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          osc.type = "sine";
+          osc.frequency.value = freq;
+          g.gain.setValueAtTime(0.0001, t0 + off);
+          g.gain.exponentialRampToValueAtTime(0.07, t0 + off + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001, t0 + off + 0.32);
+          osc.connect(g); g.connect(audioCtx.destination);
+          osc.start(t0 + off);
+          osc.stop(t0 + off + 0.35);
+        });
+      } catch (e) {}
+    }
+    document.getElementById("chat-snd-btn").addEventListener("click", () => {
+      storeSet(SND_KEY, soundEnabled() ? "off" : "on");
+      updateSndBtn();
+      unlockAudio();
+      if (soundEnabled()) setTimeout(playChime, 60);
+    });
+    updateSndBtn();
     const BASE_TITLE = document.title;
     let chatMessages = [];
     let chatMeta = null;
@@ -2152,6 +2545,7 @@
     }
 
     function renderChat() {
+      const renderStamp = Date.now();
       chatMsgs.innerHTML = "";
       const welcome = document.createElement("div");
       welcome.className = "cbub them";
@@ -2172,24 +2566,151 @@
           }
         }
         const b = document.createElement("div");
-        b.className = `cbub ${m.senderRole === "user" ? "me" : "them"}`;
-        b.appendChild(document.createTextNode(m.text || ""));
+        const imgUrl = safeImageUrl(m.imageUrl);
+        const ownMsg = m.senderRole === "user" && m.senderId === (currentUser && currentUser.uid);
+        if (ownMsg && m.id === chatEditingId) {
+          b.className = "cbub me editing";
+          const ta = document.createElement("textarea");
+          ta.className = "form-control";
+          ta.id = "chat-edit-input";
+          ta.rows = 2;
+          ta.maxLength = 2000;
+          ta.value = chatEditDraft;
+          b.appendChild(ta);
+          const ac = document.createElement("span");
+          ac.className = "acts";
+          [["save", "Enregistrer"], ["cancel", "Annuler"]].forEach(([k, label]) => {
+            const x = document.createElement("button");
+            x.type = "button"; x.className = "act"; x.dataset.msgAct = k; x.dataset.mid = m.id; x.textContent = label;
+            ac.appendChild(x);
+          });
+          b.appendChild(ac);
+          chatMsgs.appendChild(b);
+          return;
+        }
+        b.className = `cbub ${m.senderRole === "user" ? "me" : "them"}${imgUrl ? " has-img" : ""}`;
+        if (m.forwarded) {
+          const fw = document.createElement("span");
+          fw.className = "fwd";
+          fw.textContent = "↪ Message transféré";
+          b.appendChild(fw);
+        }
+        if (imgUrl) {
+          const img = document.createElement("img");
+          img.className = "cimg";
+          img.alt = cleanText(m.imageName, 80) || "Image envoyée";
+          img.loading = "lazy";
+          img.referrerPolicy = "no-referrer";
+          img.setAttribute("role", "button");
+          img.tabIndex = 0;
+          img.addEventListener("load", () => { if (Date.now() - renderStamp < 3000) chatMsgs.scrollTop = chatMsgs.scrollHeight; });
+          img.addEventListener("error", () => {
+            const f = document.createElement("div");
+            f.className = "cimg-fail";
+            f.textContent = "Image indisponible";
+            img.replaceWith(f);
+          });
+          img.addEventListener("click", () => openImageViewer(imgUrl, img.alt));
+          img.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); openImageViewer(imgUrl, img.alt); } });
+          b.appendChild(img);
+          if (m.text) {
+            const tx = document.createElement("div");
+            tx.className = "cimg-text";
+            tx.textContent = m.text;
+            b.appendChild(tx);
+          }
+        } else {
+          b.appendChild(document.createTextNode(m.text || (m.imageUrl ? "Image indisponible" : "")));
+        }
         if (ms) {
           const t = document.createElement("span");
           t.className = "ct";
-          t.textContent = d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+          t.textContent = (m.edited ? "modifié • " : "") + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
           b.appendChild(t);
+        }
+        // Seul l'auteur peut modifier / supprimer ses propres messages (les messages de l'assistant restent protégés).
+        // Le transfert n'a pas de sens ici : le membre n'a qu'une seule conversation (avec l'assistance).
+        if (ownMsg && !m._pending && (m.text || imgUrl)) {
+          const ac = document.createElement("span");
+          ac.className = "acts";
+          [["edit", "Modifier"], ["delete", "Supprimer"]].forEach(([k, label]) => {
+            const x = document.createElement("button");
+            x.type = "button"; x.className = "act"; x.dataset.msgAct = k; x.dataset.mid = m.id; x.textContent = label;
+            ac.appendChild(x);
+          });
+          b.appendChild(ac);
         }
         chatMsgs.appendChild(b);
       });
-      chatMsgs.scrollTop = chatMsgs.scrollHeight;
+      if (chatEditingId) {
+        const ta = document.getElementById("chat-edit-input");
+        if (ta && document.activeElement !== ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+      } else {
+        chatMsgs.scrollTop = chatMsgs.scrollHeight;
+      }
     }
+
+    function latestUserLabel(list) {
+      const last = [...list].reverse().find(x => x.senderRole === "user");
+      return last ? (last.text || (safeImageUrl(last.imageUrl) ? "📷 Image" : "")) : "";
+    }
+    async function syncMyLastMessage(list) {
+      try { await setDoc(doc(db, "support_chats", currentUser.uid), { lastMessage: latestUserLabel(list) }, { merge: true }); } catch (e) {}
+    }
+
+    chatMsgs.addEventListener("click", async (e) => {
+      const b = e.target.closest("[data-msg-act]");
+      if (!b || !currentUser || chatMsgBusy) return;
+      const id = b.dataset.mid;
+      const act = b.dataset.msgAct;
+      const m = chatMessages.find(x => x.id === id);
+      if (!m || m.senderRole !== "user" || m.senderId !== currentUser.uid) return;
+      if (act === "edit") {
+        chatEditingId = id; chatEditDraft = m.text || ""; renderChat();
+      } else if (act === "cancel") {
+        chatEditingId = null; chatEditDraft = ""; renderChat();
+      } else if (act === "save") {
+        const text = cleanText(chatEditDraft, 2000);
+        if (!text && !safeImageUrl(m.imageUrl)) return showPopup({ type: "warning", title: "Message vide", message: "Un message ne peut pas être vide. Utilisez « Supprimer » pour le retirer." });
+        if (text === (m.text || "")) { chatEditingId = null; chatEditDraft = ""; return renderChat(); }
+        chatMsgBusy = true;
+        try {
+          await updateDoc(doc(db, "support_chats", currentUser.uid, "messages", id), { text, edited: true, editedAt: serverTimestamp() });
+          await syncMyLastMessage(chatMessages.map(x => x.id === id ? { ...x, text } : x));
+          chatEditingId = null; chatEditDraft = "";
+        } catch (err) {
+          showPopup({ type: "error", title: "Modification impossible", message: "Votre message n'a pas pu être modifié. Veuillez réessayer." });
+        } finally { chatMsgBusy = false; renderChat(); }
+      } else if (act === "delete") {
+        const ok = await confirmPopup({ type: "warning", title: "Supprimer ce message ?", message: "Seul ce message sera supprimé de la discussion. Cette action est définitive.", confirmText: "Supprimer" });
+        if (!ok) return;
+        chatMsgBusy = true;
+        try {
+          await deleteDoc(doc(db, "support_chats", currentUser.uid, "messages", id));
+          if (chatEditingId === id) { chatEditingId = null; chatEditDraft = ""; }
+          await syncMyLastMessage(chatMessages.filter(x => x.id !== id));
+        } catch (err) {
+          showPopup({ type: "error", title: "Suppression impossible", message: "Le message n'a pas pu être supprimé. Veuillez réessayer." });
+        } finally { chatMsgBusy = false; }
+      }
+    });
+    chatMsgs.addEventListener("input", (e) => { if (e.target.id === "chat-edit-input") chatEditDraft = e.target.value; });
+    chatMsgs.addEventListener("keydown", (e) => {
+      if (e.target.id !== "chat-edit-input") return;
+      if (e.key === "Escape") { chatEditingId = null; chatEditDraft = ""; renderChat(); }
+    });
 
     function resetChatState() {
       chatMessages = [];
       chatMeta = null;
       chatLocalReadAt = 0;
       chatMarkBusy = false;
+      chatImgBusy = false;
+      chatEditingId = null;
+      chatEditDraft = "";
+      chatKnownIds = new Set();
+      chatSnapshotReady = false;
+      clearChatPreview();
       document.getElementById("chat-window").classList.remove("open");
       document.body.classList.remove("chat-open");
       renderChat();
@@ -2203,10 +2724,30 @@
         updateChatBadge();
         markChatRead();
       }, () => {}));
+      chatKnownIds = new Set();
+      chatSnapshotReady = false;
       liveUnsubs.push(onSnapshot(query(collection(db, "support_chats", uid, "messages")), (snapshot) => {
+        // Son : uniquement pour un NOUVEAU message de l'assistant reçu en direct (pas pour le chargement initial,
+        // ni pour une modification, ni pour un message déjà connu, ni pour un message ancien).
+        let incoming = false;
+        const firstLoad = !chatSnapshotReady;
+        snapshot.docChanges().forEach(ch => {
+          if (ch.type !== "added") return;
+          const known = chatKnownIds.has(ch.doc.id);
+          chatKnownIds.add(ch.doc.id);
+          if (firstLoad || known || ch.doc.metadata.hasPendingWrites) return;
+          const d0 = ch.doc.data({ serverTimestamps: "estimate" });
+          if (!isAdminMsg(d0)) return;
+          const now = serverNowMs();
+          const ms0 = tsMs(d0.createdAt);
+          if (now != null && ms0 && now - ms0 > SND_MAX_AGE_MS) return;
+          incoming = true;
+        });
+        chatSnapshotReady = true;
         chatMessages = [];
-        snapshot.forEach(docSnap => chatMessages.push({ id: docSnap.id, ...docSnap.data({ serverTimestamps: "estimate" }) }));
+        snapshot.forEach(docSnap => chatMessages.push({ id: docSnap.id, _pending: docSnap.metadata.hasPendingWrites, ...docSnap.data({ serverTimestamps: "estimate" }) }));
         chatMessages.sort((a, b) => tsMs(a.createdAt) - tsMs(b.createdAt));
+        if (incoming) playChime();
         renderChat();
         updateChatBadge();
         markChatRead();
@@ -2217,34 +2758,289 @@
       if (document.visibilityState === "visible") markChatRead();
     });
 
+    // ===== Images dans la discussion (Cloudflare R2, configuré par l'administrateur) =====
+    const CHAT_IMG_HARD_MAX = 15 * 1024 * 1024;
+    const CHAT_IMG_TYPES = Object.freeze(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+    const CHAT_IMG_EXT = Object.freeze({ "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/gif": "gif" });
+    const R2_CACHE_MS = 60 * 1000;
+    let chatPendingImage = null;
+    let chatImgBusy = false;
+    let r2Cache = null;
+
+    function httpsUrlOrNull(v) {
+      try {
+        const u = new URL(String(v || "").trim());
+        if (u.protocol !== "https:" || u.username || u.password) return null;
+        u.hash = "";
+        return u.href;
+      } catch (e) { return null; }
+    }
+    function safeImageUrl(v) {
+      return typeof v === "string" && v.length <= 2048 ? httpsUrlOrNull(v) : null;
+    }
+
+    async function sniffImageMime(file) {
+      try {
+        const b = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+        const ascii = (s, n) => String.fromCharCode(...b.slice(s, s + n));
+        if (b[0] === 0xFF && b[1] === 0xD8 && b[2] === 0xFF) return "image/jpeg";
+        if (b[0] === 0x89 && ascii(1, 3) === "PNG") return "image/png";
+        if (ascii(0, 3) === "GIF") return "image/gif";
+        if (ascii(0, 4) === "RIFF" && ascii(8, 4) === "WEBP") return "image/webp";
+      } catch (e) {}
+      return null;
+    }
+
+    async function getR2Config() {
+      if (r2Cache && Date.now() - r2Cache.t < R2_CACHE_MS) return r2Cache.cfg;
+      let snap = null;
+      try {
+        snap = await getDocFromServer(doc(db, "platform_settings", "r2"));
+      } catch (e) {
+        try { snap = await getDoc(doc(db, "platform_settings", "r2")); } catch (e2) {}
+      }
+      const d = snap && snap.exists() ? snap.data() : null;
+      const workerUrl = d ? httpsUrlOrNull(d.workerUrl || d.uploadUrl) : null;
+      const publicUrl = d ? (httpsUrlOrNull(d.publicUrl || d.publicBaseUrl) || "").replace(/\/+$/, "") : "";
+      if (!d || d.enabled === false || !workerUrl || !publicUrl) {
+        throw new AppError("L'envoi d'images n'est pas disponible pour le moment (non configuré par l'administration).");
+      }
+      let allowed = Array.isArray(d.allowedTypes) ? d.allowedTypes : String(d.allowedTypes || "").split(",");
+      allowed = allowed.map(t => String(t).trim().toLowerCase()).filter(t => CHAT_IMG_TYPES.includes(t));
+      if (!allowed.length) allowed = CHAT_IMG_TYPES.slice();
+      const maxMB = Math.min(10, Math.max(0.2, Number(d.maxSizeMB) || 5));
+      const folder = String(d.folder || "chat").replace(/[^A-Za-z0-9_\-]/g, "").slice(0, 40) || "chat";
+      const uploadToken = typeof d.uploadToken === "string" ? d.uploadToken.trim().slice(0, 300) : "";
+      const cfg = { workerUrl, publicUrl, allowed, maxBytes: Math.round(maxMB * 1024 * 1024), maxMB, folder, uploadToken };
+      r2Cache = { t: Date.now(), cfg };
+      return cfg;
+    }
+
+    async function downscaleImage(file, maxDim = 1600, quality = 0.85) {
+      const objUrl = URL.createObjectURL(file);
+      try {
+        const img = await new Promise((res, rej) => {
+          const i = new Image();
+          i.onload = () => res(i);
+          i.onerror = () => rej(new Error("decode"));
+          i.src = objUrl;
+        });
+        let w = img.naturalWidth, h = img.naturalHeight;
+        if (!w || !h) throw new Error("size");
+        const scale = Math.min(1, maxDim / Math.max(w, h));
+        w = Math.max(1, Math.round(w * scale));
+        h = Math.max(1, Math.round(h * scale));
+        const c = document.createElement("canvas");
+        c.width = w; c.height = h;
+        const ctx = c.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        return await new Promise(r => c.toBlob(r, "image/jpeg", quality));
+      } finally {
+        URL.revokeObjectURL(objUrl);
+      }
+    }
+
+    function checkImageLoads(url, ms = 15000) {
+      return new Promise((resolve, reject) => {
+        const i = new Image();
+        const t = setTimeout(() => { i.onload = i.onerror = null; reject(new AppError("L'image envoyée n'est pas accessible. Vérifiez l'URL publique du bucket R2 dans l'administration.")); }, ms);
+        i.onload = () => { clearTimeout(t); resolve(); };
+        i.onerror = () => { clearTimeout(t); reject(new AppError("L'image envoyée n'est pas accessible. Vérifiez l'URL publique du bucket R2 dans l'administration.")); };
+        i.referrerPolicy = "no-referrer";
+        i.src = url;
+      });
+    }
+
+    async function postImageToWorker(blob, mime, cfg) {
+      const ext = CHAT_IMG_EXT[mime];
+      const rnd = Array.from(crypto.getRandomValues(new Uint8Array(6)), x => x.toString(16).padStart(2, "0")).join("");
+      const key = `${cfg.folder}/${currentUser.uid}/${Date.now()}_${rnd}.${ext}`;
+      const fd = new FormData();
+      fd.append("file", blob, `${rnd}.${ext}`);
+      fd.append("key", key);
+      fd.append("contentType", mime);
+
+      const headers = {};
+      try { headers["Authorization"] = `Bearer ${await currentUser.getIdToken()}`; } catch (e) {}
+      if (cfg.uploadToken) headers["X-Upload-Token"] = cfg.uploadToken;
+
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 60000);
+      let res;
+      try {
+        res = await fetch(cfg.workerUrl, { method: "POST", body: fd, headers, signal: ctrl.signal, credentials: "omit", referrerPolicy: "no-referrer" });
+      } catch (e) {
+        throw new AppError(e && e.name === "AbortError"
+          ? "L'envoi de l'image a pris trop de temps. Vérifiez votre connexion puis réessayez."
+          : "Impossible de joindre le service d'envoi d'images. Vérifiez votre connexion puis réessayez.");
+      } finally {
+        clearTimeout(timer);
+      }
+      if (res.status === 401 || res.status === 403) throw new AppError("Envoi d'image refusé par le serveur.");
+      if (res.status === 413) throw new AppError("Image trop volumineuse pour le serveur.");
+      if (!res.ok) throw new AppError(`Échec de l'envoi de l'image (code ${res.status}).`);
+
+      let data = null;
+      try { data = await res.json(); } catch (e) {}
+      let outKey = key;
+      let url = null;
+      if (data && typeof data === "object") {
+        const k = data.key || data.path;
+        if (typeof k === "string" && k && k.length <= 300 && !k.includes("..")) outKey = k.replace(/^\/+/, "");
+        const cand = data.url || data.publicUrl || data.imageUrl;
+        if (typeof cand === "string") url = httpsUrlOrNull(cand);
+      }
+      if (!url) url = `${cfg.publicUrl}/${outKey.split("/").map(encodeURIComponent).join("/")}`;
+      if (!url.startsWith(cfg.publicUrl + "/")) throw new AppError("Le serveur a renvoyé un lien d'image invalide.");
+      return { url, key: outKey };
+    }
+
+    async function uploadChatImage(pending) {
+      if (!currentUser) throw new AppError("Session expirée. Veuillez vous reconnecter.");
+      const cfg = await getR2Config();
+      if (!cfg.allowed.includes(pending.mime)) throw new AppError("Ce format d'image n'est pas autorisé par l'administration.");
+      let blob = pending.file;
+      let mime = pending.mime;
+      if (mime !== "image/gif" && blob.size > 900 * 1024) {
+        try {
+          const out = await downscaleImage(blob);
+          if (out && out.size > 0 && out.size < blob.size) { blob = out; mime = "image/jpeg"; }
+        } catch (e) {}
+      }
+      if (blob.size > cfg.maxBytes) throw new AppError(`Image trop volumineuse (maximum ${cfg.maxMB} Mo).`);
+      const up = await postImageToWorker(blob, mime, cfg);
+      await checkImageLoads(up.url);
+      return { url: up.url, key: up.key, name: cleanText(pending.file.name, 80) || "image", size: blob.size, type: mime };
+    }
+
+    function setChatImgBusy(busy, msg) {
+      chatImgBusy = busy;
+      document.getElementById("chat-send-btn").disabled = busy;
+      document.getElementById("chat-img-btn").disabled = busy;
+      document.getElementById("chat-preview-remove").disabled = busy;
+      const st = document.getElementById("chat-preview-status");
+      if (st) st.textContent = busy ? (msg || "Envoi en cours...") : "Prête à être envoyée";
+    }
+
+    function setChatPreview(file, mime) {
+      clearChatPreview();
+      chatPendingImage = { file, mime, previewUrl: URL.createObjectURL(file) };
+      document.getElementById("chat-preview-img").src = chatPendingImage.previewUrl;
+      document.getElementById("chat-preview-name").textContent = cleanText(file.name, 60) || "image";
+      document.getElementById("chat-preview-status").textContent = "Prête à être envoyée";
+      document.getElementById("chat-preview").style.display = "flex";
+    }
+    function clearChatPreview() {
+      if (chatPendingImage && chatPendingImage.previewUrl) { try { URL.revokeObjectURL(chatPendingImage.previewUrl); } catch (e) {} }
+      chatPendingImage = null;
+      const box = document.getElementById("chat-preview");
+      if (box) box.style.display = "none";
+      const im = document.getElementById("chat-preview-img");
+      if (im) im.removeAttribute("src");
+    }
+
+    function openImageViewer(url, alt) {
+      const safe = safeImageUrl(url);
+      if (!safe) return;
+      const img = document.getElementById("img-viewer-img");
+      img.src = safe;
+      img.alt = alt || "Image";
+      const link = document.getElementById("img-viewer-open");
+      link.href = safe;
+      document.getElementById("img-viewer").classList.add("open");
+    }
+    function closeImageViewer() {
+      document.getElementById("img-viewer").classList.remove("open");
+      document.getElementById("img-viewer-img").removeAttribute("src");
+    }
+    document.getElementById("img-viewer-close").addEventListener("click", closeImageViewer);
+    document.getElementById("img-viewer").addEventListener("click", (e) => { if (e.target.id === "img-viewer") closeImageViewer(); });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && document.getElementById("img-viewer").classList.contains("open")) closeImageViewer();
+    });
+
+    document.getElementById("chat-img-btn").addEventListener("click", () => {
+      if (chatImgBusy) return;
+      document.getElementById("chat-file").click();
+    });
+    document.getElementById("chat-preview-remove").addEventListener("click", () => {
+      if (!chatImgBusy) clearChatPreview();
+    });
+    document.getElementById("chat-file").addEventListener("change", async (e) => {
+      const input = e.target;
+      const file = input.files && input.files[0];
+      input.value = "";
+      if (!file || chatImgBusy || !currentUser) return;
+      if (file.size === 0) return showPopup({ type: "error", title: "Image invalide", message: "Le fichier sélectionné est vide." });
+      if (file.size > CHAT_IMG_HARD_MAX) return showPopup({ type: "error", title: "Image trop volumineuse", message: "Choisissez une image de moins de 15 Mo." });
+      const mime = await sniffImageMime(file);
+      if (!mime || !CHAT_IMG_TYPES.includes(mime)) {
+        return showPopup({ type: "error", title: "Format non pris en charge", message: "Seules les images JPG, PNG, WebP et GIF sont acceptées." });
+      }
+      setChatPreview(file, mime);
+    });
+
     document.getElementById("chat-form").addEventListener("submit", async function(e) {
       e.preventDefault();
-      if (!currentUser || !currentProfile) return;
+      if (!currentUser || !currentProfile || chatImgBusy) return;
       const input = document.getElementById("chat-input");
       const text = cleanText(input.value, 2000);
-      if (!text) return;
+      const pending = chatPendingImage;
+      if (!text && !pending) return;
       if (Date.now() - lastChatSentAt < CHAT_MIN_GAP_MS) return;
       lastChatSentAt = Date.now();
-      input.value = "";
+
+      let imageData = null;
+      if (pending) {
+        setChatImgBusy(true, "Envoi de l'image...");
+        try {
+          imageData = await uploadChatImage(pending);
+        } catch (err) {
+          setChatImgBusy(false);
+          lastChatSentAt = 0;
+          showPopup({
+            type: "error",
+            title: "Image non envoyée",
+            message: userMsg(err, "L'image n'a pas pu être envoyée. Veuillez réessayer.") + "\n\nVous pouvez réessayer, retirer l'image ou envoyer votre message sans image."
+          });
+          return;
+        }
+      } else {
+        input.value = "";
+      }
 
       try {
         await setDoc(doc(db, "support_chats", currentUser.uid), {
           userId: currentUser.uid,
           userName: currentProfile.fullName,
           userPhone: currentProfile.phone,
-          lastMessage: text,
+          lastMessage: text || "📷 Image",
           updatedAt: serverTimestamp(),
           userLastReadAt: serverTimestamp()
         }, { merge: true });
 
-        await addDoc(collection(db, "support_chats", currentUser.uid, "messages"), {
+        const payload = {
           senderId: currentUser.uid,
           senderRole: "user",
           text,
           createdAt: serverTimestamp()
-        });
+        };
+        if (imageData) {
+          payload.type = "image";
+          payload.imageUrl = imageData.url;
+          payload.imageKey = imageData.key;
+          payload.imageName = imageData.name;
+          payload.imageSize = imageData.size;
+          payload.imageType = imageData.type;
+        }
+        await addDoc(collection(db, "support_chats", currentUser.uid, "messages"), payload);
+        if (pending) { input.value = ""; clearChatPreview(); }
       } catch (err) {
         showPopup({ type: "error", title: "Message non envoyé", message: "Votre message n'a pas pu être envoyé. Veuillez réessayer." });
+      } finally {
+        if (pending) setChatImgBusy(false);
       }
     });
   </script>
