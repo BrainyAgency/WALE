@@ -3,26 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Créer un admin INVER</title>
+<title>INVER – Inscription</title>
 <style>
   body{font-family:sans-serif;max-width:420px;margin:40px auto;padding:0 16px}
   input,button{width:100%;padding:11px;margin:6px 0;font-size:16px;box-sizing:border-box}
   button{background:#10b981;border:0;border-radius:8px;font-weight:700;cursor:pointer}
+  button:disabled{opacity:.6;cursor:wait}
   #out{white-space:pre-wrap;margin-top:12px}
+  #code{text-transform:uppercase}
+  .hidden{display:none}
 </style>
 </head>
 <body>
-<h2>Créer le compte administrateur</h2>
-<input id="name"  placeholder="Nom complet">
-<input id="phone" placeholder="Téléphone ex : +22890000000" inputmode="tel">
-<input id="pass"  type="password" placeholder="Mot de passe (6 caractères min)">
-<button id="go">Créer l'administrateur</button>
+<h2 id="title">Chargement…</h2>
+<input id="name"  placeholder="Nom complet" autocomplete="name">
+<input id="phone" placeholder="Téléphone ex : +22890000000" inputmode="tel" autocomplete="tel">
+<input id="pass"  type="password" placeholder="Mot de passe (6 caractères min)" autocomplete="new-password">
+<input id="code"  class="hidden" placeholder="Code d'invitation (ex : INVABC234)">
+<button id="go" disabled>Valider</button>
 <div id="out"></div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, writeBatch, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const app = initializeApp({
   apiKey: "AIzaSyAe3VwRV4nCCUdLCVjkJaWHG__udFcKx-I",
@@ -35,26 +39,87 @@ const app = initializeApp({
 });
 const auth = getAuth(app);
 const db = getFirestore(app);
-const out = document.getElementById("out");
 
-document.getElementById("go").onclick = async () => {
-  const fullName = document.getElementById("name").value.trim();
-  const phone = document.getElementById("phone").value.replace(/[\s\-().]/g, "");
-  const password = document.getElementById("pass").value;
+const $ = id => document.getElementById(id);
+const out = $("out"), go = $("go"), codeInput = $("code");
+let mode = null; // "admin" (aucun admin n'existe encore) ou "user"
+
+const ERRORS = {
+  "auth/email-already-in-use": "Ce numéro de téléphone a déjà un compte.",
+  "auth/weak-password": "Mot de passe trop faible (6 caractères min).",
+  "auth/operation-not-allowed": "Activez « E-mail / Mot de passe » dans Firebase Authentication.",
+  "auth/network-request-failed": "Problème de connexion internet.",
+  "permission-denied": "Refusé par les règles Firestore (voir firestore.rules)."
+};
+const showError = e => { out.textContent = "Erreur : " + (ERRORS[e.code] || ((e.code || "") + " " + e.message)); };
+
+function newCode() {
+  const rnd = crypto.getRandomValues(new Uint8Array(6));
+  return "INV" + Array.from(rnd, b => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[b % 32]).join("");
+}
+
+// ── Au chargement : existe-t-il déjà un administrateur ? ──
+(async () => {
+  try {
+    const boot = await getDoc(doc(db, "meta", "bootstrap"));
+    mode = boot.exists() ? "user" : "admin";
+  } catch (e) {
+    $("title").textContent = "Erreur";
+    showError(e);
+    return;
+  }
+  if (mode === "admin") {
+    $("title").textContent = "Créer le compte administrateur";
+    go.textContent = "Créer l'administrateur";
+  } else {
+    $("title").textContent = "Créer mon compte";
+    go.textContent = "Créer mon compte";
+    codeInput.classList.remove("hidden");
+    // lien de parrainage : index.html?code=INVXXXXXX
+    const fromUrl = new URLSearchParams(location.search).get("code");
+    if (fromUrl) codeInput.value = fromUrl.toUpperCase();
+  }
+  go.disabled = false;
+})();
+
+go.onclick = async () => {
+  const fullName = $("name").value.trim();
+  const phone = $("phone").value.replace(/[\s\-().]/g, "");
+  const password = $("pass").value;
+  const refCode = codeInput.value.trim().toUpperCase();
+
   if (fullName.length < 2 || !/^\+?[0-9]{8,15}$/.test(phone) || password.length < 6) {
     out.textContent = "Vérifiez le nom, le téléphone et le mot de passe (6 caractères min).";
     return;
   }
+  if (mode === "user" && !/^INV[A-Z0-9]{6}$/.test(refCode)) {
+    out.textContent = "Entrez un code d'invitation valide (ex : INVABC234).";
+    return;
+  }
+
+  go.disabled = true;
+  out.textContent = "Création en cours…";
+  let cred = null;
   try {
-    // même règle que user.html et admin.html : u_<chiffres du téléphone>@inver.tg
+    // 1) Mode utilisateur : vérifier le code AVANT de créer le compte (évite les comptes orphelins)
+    let referrerUid = null;
+    if (mode === "user") {
+      const inv = await getDoc(doc(db, "inviteCodes", refCode));
+      if (!inv.exists()) { out.textContent = "Code d'invitation introuvable."; go.disabled = false; return; }
+      referrerUid = inv.data().uid;
+    }
+
+    // 2) Compte Auth (même règle que user.html / admin.html : u_<chiffres>@inver.tg)
     const email = `u_${phone.replace(/[^0-9]/g, "")}@inver.tg`;
-    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    cred = await createUserWithEmailAndPassword(auth, email, password);
     const uid = cred.user.uid;
-    const rnd = crypto.getRandomValues(new Uint8Array(6));
-    const code = "INV" + Array.from(rnd, b => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[b % 32]).join("");
-    await setDoc(doc(db, "users", uid), {
+    const myCode = newCode();
+
+    // 3) Tout est écrit en une seule opération atomique
+    const batch = writeBatch(db);
+    batch.set(doc(db, "users", uid), {
       uid, fullName, phone,
-      role: "admin",
+      role: mode === "admin" ? "admin" : "user",
       status: "active",
       level: 0,
       balance: 0,
@@ -62,15 +127,39 @@ document.getElementById("go").onclick = async () => {
       totalEarnings: 0,
       totalCommissions: 0,
       totalWithdrawals: 0,
-      inviteCode: code,
-      referredBy: null,
+      inviteCode: myCode,
+      referredBy: referrerUid,
+      referredByCode: mode === "user" ? refCode : null,
       referralsCount: 0,
       activeReferralsCount: 0,
       createdAt: serverTimestamp()
     });
-    out.textContent = "✅ Administrateur créé.\nCode d'invitation : " + code + "\nConnectez-vous dans admin.html avec ce téléphone et ce mot de passe.\nSupprimez ensuite ce fichier.";
+    batch.set(doc(db, "inviteCodes", myCode), { uid, createdAt: serverTimestamp() });
+    if (mode === "admin") {
+      batch.set(doc(db, "meta", "bootstrap"), { adminUid: uid, createdAt: serverTimestamp() });
+    } else {
+      batch.update(doc(db, "users", referrerUid), { referralsCount: increment(1) });
+    }
+    await batch.commit();
+
+    await signOut(auth);
+    out.textContent = (mode === "admin"
+      ? "✅ Administrateur créé.\nConnectez-vous dans admin.html avec ce téléphone et ce mot de passe.\n"
+      : "✅ Compte créé.\nConnectez-vous dans user.html avec ce téléphone et ce mot de passe.\n")
+      + "\nVotre code d'invitation : " + myCode
+      + "\nLien à partager : " + location.origin + location.pathname + "?code=" + myCode;
+    if (mode === "admin") {
+      mode = "user"; // la page passe en mode inscription
+      $("title").textContent = "Créer mon compte";
+      go.textContent = "Créer mon compte";
+      codeInput.classList.remove("hidden");
+    }
+    go.disabled = false;
   } catch (e) {
-    out.textContent = "Erreur : " + (e.code || "") + " " + e.message;
+    // si le compte Auth a été créé mais pas le profil, on le supprime pour pouvoir réessayer
+    if (cred) { try { await cred.user.delete(); } catch (_) {} }
+    showError(e);
+    go.disabled = false;
   }
 };
 </script>
