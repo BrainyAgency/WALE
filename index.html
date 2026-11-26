@@ -266,6 +266,7 @@
     .admin-tab-btn[data-tab="actions"]::before { content: "📈"; }
     .admin-tab-btn[data-tab="participations"]::before { content: "🎯"; }
     .admin-tab-btn[data-tab="wheel"]::before { content: "🎡"; }
+    .admin-tab-btn[data-tab="pricing"]::before { content: "💳"; }
     .admin-tab-btn[data-tab="history"]::before { content: "🧾"; }
     .admin-tab-btn[data-tab="support"]::before { content: "💬"; }
     .admin-tab-btn[data-tab="group"]::before { content: "🗨️"; }
@@ -497,6 +498,7 @@
           <button class="admin-tab-btn" data-tab="actions">Actions</button>
           <button class="admin-tab-btn" data-tab="participations">Participations</button>
           <button class="admin-tab-btn" data-tab="wheel">Roues</button>
+          <button class="admin-tab-btn" data-tab="pricing">Tarifs &amp; Paiements</button>
           <button class="admin-tab-btn" data-tab="history">Historique</button>
           <button class="admin-tab-btn" data-tab="support">Assistance Chat <span class="tab-badge" id="tab-badge-support">0</span></button>
           <button class="admin-tab-btn" data-tab="group">Discussion groupe <span class="tab-badge" id="tab-badge-group">0</span></button>
@@ -720,6 +722,87 @@
           </div>
         </div>
 
+        <!-- ===== Tarifs & Paiements ===== -->
+        <div id="admin-sec-pricing" class="admin-section">
+          <div class="card">
+            <h3 style="font-size: 1.1rem; margin-bottom: 4px;">🎡 Tour de roue payant</h3>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:10px;">Montant débité du solde d'un membre pour un tour de roue supplémentaire. Les gains, probabilités et règles de parrainage ne sont pas modifiés. Enregistré dans platform_settings/wheel_paid_spin.</p>
+            <p id="wp-state" style="font-size:0.88rem; font-weight:600; margin-bottom:12px;">Chargement...</p>
+            <form id="wheel-price-form" novalidate>
+              <div class="form-group">
+                <label class="form-label" for="wp-price">Montant du tour payant (F CFA)</label>
+                <input type="number" id="wp-price" class="form-control" min="1" step="1" inputmode="numeric" placeholder="Ex : 500">
+              </div>
+              <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+                <input type="checkbox" id="wp-enabled" checked style="width:18px; height:18px; accent-color:var(--primary);">
+                <label for="wp-enabled" style="font-size:0.88rem;">Proposer le tour payant aux membres</label>
+              </div>
+              <button type="submit" id="wp-save" class="btn btn-primary">Enregistrer le montant</button>
+            </form>
+          </div>
+
+          <div class="card">
+            <h3 style="font-size: 1.1rem; margin-bottom: 4px;">💳 Lien de paiement « Recharger mon compte »</h3>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:10px;">Les membres sont redirigés vers ce lien lorsqu'ils cliquent sur « Recharger mon compte ». Sans lien actif, l'ancien message de rechargement reste affiché. Enregistré dans platform_settings/deposit_link.</p>
+            <p id="dl-state" style="font-size:0.88rem; font-weight:600; margin-bottom:12px; word-break:break-all;">Chargement...</p>
+            <form id="deposit-link-form" novalidate>
+              <div class="form-group">
+                <label class="form-label" for="dl-url">Lien de paiement</label>
+                <input type="url" id="dl-url" class="form-control" maxlength="1000" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://...">
+              </div>
+              <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+                <input type="checkbox" id="dl-enabled" checked style="width:18px; height:18px; accent-color:var(--primary);">
+                <label for="dl-enabled" style="font-size:0.88rem;">Activer la redirection vers ce lien</label>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button type="submit" id="dl-save" class="btn btn-primary">Enregistrer le lien</button>
+                <button type="button" id="dl-delete" class="btn btn-danger" style="display:none;">Supprimer le lien</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="card">
+            <h3 id="ad-dur-form-title" style="font-size: 1.1rem; margin-bottom: 4px;">📣 Durées et tarifs publicitaires</h3>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;">Ces durées apparaissent dans le formulaire « Faire Ma Publicité » avec leur montant. Seules les durées actives sont proposées aux nouvelles publicités ; les publicités déjà publiées ne sont jamais modifiées. Collection ad_durations.</p>
+            <form id="ad-dur-form" novalidate>
+              <div class="form-group">
+                <label class="form-label" for="ad-dur-label">Libellé (facultatif)</label>
+                <input type="text" id="ad-dur-label" class="form-control" maxlength="40" placeholder="Ex : 24 heures (laissez vide pour afficher la durée)">
+              </div>
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="ad-dur-value">Durée de publication</label>
+                  <input type="number" id="ad-dur-value" class="form-control" min="1" step="any" inputmode="decimal" placeholder="Ex : 24">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="ad-dur-unit">Unité</label>
+                  <select id="ad-dur-unit" class="form-control">
+                    <option value="60">Minutes</option>
+                    <option value="3600" selected>Heures</option>
+                    <option value="86400">Jours</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="ad-dur-price">Montant à payer (F CFA)</label>
+                <input type="number" id="ad-dur-price" class="form-control" min="1" step="1" inputmode="numeric" placeholder="Ex : 1000">
+              </div>
+              <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+                <input type="checkbox" id="ad-dur-active" checked style="width:18px; height:18px; accent-color:var(--primary);">
+                <label for="ad-dur-active" style="font-size:0.88rem;">Durée active (proposée aux membres)</label>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button type="submit" id="ad-dur-submit" class="btn btn-primary">Ajouter la durée</button>
+                <button type="button" id="ad-dur-cancel" class="btn btn-outline" style="display:none;">Annuler la modification</button>
+              </div>
+            </form>
+          </div>
+          <div class="card" style="border-bottom:none;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 12px;">Durées enregistrées</h3>
+            <div id="ad-dur-list"><p style="color:var(--text-muted);">Chargement...</p></div>
+          </div>
+        </div>
+
         <!-- ===== Historique des opérations ===== -->
         <div id="admin-sec-history" class="admin-section">
           <div class="card" style="border-bottom:none;">
@@ -734,6 +817,8 @@
                   <option value="action_stake">Mise action</option>
                   <option value="action_payout">Gain action</option>
                   <option value="bonus_wheel">Roue</option>
+                  <option value="wheel_paid_spin">Tour de roue payant</option>
+                  <option value="ad_publish">Publicité</option>
                   <option value="daily_like_reward">Crédit J'aime</option>
                   <option value="withdrawal">Retrait</option>
                   <option value="admin_credit">Crédit admin</option>
@@ -838,7 +923,31 @@
             </form>
           </div>
           <div class="card" style="border-bottom:none;">
-            <h3 style="font-size: 1.1rem; margin-bottom: 12px;">Dernières notifications envoyées</h3>
+            <h3 style="font-size: 1.1rem; margin-bottom: 4px;">Notifications popup envoyées</h3>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:12px;">Modifier, désactiver, réactiver ou supprimer une notification. Une notification désactivée ou supprimée n'est plus affichée aux membres qui ne l'ont pas encore vue.</p>
+            <form id="bc-edit-form" class="list-row" style="display:none; margin-bottom:14px;" novalidate>
+              <h4 style="font-size:0.98rem; margin-bottom:10px;">Modifier la notification</h4>
+              <div class="form-group">
+                <label class="form-label" for="bc-edit-kind">Type</label>
+                <select id="bc-edit-kind" class="form-control">
+                  <option value="info">Information</option>
+                  <option value="success">Succès</option>
+                  <option value="warning">Avertissement</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="bc-edit-title">Titre</label>
+                <input type="text" id="bc-edit-title" class="form-control" maxlength="80">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="bc-edit-msg">Message</label>
+                <textarea id="bc-edit-msg" class="form-control" rows="4" maxlength="600"></textarea>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button type="submit" id="bc-edit-save" class="btn btn-primary">Enregistrer les modifications</button>
+                <button type="button" id="bc-edit-cancel" class="btn btn-outline">Annuler</button>
+              </div>
+            </form>
             <div id="broadcast-list"><p style="color:var(--text-muted);">Chargement...</p></div>
           </div>
         </div>
@@ -1337,6 +1446,7 @@
         loadPrivacy();
         loadR2Settings();
         initAdminPopupForm();
+        attachPricingAdmin();
       }
     });
     document.addEventListener("visibilitychange", () => {
@@ -2012,7 +2122,7 @@
       $("wheel-spin-tbody").innerHTML = wheelSpinRows.length ? wheelSpinRows.map(s => `<tr>
         <td>${esc(userLabel(s.userId, s.userName))}</td>
         <td>${esc(fmtTs(s.createdAt))}</td>
-        <td>${esc(s.label)}</td>
+        <td>${esc(s.label)}${s.paid === true ? ` <span class="badge badge-info">Payant${Number(s.price) > 0 ? " • " + esc(formatCFA(s.price)) : ""}</span>` : ""}</td>
         <td>${s.amount > 0 ? `<strong style="color:#047857;">${formatCFA(s.amount)}</strong>` : "—"}</td>
       </tr>`).join("") : `<tr><td colspan="4" style="color:var(--text-muted);">Aucune participation.</td></tr>`;
     }
@@ -3500,21 +3610,163 @@
       }
     });
 
+    /* ----- Gestion des notifications déjà envoyées (modifier / désactiver / réactiver / supprimer) -----
+       Chaque notification envoyée = 1 document « notifications » par membre + 1 résumé « admin_broadcasts ».
+       L'espace membre n'affiche que les notifications avec read == false :
+       - désactiver  → les copies non lues passent à read:true + disabled:true (jamais affichées) ;
+       - réactiver   → seules les copies marquées disabled:true repassent à read:false ;
+       - modifier    → titre / message / type mis à jour sur toutes les copies ;
+       - supprimer   → toutes les copies et le résumé sont supprimés.
+       Les copies sont retrouvées sans changer le format d'envoi : fromAdmin + titre + message (+ destinataire) + fenêtre de temps. */
+    let broadcastRows = [];
+    let editingBroadcastId = null;
+    let broadcastBusy = false;
+
     function attachBroadcasts() {
       liveUnsubs.push(onSnapshot(collection(db, "admin_broadcasts"), (snap) => {
         const rows = [];
         snap.forEach(d => rows.push({ id: d.id, ...d.data() }));
         rows.sort((a, b) => tsOrder(b.createdAt) - tsOrder(a.createdAt));
-        $("broadcast-list").innerHTML = rows.length ? rows.slice(0, 20).map(b => `
-          <div class="list-row">
-            <strong>${esc(b.title)}</strong> <span class="badge badge-info">${esc(b.kind)}</span><br>
-            <span style="font-size:0.85rem; color:var(--text-muted); white-space:pre-line;">${esc(b.message)}</span><br>
-            <span style="font-size:0.75rem; color:var(--text-muted);">${esc(b.audienceLabel || "")} • ${esc(b.count ?? "")} destinataire(s) • ${esc(fmtTs(b.createdAt))}</span>
-          </div>`).join("") : `<p style="color:var(--text-muted);">Aucune notification envoyée.</p>`;
+        broadcastRows = rows;
+        renderBroadcasts();
+        if (editingBroadcastId && !rows.some(b => b.id === editingBroadcastId)) closeBroadcastEdit();
       }, () => {
         $("broadcast-list").innerHTML = `<p style="color:var(--text-muted);">Historique indisponible.</p>`;
       }));
     }
+    function renderBroadcasts() {
+      const rows = broadcastRows.slice(0, 50);
+      $("broadcast-list").innerHTML = rows.length ? rows.map(b => `
+          <div class="list-row">
+            <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:flex-start;">
+              <div style="min-width:0; flex:1;">
+                <strong>${esc(b.title)}</strong> <span class="badge badge-info">${esc(b.kind)}</span>
+                <span class="badge ${b.disabled === true ? "badge-danger" : "badge-success"}">${b.disabled === true ? "Désactivée" : "Active"}</span><br>
+                <span style="font-size:0.85rem; color:var(--text-muted); white-space:pre-line;">${esc(b.message)}</span><br>
+                <span style="font-size:0.75rem; color:var(--text-muted);">${esc(b.audienceLabel || "")} • ${esc(b.count ?? "")} destinataire(s) • ${esc(fmtTs(b.createdAt))}</span>
+              </div>
+              <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-outline btn-sm" data-bc-edit="${esc(b.id)}">Modifier</button>
+                <button type="button" class="btn ${b.disabled === true ? "btn-primary" : "btn-outline"} btn-sm" data-bc-toggle="${esc(b.id)}">${b.disabled === true ? "Réactiver" : "Désactiver"}</button>
+                <button type="button" class="btn btn-danger btn-sm" data-bc-delete="${esc(b.id)}">Supprimer</button>
+              </div>
+            </div>
+          </div>`).join("") : `<p style="color:var(--text-muted);">Aucune notification envoyée.</p>`;
+    }
+
+    async function fetchBroadcastCopies(b) {
+      const cons = [where("fromAdmin", "==", true), where("title", "==", String(b.title ?? "")), where("message", "==", String(b.message ?? ""))];
+      if (b.audience && b.audience !== "all") cons.push(where("userId", "==", b.audience));
+      const snap = await getDocs(query(collection(db, "notifications"), ...cons));
+      const t0 = b.createdAt && typeof b.createdAt.toMillis === "function" ? b.createdAt.toMillis() : null;
+      const out = [];
+      snap.forEach(d => {
+        const n = d.data();
+        if (t0 !== null && n.createdAt && typeof n.createdAt.toMillis === "function") {
+          const t = n.createdAt.toMillis();
+          if (t < t0 - 10 * 60000 || t > t0 + 60000) return; // autre envoi au contenu identique
+        }
+        out.push({ ref: d.ref, data: n });
+      });
+      return out;
+    }
+    async function commitChunks(items, apply) {
+      for (let i = 0; i < items.length; i += 400) {
+        const batch = writeBatch(db);
+        items.slice(i, i + 400).forEach(it => apply(batch, it));
+        await batch.commit();
+      }
+    }
+    function bcErrMsg(err) {
+      return err && err.code === "permission-denied" ? "Permission refusée par les règles Firestore (collection notifications ou admin_broadcasts)." : (err && err.message) || "Erreur inconnue.";
+    }
+
+    function closeBroadcastEdit() {
+      editingBroadcastId = null;
+      $("bc-edit-form").style.display = "none";
+    }
+    $("bc-edit-cancel").addEventListener("click", closeBroadcastEdit);
+
+    $("bc-edit-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (broadcastBusy || !editingBroadcastId) return;
+      const b = broadcastRows.find(x => x.id === editingBroadcastId);
+      if (!b) { closeBroadcastEdit(); return; }
+      const title = $("bc-edit-title").value.trim();
+      const message = $("bc-edit-msg").value.trim();
+      const kind = $("bc-edit-kind").value;
+      if (!title) return showPopup({ type: "error", title: "Champ manquant", message: "Le titre est obligatoire." });
+      if (!message) return showPopup({ type: "error", title: "Champ manquant", message: "Le message est obligatoire." });
+      if (title.length > 80 || message.length > 600) return showPopup({ type: "error", title: "Texte trop long", message: "Le titre est limité à 80 caractères et le message à 600." });
+      if (!["info", "success", "warning"].includes(kind)) return;
+      broadcastBusy = true;
+      const btn = $("bc-edit-save");
+      btn.disabled = true;
+      try {
+        const copies = await fetchBroadcastCopies(b);
+        await commitChunks(copies, (batch, c) => batch.update(c.ref, { title, message, kind }));
+        await updateDoc(doc(db, "admin_broadcasts", b.id), { title, message, kind, updatedAt: serverTimestamp(), updatedBy: currentUser.uid });
+        logAdmin("notification_update", `Notification « ${b.title} » modifiée en « ${title} » (${copies.length} copie${copies.length > 1 ? "s" : ""})`);
+        closeBroadcastEdit();
+        showPopup({ type: "success", title: "Notification modifiée", message: "Les membres qui ne l'ont pas encore vue verront la version modifiée." });
+      } catch (err) {
+        showPopup({ type: "error", title: "Modification impossible", message: bcErrMsg(err) });
+      } finally {
+        broadcastBusy = false;
+        btn.disabled = false;
+      }
+    });
+
+    $("broadcast-list").addEventListener("click", async (e) => {
+      const editBtn = e.target.closest("[data-bc-edit]");
+      const toggleBtn = e.target.closest("[data-bc-toggle]");
+      const delBtn = e.target.closest("[data-bc-delete]");
+      if (editBtn) {
+        const b = broadcastRows.find(x => x.id === editBtn.getAttribute("data-bc-edit"));
+        if (!b) return;
+        editingBroadcastId = b.id;
+        $("bc-edit-title").value = b.title || "";
+        $("bc-edit-msg").value = b.message || "";
+        $("bc-edit-kind").value = ["info", "success", "warning"].includes(b.kind) ? b.kind : "info";
+        $("bc-edit-form").style.display = "block";
+        $("bc-edit-form").scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+      if (broadcastBusy) return;
+      if (toggleBtn) {
+        const b = broadcastRows.find(x => x.id === toggleBtn.getAttribute("data-bc-toggle"));
+        if (!b) return;
+        const disable = b.disabled !== true;
+        broadcastBusy = true;
+        toggleBtn.disabled = true;
+        try {
+          const copies = await fetchBroadcastCopies(b);
+          const targets = copies.filter(c => disable ? (c.data.read === false && c.data.disabled !== true) : c.data.disabled === true);
+          await commitChunks(targets, (batch, c) => batch.update(c.ref, disable ? { read: true, disabled: true } : { read: false, disabled: false }));
+          await updateDoc(doc(db, "admin_broadcasts", b.id), { disabled: disable, updatedAt: serverTimestamp(), updatedBy: currentUser.uid });
+          logAdmin("notification_toggle", `Notification « ${b.title} » ${disable ? "désactivée" : "réactivée"} (${targets.length} copie${targets.length > 1 ? "s" : ""} concernée${targets.length > 1 ? "s" : ""})`);
+          showPopup({ type: "success", title: disable ? "Notification désactivée" : "Notification réactivée", message: disable ? "Elle ne sera plus affichée aux membres qui ne l'ont pas encore vue." : "Elle sera de nouveau affichée aux membres qui ne l'avaient pas encore vue." });
+        } catch (err) {
+          showPopup({ type: "error", title: "Opération impossible", message: bcErrMsg(err) });
+        } finally { broadcastBusy = false; toggleBtn.disabled = false; }
+      } else if (delBtn) {
+        const b = broadcastRows.find(x => x.id === delBtn.getAttribute("data-bc-delete"));
+        if (!b) return;
+        const ok = await confirmPopup({ type: "warning", title: "Supprimer cette notification ?", message: `« ${b.title} »\nElle sera retirée pour tous les destinataires. Cette action est définitive.`, confirmText: "Supprimer" });
+        if (!ok) return;
+        broadcastBusy = true;
+        try {
+          const copies = await fetchBroadcastCopies(b);
+          await commitChunks(copies, (batch, c) => batch.delete(c.ref));
+          await deleteDoc(doc(db, "admin_broadcasts", b.id));
+          if (editingBroadcastId === b.id) closeBroadcastEdit();
+          logAdmin("notification_delete", `Notification « ${b.title} » supprimée (${copies.length} copie${copies.length > 1 ? "s" : ""})`);
+          showPopup({ type: "success", title: "Notification supprimée", message: "La notification a été retirée du système." });
+        } catch (err) {
+          showPopup({ type: "error", title: "Suppression impossible", message: bcErrMsg(err) });
+        } finally { broadcastBusy = false; }
+      }
+    });
 
     /* =====================================================================
        CONFIGURATION CLOUDFLARE R2  (platform_settings/r2)
@@ -3851,6 +4103,274 @@
     });
 
     /* =====================================================================
+       TARIFS & PAIEMENTS
+       - platform_settings/wheel_paid_spin  { enabled, price }        → tour de roue payant
+       - platform_settings/deposit_link     { enabled, url }          → lien « Recharger mon compte »
+       - ad_durations/{id} { label, durationSeconds, price, active }  → durées publicitaires
+       Ces documents sont lus en temps réel par l'espace membre (index).
+       ===================================================================== */
+    const PRICE_MAX = 100000000;
+    const AD_DURATION_MAX_SECONDS = 365 * 86400;
+    const pricingBusy = {};
+
+    function parseWhole(raw) {
+      const t = String(raw ?? "").trim().replace(/\s+/g, "");
+      return /^\d{1,12}$/.test(t) ? Number(t) : NaN;
+    }
+    function validPrice(n) { return Number.isInteger(n) && n > 0 && n <= PRICE_MAX; }
+    function pricingErr(err) {
+      return err && err.code === "permission-denied" ? "Permission refusée par les règles Firestore pour cette collection." : (err && err.message) || "Erreur inconnue.";
+    }
+
+    /* ----- Tour de roue payant ----- */
+    let wheelPriceDirty = false;
+    function renderWheelPrice(d) {
+      const p = d ? Number(d.price) : NaN;
+      const priceOk = Number.isInteger(p) && p > 0;
+      const active = !!d && d.enabled !== false && priceOk;
+      $("wp-state").innerHTML = active
+        ? `<span class="badge badge-success">Actif</span> Tour payant : ${esc(formatCFA(p))}`
+        : (priceOk ? `<span class="badge badge-danger">Désactivé</span> Dernier montant : ${esc(formatCFA(p))} — le bouton n'est pas affiché aux membres.`
+                   : `<span class="badge badge-warning">Non configuré</span> Le tour payant n'est pas proposé aux membres.`);
+      if (!wheelPriceDirty) {
+        $("wp-price").value = priceOk ? String(p) : "";
+        $("wp-enabled").checked = d ? (d.enabled !== false) : true;
+      }
+    }
+    $("wp-price").addEventListener("input", () => { wheelPriceDirty = true; });
+    $("wp-enabled").addEventListener("change", () => { wheelPriceDirty = true; });
+    $("wheel-price-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (pricingBusy.wheel) return;
+      const enabled = $("wp-enabled").checked;
+      const raw = $("wp-price").value.trim();
+      const price = raw === "" ? NaN : parseWhole(raw);
+      if (enabled && !validPrice(price)) return showPopup({ type: "error", title: "Montant invalide", message: "Saisissez un montant entier supérieur à 0 (en F CFA)." });
+      if (!enabled && raw !== "" && !validPrice(price)) return showPopup({ type: "error", title: "Montant invalide", message: "Saisissez un montant entier supérieur à 0 (en F CFA) ou laissez le champ vide." });
+      pricingBusy.wheel = true;
+      const btn = $("wp-save");
+      btn.disabled = true;
+      try {
+        const data = { enabled, updatedAt: serverTimestamp(), updatedBy: currentUser.uid };
+        if (validPrice(price)) data.price = price;
+        await setDoc(doc(db, "platform_settings", "wheel_paid_spin"), data, { merge: true });
+        wheelPriceDirty = false;
+        logAdmin("wheel_price_update", `Tour de roue payant : ${enabled ? "actif" : "désactivé"}${validPrice(price) ? " • " + formatCFA(price) : ""}`);
+        showPopup({ type: "success", title: "Montant enregistré", message: enabled ? `Le tour de roue payant est à ${formatCFA(price)}. Les membres voient ce montant immédiatement.` : "Le tour de roue payant est désactivé." });
+      } catch (err) {
+        showPopup({ type: "error", title: "Enregistrement impossible", message: pricingErr(err) });
+      } finally { pricingBusy.wheel = false; btn.disabled = false; }
+    });
+
+    /* ----- Lien de paiement du rechargement ----- */
+    let depositLinkDirty = false;
+    let depositLinkExists = false;
+    function normalizeAdminLink(raw) {
+      let v = String(raw || "").trim();
+      if (!v || v.length > 1000) return null;
+      if (!/^[a-z][a-z0-9+.\-]*:/i.test(v)) v = "https://" + v.replace(/^\/+/, "");
+      try {
+        const u = new URL(v);
+        if ((u.protocol !== "https:" && u.protocol !== "http:") || u.username || u.password || !u.hostname.includes(".")) return null;
+        return u.href;
+      } catch (e) { return null; }
+    }
+    function renderDepositLink(d) {
+      const url = d ? String(d.url || "").trim() : "";
+      depositLinkExists = !!url;
+      const active = !!url && d.enabled !== false;
+      $("dl-state").innerHTML = !url
+        ? `<span class="badge badge-warning">Aucun lien</span> L'ancien message de rechargement est affiché aux membres.`
+        : `<span class="badge ${active ? "badge-success" : "badge-danger"}">${active ? "Actif" : "Désactivé"}</span> ${esc(url)}`;
+      $("dl-delete").style.display = url ? "inline-flex" : "none";
+      if (!depositLinkDirty) {
+        $("dl-url").value = url;
+        $("dl-enabled").checked = d ? d.enabled !== false : true;
+      }
+    }
+    $("dl-url").addEventListener("input", () => { depositLinkDirty = true; });
+    $("dl-enabled").addEventListener("change", () => { depositLinkDirty = true; });
+    $("deposit-link-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (pricingBusy.link) return;
+      const url = normalizeAdminLink($("dl-url").value);
+      if (!url) return showPopup({ type: "error", title: "Lien invalide", message: "Saisissez un lien complet commençant par https:// (ex : https://paiement.exemple.com/...)." });
+      const enabled = $("dl-enabled").checked;
+      pricingBusy.link = true;
+      const btn = $("dl-save");
+      btn.disabled = true;
+      try {
+        await setDoc(doc(db, "platform_settings", "deposit_link"), { enabled, url, updatedAt: serverTimestamp(), updatedBy: currentUser.uid }, { merge: true });
+        depositLinkDirty = false;
+        $("dl-url").value = url;
+        logAdmin("deposit_link_update", `Lien de rechargement ${enabled ? "enregistré (actif)" : "enregistré (désactivé)"} : ${url}`);
+        showPopup({ type: "success", title: "Lien enregistré", message: enabled ? "Les membres seront redirigés vers ce lien en cliquant sur « Recharger mon compte »." : "Le lien est enregistré mais désactivé : l'ancien message de rechargement reste affiché." });
+      } catch (err) {
+        showPopup({ type: "error", title: "Enregistrement impossible", message: pricingErr(err) });
+      } finally { pricingBusy.link = false; btn.disabled = false; }
+    });
+    $("dl-delete").addEventListener("click", async () => {
+      if (pricingBusy.link || !depositLinkExists) return;
+      const ok = await confirmPopup({ type: "warning", title: "Supprimer le lien de paiement ?", message: "Les membres verront de nouveau l'ancien message de rechargement.", confirmText: "Supprimer" });
+      if (!ok) return;
+      pricingBusy.link = true;
+      try {
+        try { await deleteDoc(doc(db, "platform_settings", "deposit_link")); }
+        catch (delErr) {
+          // Repli si les règles interdisent la suppression : le lien est vidé et désactivé (même effet côté membre)
+          await setDoc(doc(db, "platform_settings", "deposit_link"), { enabled: false, url: "", updatedAt: serverTimestamp(), updatedBy: currentUser.uid }, { merge: true });
+        }
+        depositLinkDirty = false;
+        logAdmin("deposit_link_delete", "Lien de rechargement supprimé");
+        showPopup({ type: "success", title: "Lien supprimé", message: "L'ancien message de rechargement est de nouveau affiché aux membres." });
+      } catch (err) {
+        showPopup({ type: "error", title: "Suppression impossible", message: pricingErr(err) });
+      } finally { pricingBusy.link = false; }
+    });
+
+    /* ----- Durées et tarifs publicitaires ----- */
+    let adDurRows = [];
+    let editingAdDurId = null;
+    function adDurSeconds(d) { return Number(d.durationSeconds); }
+    function adDurLabel(d) { return String(d.label || "").trim().slice(0, 40) || formatDuration(adDurSeconds(d)); }
+    // Même règle de validité que l'espace membre (index) : une durée invalide n'y est jamais proposée
+    function adDurValid(d) { return d.active === true && Number.isInteger(Number(d.price)) && Number(d.price) > 0 && Number.isFinite(adDurSeconds(d)) && adDurSeconds(d) > 0; }
+
+    function resetAdDurForm() {
+      editingAdDurId = null;
+      $("ad-dur-form").reset();
+      $("ad-dur-form-title").textContent = "📣 Durées et tarifs publicitaires";
+      $("ad-dur-submit").textContent = "Ajouter la durée";
+      $("ad-dur-cancel").style.display = "none";
+    }
+    $("ad-dur-cancel").addEventListener("click", resetAdDurForm);
+
+    function renderAdDurations() {
+      const box = $("ad-dur-list");
+      if (!adDurRows.length) { box.innerHTML = `<p style="color:var(--text-muted);">Aucune durée enregistrée. Sans durée active, les membres ne peuvent pas publier de publicité.</p>`; return; }
+      const proposed = adDurRows.filter(adDurValid).length;
+      box.innerHTML = `<p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:10px;">${adDurRows.length} durée${adDurRows.length > 1 ? "s" : ""} • ${proposed} proposée${proposed > 1 ? "s" : ""} aux membres</p>` + adDurRows.map(d => `
+        <div class="list-row">
+          <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:flex-start;">
+            <div style="min-width:0; flex:1;">
+              <strong>${esc(adDurLabel(d))}</strong>
+              <span class="badge ${d.active === true ? "badge-success" : "badge-danger"}" style="margin-left:6px;">${d.active === true ? "Active" : "Désactivée"}</span>
+              ${d.active === true && !adDurValid(d) ? `<span class="badge badge-warning">Invalide : non proposée</span>` : ""}
+              <div style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">Durée : ${esc(formatDuration(adDurSeconds(d)))} • Montant : <strong style="color:var(--text-main);">${esc(formatCFA(d.price))}</strong></div>
+            </div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline btn-sm" data-addur-edit="${esc(d.id)}">Modifier</button>
+              <button type="button" class="btn ${d.active === true ? "btn-outline" : "btn-primary"} btn-sm" data-addur-toggle="${esc(d.id)}">${d.active === true ? "Désactiver" : "Activer"}</button>
+              <button type="button" class="btn btn-danger btn-sm" data-addur-delete="${esc(d.id)}">Supprimer</button>
+            </div>
+          </div>
+        </div>`).join("");
+    }
+
+    $("ad-dur-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (pricingBusy.dur) return;
+      const label = $("ad-dur-label").value.replace(/\s+/g, " ").trim().slice(0, 40);
+      const value = Number(String($("ad-dur-value").value).trim().replace(",", "."));
+      const unit = Number($("ad-dur-unit").value);
+      const price = parseWhole($("ad-dur-price").value);
+      const active = $("ad-dur-active").checked;
+      const seconds = Math.round(value * unit);
+      if (![60, 3600, 86400].includes(unit)) return;
+      if (!isFinite(value) || value <= 0 || seconds < 60) return showPopup({ type: "error", title: "Durée invalide", message: "La durée doit être d'au moins 1 minute." });
+      if (seconds > AD_DURATION_MAX_SECONDS) return showPopup({ type: "error", title: "Durée trop longue", message: "La durée maximale est de 365 jours." });
+      if (!validPrice(price)) return showPopup({ type: "error", title: "Montant invalide", message: "Saisissez un montant entier supérieur à 0 (en F CFA)." });
+      pricingBusy.dur = true;
+      const btn = $("ad-dur-submit");
+      btn.disabled = true;
+      try {
+        const shown = label || formatDuration(seconds);
+        if (editingAdDurId) {
+          await updateDoc(doc(db, "ad_durations", editingAdDurId), { label, durationSeconds: seconds, price, active, updatedAt: serverTimestamp(), updatedBy: currentUser.uid });
+          logAdmin("ad_duration_update", `Durée publicitaire modifiée : ${shown} • ${formatCFA(price)} (${active ? "active" : "désactivée"})`);
+          showPopup({ type: "success", title: "Durée modifiée", message: "Les nouvelles conditions s'appliquent aux prochaines publicités. Les publicités déjà publiées ne changent pas." });
+        } else {
+          await addDoc(collection(db, "ad_durations"), { label, durationSeconds: seconds, price, active, createdAt: serverTimestamp(), createdBy: currentUser.uid });
+          logAdmin("ad_duration_create", `Durée publicitaire créée : ${shown} • ${formatCFA(price)} (${active ? "active" : "désactivée"})`);
+          showPopup({ type: "success", title: "Durée ajoutée", message: active ? "Elle est maintenant proposée dans « Faire Ma Publicité »." : "Elle est enregistrée mais désactivée : les membres ne la voient pas." });
+        }
+        resetAdDurForm();
+      } catch (err) {
+        showPopup({ type: "error", title: "Enregistrement impossible", message: err && err.code === "not-found" ? "Cette durée n'existe plus." : pricingErr(err) });
+      } finally { pricingBusy.dur = false; btn.disabled = false; }
+    });
+
+    $("ad-dur-list").addEventListener("click", async (e) => {
+      const editBtn = e.target.closest("[data-addur-edit]");
+      const toggleBtn = e.target.closest("[data-addur-toggle]");
+      const delBtn = e.target.closest("[data-addur-delete]");
+      if (editBtn) {
+        const d = adDurRows.find(x => x.id === editBtn.getAttribute("data-addur-edit"));
+        if (!d) return;
+        const secs = adDurSeconds(d);
+        let unit = 60;
+        if (secs > 0 && secs % 86400 === 0) unit = 86400; else if (secs > 0 && secs % 3600 === 0) unit = 3600;
+        editingAdDurId = d.id;
+        $("ad-dur-label").value = String(d.label || "");
+        $("ad-dur-unit").value = String(unit);
+        $("ad-dur-value").value = secs > 0 ? String(Math.round((secs / unit) * 100) / 100) : "";
+        $("ad-dur-price").value = Number.isInteger(Number(d.price)) && Number(d.price) > 0 ? String(Number(d.price)) : "";
+        $("ad-dur-active").checked = d.active === true;
+        $("ad-dur-form-title").textContent = "Modifier la durée";
+        $("ad-dur-submit").textContent = "Enregistrer les modifications";
+        $("ad-dur-cancel").style.display = "inline-flex";
+        $("ad-dur-form").scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+      if (pricingBusy.dur) return;
+      if (toggleBtn) {
+        const d = adDurRows.find(x => x.id === toggleBtn.getAttribute("data-addur-toggle"));
+        if (!d) return;
+        const next = d.active !== true;
+        pricingBusy.dur = true;
+        toggleBtn.disabled = true;
+        try {
+          await updateDoc(doc(db, "ad_durations", d.id), { active: next, updatedAt: serverTimestamp(), updatedBy: currentUser.uid });
+          logAdmin("ad_duration_toggle", `Durée publicitaire « ${adDurLabel(d)} » ${next ? "activée" : "désactivée"}`);
+          showPopup({ type: "success", title: next ? "Durée activée" : "Durée désactivée", message: next ? "Elle est de nouveau proposée aux membres." : "Elle n'est plus proposée aux nouvelles publicités. Les publicités déjà publiées ne changent pas." });
+        } catch (err) {
+          showPopup({ type: "error", title: "Opération impossible", message: err && err.code === "not-found" ? "Cette durée n'existe plus." : pricingErr(err) });
+        } finally { pricingBusy.dur = false; toggleBtn.disabled = false; }
+      } else if (delBtn) {
+        const d = adDurRows.find(x => x.id === delBtn.getAttribute("data-addur-delete"));
+        if (!d) return;
+        const ok = await confirmPopup({ type: "warning", title: "Supprimer cette durée ?", message: `« ${adDurLabel(d)} » — ${formatCFA(d.price)}\nElle ne sera plus proposée. Les publicités déjà publiées ne sont pas modifiées.`, confirmText: "Supprimer" });
+        if (!ok) return;
+        pricingBusy.dur = true;
+        try {
+          await deleteDoc(doc(db, "ad_durations", d.id));
+          if (editingAdDurId === d.id) resetAdDurForm();
+          logAdmin("ad_duration_delete", `Durée publicitaire supprimée : ${adDurLabel(d)} • ${formatCFA(d.price)}`);
+          showPopup({ type: "success", title: "Durée supprimée", message: "La durée a été retirée du formulaire « Faire Ma Publicité »." });
+        } catch (err) {
+          showPopup({ type: "error", title: "Suppression impossible", message: pricingErr(err) });
+        } finally { pricingBusy.dur = false; }
+      }
+    });
+
+    function attachPricingAdmin() {
+      liveUnsubs.push(onSnapshot(doc(db, "platform_settings", "wheel_paid_spin"), (snap) => {
+        renderWheelPrice(snap.exists() ? snap.data() : null);
+      }, () => { $("wp-state").textContent = "Impossible de lire la configuration actuelle."; }));
+      liveUnsubs.push(onSnapshot(doc(db, "platform_settings", "deposit_link"), (snap) => {
+        renderDepositLink(snap.exists() ? snap.data() : null);
+      }, () => { $("dl-state").textContent = "Impossible de lire la configuration actuelle."; }));
+      liveUnsubs.push(onSnapshot(collection(db, "ad_durations"), (snap) => {
+        const rows = [];
+        snap.forEach(d => rows.push({ id: d.id, ...d.data() }));
+        rows.sort((a, b) => (adDurSeconds(a) || 0) - (adDurSeconds(b) || 0) || (Number(a.price) || 0) - (Number(b.price) || 0));
+        adDurRows = rows;
+        renderAdDurations();
+        if (editingAdDurId && !rows.some(r => r.id === editingAdDurId)) resetAdDurForm();
+      }, () => { $("ad-dur-list").innerHTML = `<p style="color:var(--text-muted);">Impossible de charger les durées.</p>`; }));
+    }
+
+    /* =====================================================================
        JOURNAL D'ACTIVITÉ
        ===================================================================== */
     const LOG_LABELS = {
@@ -3860,7 +4380,11 @@
       notification_send: "Notification", privacy_update: "Confidentialité", popup_update: "Popup annonce",
       popup_create: "Annonce créée", popup_delete: "Annonce supprimée", popup_toggle: "Annonce publiée/désactivée",
       r2_update: "Config. images (R2)", chat_edit: "Message modifié", chat_delete: "Message supprimé", chat_forward: "Message transféré",
-      group_delete: "Message de groupe supprimé", group_post: "Message de groupe publié"
+      group_delete: "Message de groupe supprimé", group_post: "Message de groupe publié",
+      wheel_price_update: "Prix tour de roue", deposit_link_update: "Lien de rechargement", deposit_link_delete: "Lien de rechargement supprimé",
+      ad_duration_create: "Durée pub créée", ad_duration_update: "Durée pub modifiée", ad_duration_toggle: "Durée pub activée/désactivée",
+      ad_duration_delete: "Durée pub supprimée", notification_update: "Notification modifiée",
+      notification_toggle: "Notification activée/désactivée", notification_delete: "Notification supprimée"
     };
     let logRows = [];
     function attachLogs() {
